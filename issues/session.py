@@ -29,16 +29,12 @@ def login():
             error = 'Invalid password'
         else:
             login_user(user)
-            return 'Logged in successfully.' #redirect(request.args.get('next')) or 
+            return redirect(request.args.get('next')) or redirect(url_for('view_frontend'))
+
     return render_template('login.html', error=error)
 
 @app.route('/logout', methods=['GET'])
 @login_required
 def logout():
     logout_user()
-    return 'You were logged out'
-
-@app.route('/', methods=['GET'])
-@login_required
-def haai():
-    return 'Hi!'
+    return redirect(url_for('view_frontend'))

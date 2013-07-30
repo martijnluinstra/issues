@@ -20,11 +20,19 @@ class IssueListView extends Backbone.View
 
 	initialize: ->
 		@model.on 'reset', @render, this
+		@model.on 'add', @renderIssue, this
 
 	render: (eventName) ->
-		for issue in @model.models
-			view = new IssueListItemView model:issue
-			@$el.append view.render()
+		# clear all issues from view
+		@$el.html ''
+
+		# Render all issues
+		@renderIssue issue for issue in @model.models
+
+	renderIssue: (issue) ->
+		view = new IssueListItemView model:issue
+		@$el.append view.render()
+			
 
 class IssueListItemView extends Backbone.View
 	tagName: 'li'
@@ -67,9 +75,14 @@ class CommentCollection extends Backbone.Collection
 class CommentListView extends Backbone.View	
 	events:
 		# catch the submit-event of the comment form
-		'submit form': 'addComment'
+		'submit form': (evt) ->
+			evt.preventDefault()
+			@addComment()
+
 		# Also catch the cmd/ctrl+enter key combination on the textarea
-		'keydown textarea[name=text]': 'testForSubmit'
+		'keypress textarea': (evt) ->
+			if evt.keyCode == 13 and (evt.ctrlKey or evt.metaKey)
+				@addComment()
 
 	initialize: ->
 		@model.on 'add', @renderComment, this
@@ -88,14 +101,7 @@ class CommentListView extends Backbone.View
 			user: app.user
 			text: @$el.find('textarea[name=text]').val()
 
-		@$el.find('form').get(0).reset()
-
-	testFormSubmit: (evt) ->
-		console.log "type"
-		if evt.keyCode == 13 and (evt.ctrlKey or evt.metaKey)
-			@_addComment()
-
-		
+		@$el.find('form').get(0).reset()	
 
 class CommentListItemView extends Backbone.View
 	tagName: 'li'

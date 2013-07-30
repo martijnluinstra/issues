@@ -34,7 +34,7 @@
 					<button type="button" class="btn btn-default">Done</button>
 				</div>
 			</div>
-			<div id="issue-list" class="list-group"></div>
+			<ol id="issue-list" class="list-group"></ol>
 		</div>
 
 		<div id="issue-details-panel" class="panel">
@@ -75,10 +75,8 @@
 	</div>
 
 	<script id="tpl-issue-list-item" type="text/x-template">
-		<li>
-			<input type="checkbox">
-			<a href="/issues/<%= id %>"><%= title %></a>
-		</li>
+		<input type="checkbox">
+		<a href="/issues/<%= id %>"><%= title %></a>
 	</script>
 
 	<script id="tpl-comment-list" type="text/x-template">
@@ -97,7 +95,7 @@
 	<script src="/static/js/issues.js"></script>
 	<script>
 		{% autoescape false %}
-		var app = init({{ jsonify(issues) }});
+		var app = init({{ issues }});
 		{% endautoescape %}
 	</script>
 </body>
