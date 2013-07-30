@@ -4,6 +4,11 @@ class Comment extends Backbone.Model
 
 class Label extends Backbone.Model
 
+class IssueCollection extends Backbone.Collection
+	model: Issue
+
+	url: '/api/issues/all'
+
 class IssueListView extends Backbone.View
 	tagName: 'ul'
 
@@ -44,8 +49,8 @@ class AppRouter extends Backbone.Router
 		@route 'labels/:name', 'showLabel'
 
 		@issueCollection = new IssueCollection
-		@issueCollection.fetch success: ->
-			list()
+		@issueCollection.fetch success: =>
+			@list()
 			callback()
 
 	list: ->
