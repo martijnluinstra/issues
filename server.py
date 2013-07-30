@@ -38,7 +38,8 @@ def list_all_issues():
 
 # Frontend routes (return HTML)
 @app.route('/')
-def show_index():
+@app.route('/<path:page>')
+def show_index(page=None):
 	return render_template('index.html', issues=dummy_issues)
 
 if __name__ == '__main__':

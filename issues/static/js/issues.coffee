@@ -57,3 +57,12 @@ class AppRouter extends Backbone.Router
 		issue = @issueCollection.get id
 		view = new IssueView model:issue
 		(jQuery '#issue-details').html view.render()
+
+init = (issues) ->
+	app = new AppRouter issues:issues
+
+	Backbone.history.start pushState:true
+
+	jQuery("a:not([href^='http://'])").click (evt) ->
+		evt.preventDefault()
+		app.navigate (jQuery this).attr('href'), true

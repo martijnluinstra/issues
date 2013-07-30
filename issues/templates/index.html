@@ -50,12 +50,8 @@
 	<script src="/static/js/issues.js"></script>
 	<script>
 		{% autoescape false %}
-		var app = new AppRouter({
-			issues: {{ jsonify(issues) }}
-		});
+		var app = init({{ jsonify(issues) }});
 		{% endautoescape %}
-
-		Backbone.history.start();
 	</script>
 </body>
 </html>
