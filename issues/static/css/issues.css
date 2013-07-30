@@ -2,3 +2,20 @@
 	max-width: 400px;
 	margin: 100px auto;
 }
+
+#label-panel {
+	position: fixed;
+	top: 12px;
+	left: 12px;
+	width: 200px;
+}
+
+#issue-list-panel,
+#issue-details-panel,
+#new-issue-panel {
+	position: absolute;
+	top: 12px;
+	right: 12px;
+	left: 224px;
+	bottom: 12px;
+}

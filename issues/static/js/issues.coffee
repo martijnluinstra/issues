@@ -16,17 +16,15 @@ class IssueCollection extends Backbone.Collection
 	url: '/api/issues/all'
 
 class IssueListView extends Backbone.View
-	tagName: 'ul'
+	el: jQuery('#issue-list')
 
 	initialize: ->
-		@el.id = 'issue-list'
 		@model.on 'reset', @render, this
-		(jQuery @el).addClass 'list-group'
 
 	render: (eventName) ->
 		for issue in @model.models
 			view = new IssueListItemView model:issue
-			(jQuery @el).append view.render()
+			@$el.append view.render()
 
 class IssueListItemView extends Backbone.View
 	tagName: 'li'
@@ -34,26 +32,28 @@ class IssueListItemView extends Backbone.View
 	template: _.template jQuery('#tpl-issue-list-item').text()
 
 	initialize: ->
-		(jQuery @el).addClass 'list-group-item'
+		@$el.addClass 'list-group-item'
 
 	render: (eventName) ->
-		(jQuery @el).html @template @model.toJSON()
+		@$el.html @template @model.toJSON()
 
 class IssueView extends Backbone.View
 	tagName: 'div'
 
-	template: _.template jQuery('#tpl-issue-details').text()
-
-	initialize: (options)->
-		@commentListView = new CommentListView model:@model.comments
-
-		# Refresh comments collection (till we have push requests ;) )
+	initialize: ->
 		@model.comments.fetch()
 
 	render: (eventName) ->
-		(jQuery @el).html(@template @model.toJSON()).show()
+		@$el.find('.issue-title').text @model.get 'title'
 
-		(jQuery @el).find('.comments').replaceWith @commentListView.render()
+		@$el.find('.issue-description').html @model.get 'description'
+
+		# also initialize a view for the comment list
+		commentListView = new CommentListView
+			model: @model.comments
+			el: @$el.find('.comments')
+
+		commentListView.render()
 
 		return @el
 
@@ -65,42 +65,37 @@ class CommentCollection extends Backbone.Collection
 		@url = "/api/issues/#{ @issue.get 'id' }/comments"
 
 class CommentListView extends Backbone.View	
-	template: _.template jQuery('#tpl-comment-list').text()
+	events:
+		# catch the submit-event of the comment form
+		'submit form': 'addComment'
+		# Also catch the cmd/ctrl+enter key combination on the textarea
+		'keydown textarea[name=text]': 'testForSubmit'
 
 	initialize: ->
 		@model.on 'add', @renderComment, this
 
 	render: (eventName) ->
-		@el = jQuery(@template issue:@model.issue)
-
-		# submit callback
-		addComment = =>
-			@model.create
-				issue_id: @model.issue.get 'id'
-				user: app.user
-				text: @el.find('textarea[name=text]').val()
-
-			@el.find('form').get(0).reset()
-
-		# catch the submit-event of the comment form
-		@el.find('form').submit (evt) ->
-			addComment()
-			evt.preventDefault()
-
-		# Also catch the cmd/ctrl+enter key combination on the textarea
-		@el.find('textarea[name=text]').keydown (evt) ->
-			if evt.keyCode == 13 and (evt.ctrlKey or evt.metaKey)
-				addComment()
-			
-		
 		# Render all the comments that are already in the model
 		@renderComment comment for comment in @model.models
 
-		return @el
-
 	renderComment: (comment) ->
 		view = new CommentListItemView model:comment
-		@el.find('.comment-list').append view.render()
+		@$el.find('.comment-list').append view.render()
+
+	addComment: ->
+		@model.create
+			issue_id: @model.issue.get 'id'
+			user: app.user
+			text: @$el.find('textarea[name=text]').val()
+
+		@$el.find('form').get(0).reset()
+
+	testFormSubmit: (evt) ->
+		console.log "type"
+		if evt.keyCode == 13 and (evt.ctrlKey or evt.metaKey)
+			@_addComment()
+
+		
 
 class CommentListItemView extends Backbone.View
 	tagName: 'li'
@@ -108,7 +103,9 @@ class CommentListItemView extends Backbone.View
 	template: _.template jQuery('#tpl-comment-list-item').text()
 
 	render: (eventName) ->
-		@el = jQuery @template @model.toJSON()
+		@setElement jQuery @template @model.toJSON()
+
+		return @el
 
 class AppRouter extends Backbone.Router
 	initialize: (config) ->
@@ -124,11 +121,21 @@ class AppRouter extends Backbone.Router
 	list: ->
 		view = new IssueListView model:@issueCollection
 		(jQuery '#issue-list').replaceWith view.render()
+		@showPanel '#issue-list-panel'
 
 	showIssue: (id) ->
 		issue = @issueCollection.get id
-		view = new IssueView model:issue
-		(jQuery '#issue-details').replaceWith view.render()
+		view = new IssueView
+			el: jQuery '#issue-details-panel'
+			model:issue
+		
+		view.render()
+
+		@showPanel '#issue-details-panel'
+
+	showPanel: (id) ->
+		jQuery('.issue-tracker > .panel:not([id=label-panel])').hide()
+		jQuery(id).show()
 
 window.init = (issues) ->
 	# FIXME Temporary user, this data should come from the initialisation
@@ -140,6 +147,11 @@ window.init = (issues) ->
 	app = new AppRouter
 		user:user
 		issues:issues
+
+	# Hide the new-issue panel for now
+	jQuery('#new-issue-panel').hide()
+
+	jQuery('#issue-details-panel').hide()
 
 	# Let Backbone do the routing :)
 	Backbone.history.start pushState:true
