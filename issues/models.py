@@ -80,9 +80,9 @@ class Comment(db.Model):
 
     def to_dict(self):
         return {
-            'issue': self.issue_id
-            'user': self.user_id
-            'text': self.text
+            'issue': self.issue_id,
+            'user': self.user_id,
+            'text': self.text,
             'time': self.time
         }
 
@@ -97,7 +97,7 @@ class Label(db.Model):
 
     def to_dict(self):
         return {
-            'id': self.id
-            'name': self.name
+            'id': self.id,
+            'name': self.name,
             'colour': self.colour
         }
