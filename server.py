@@ -27,6 +27,10 @@ dummy_issues = [
 	Issue(3, 'Test Issue 3')
 ]
 
+@app.context_processor
+def utility_processor():
+	return dict(jsonify=jsonify)
+
 # API routes (all return JSON)
 @app.route('/api/issues/all')
 def list_all_issues():
@@ -35,7 +39,7 @@ def list_all_issues():
 # Frontend routes (return HTML)
 @app.route('/')
 def show_index():
-	return render_template('index.html')
+	return render_template('index.html', issues=dummy_issues)
 
 if __name__ == '__main__':
 	app.run(debug=True)
