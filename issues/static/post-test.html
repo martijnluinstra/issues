@@ -1,0 +1,14 @@
+<script src="/static/js/jquery-2.0.3.js"></script>
+<script>
+	var req = new XMLHttpRequest();
+	req.open('POST', '/api/issues/23/comments', true);
+	req.onreadystatechange = function() {
+		if (req.readyState == 4)
+			jQuery('pre').text(req.responseText);
+	};
+	req.send(JSON.stringify({
+		id: 'topts',
+		text: 'appeltaart'
+	}));
+</script>
+<pre></pre>
