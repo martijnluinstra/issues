@@ -21,7 +21,7 @@ def add_issue():
     issue = Issue(data['title'], data['description'], current_user.id)
     db.session.add(issue)
     db.session.commit()
-    return 'Issue added', 201
+    return issue.id, 201
 
 
 @app.route('/api/issues/<int:issue_id>', methods=['GET'])
@@ -99,7 +99,31 @@ def add_label(issue_id):
     return 'No label name', 500
 
 
+@app.route('/api/issues/<int:issue_id>/labels/<name>', methods=['DELETE'])
+@api_admin_required
+def remove_label(issue_id, name):
+    label = Label.query.filter_by(name=name).first_or_404()
+    issue = Issue.query.filter_by(id=issue_id).first_or_404()
+    issue.labels.remove(label)
+    db.session.commit()
+    return 'Label removed'
+
+
+@app.route('/api/labels', methods=['GET'])
+def list_labels():
+    labels = Label.query.all()
+    return jsonify([label.to_dict() for label in labels])
+
+
+@app.route('/api/labels/<names>', methods=['GET'])
+def list_issues_labels(names):
+    labels = names.split('+')
+    issues = Issue.query.filter(Issue.labels.any(Label.name.in_(labels))).all()
+    return jsonify([issue.to_dict() for issue in issues])
+
+
 @app.route('/api/labels/<name>', methods=['PUT'])
+@api_admin_required
 def update_label(name):
     data = request.get_json()
     label = Label.query.filter_by(name=name).first_or_404()
@@ -109,8 +133,10 @@ def update_label(name):
     return 'OK'
 
 
-@app.route('/api/labels/<names>', methods=['GET'])
-def view_label(names):
-    labels = names.split('+')
-    issues = Issue.query.filter(Issue.labels.any(Label.name.in_(labels))).all()
-    return jsonify([issue.to_dict() for issue in issues])
+@app.route('/api/labels/<name>', methods=['DELETE'])
+@api_admin_required
+def delete_label(name):
+    label = Label.query.filter_by(name=name).first_or_404()
+    db.session.delete(label)
+    db.session.commit()
+    return 'Label deleted'
