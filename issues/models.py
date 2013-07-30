@@ -71,30 +71,23 @@ class Issue(db.Model):
         self.public = public
         self.deadline = deadline
 
-    def to_dict(self, compact=True):
+    def to_dict(self, details=False):
         owner = User.query.filter_by(id=self.owner_id).first()
-        if compact:
-            return {
-                'id': self.id,
-                'title': self.title,
-                'description': self.description,
-                'completed': self.completed,
-                'deadline': self.deadline,
-                'labels': list([label.to_dict() for label in self.labels])
-            }
         comments = self.comments.all()
-        return {
+        data = {
             'id': self.id,
             'title': self.title,
             'description': self.description,
-            'owner': owner.to_dict(),
             'completed': self.completed,
             'deadline': self.deadline,
-            'public': self. public,
-            'labels': [label.to_dict() for label in self.labels],
-            'deadline': self.deadline.isoformat() if self.deadline is not None else None,
-            'comments': list([comment.to_dict() for comment in comments])
+            'labels': [label.to_dict() for label in self.labels]
         }
+        if details:
+            data['owner']= owner.to_dict()
+            data['public']= self. public
+            data['deadline']= self.deadline.isoformat() if self.deadline is not None else None
+            data['comments']= [comment.to_dict() for comment in comments]
+        return data
 
 class Comment(db.Model):
     issue_id = db.Column(db.Integer, db.ForeignKey('issue.id'), primary_key=True)

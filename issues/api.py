@@ -33,7 +33,7 @@ def add_issue():
 @app.route('/api/issues/<int:issue_id>', methods=['GET'])
 def view_issue(issue_id):
     issue = Issue.query.filter_by(id=issue_id, public=not is_admin()).first_or_404()
-    return jsonify(issue.to_dict(compact=False))
+    return jsonify(issue.to_dict(details=True))
 
 
 @app.route('/api/issues/<int:issue_id>', methods=['PUT'])
