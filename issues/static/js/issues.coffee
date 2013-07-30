@@ -46,6 +46,8 @@ class IssueView extends Backbone.View
 
 	initialize: (options)->
 		@commentListView = new CommentListView model:@model.comments
+
+		# Refresh comments collection (till we have push requests ;) )
 		@model.comments.fetch()
 
 	render: (eventName) ->
