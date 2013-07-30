@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Issues</title>
+	<link rel="stylesheet" href="/static/css/bootstrap.css">
+	<script src="/static/js/jquery-2.0.3.js"></script>
+	<script src="/static/js/underscore.js"></script>
+	<script src="/static/js/backbone.js"></script>
+	<script src="/static/js/bootstrap.js"></script>
+</head>
+<body>
+	<div id="issue-tracker">
+		<p class="loading-message">Loading…</p>
+
+		<div id="issue-list"></div>
+
+		<div id="issue-details"></div>
+
+	</div>
+
+	<div id="login-popup" class="panel panel-primary">
+		<div class="panel-heading">
+			<h3 class="panel-title">Login</h3>
+		</div>
+		<form method="post" action="/session/create">
+			<fieldset>
+				<div class="form-group">
+					<label for="login-email">Email address</label>
+					<input type="email" id="login-email" name="email">
+				</div>
+				<div class="form-group">
+					<label for="login-password">Password</label>
+					<input type="password" id="login-password" name="password">
+				</div>
+				<button type="submit" class="btn btn-default">Login</button>
+			</fieldset>
+		</form>
+	</div>
+
+</body>
+</html>
