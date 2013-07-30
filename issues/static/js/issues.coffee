@@ -43,15 +43,13 @@ class IssueView extends Backbone.View
 		(jQuery @el).html(@template @model.toJSON()).show()
 
 class AppRouter extends Backbone.Router
-	initialize: (callback) ->
+	initialize: (config) ->
 		@route '', 'list'
 		@route 'issues/:id', 'showIssue'
 		@route 'labels/:name', 'showLabel'
 
-		@issueCollection = new IssueCollection
-		@issueCollection.fetch success: =>
-			@list()
-			callback()
+		@issueCollection = new IssueCollection config.issues
+		@list()
 
 	list: ->
 		view = new IssueListView model:@issueCollection
@@ -61,6 +59,3 @@ class AppRouter extends Backbone.Router
 		issue = @issueCollection.get id
 		view = new IssueView model:issue
 		(jQuery '#issue-details').html view.render()
-
-app = new AppRouter ->
-	Backbone.history.start()
