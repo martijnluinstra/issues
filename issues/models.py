@@ -1,24 +1,23 @@
 from issues import db
-from sqlalchemy import Table, Column, Integer, ForeignKey, String, Boolean, Text, DateTime
-from sqlalchemy.orm import relationship
+from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 
 
-issues_labels_table = Table('issues_labels', db.Model.metadata,
-    Column('issue', Integer, ForeignKey('issue.id')),
-    Column('label', Integer, ForeignKey('label.id'))
+issues_labels = db.Table('issues_labels',
+    db.Column('issue', db.Integer, db.ForeignKey('issue.id')),
+    db.Column('label', db.Integer, db.ForeignKey('label.id'))
 )
 
-notifications_table = Table('notifications', db.Model.metadata,
-    Column('issue', Integer, ForeignKey('issue.id')),
-    Column('user', Integer, ForeignKey('user.id'))
+notifications = db.Table('notifications',
+    db.Column('issue', db.Integer, db.ForeignKey('issue.id')),
+    db.Column('user', db.Integer, db.ForeignKey('user.id'))
 )
 
 class User(db.Model):
-    id = Column(Integer, primary_key=True)
-    name = Column(String(80), unique=True)
-    password = Column(String(40))
-    email = Column(String(255))
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(80), unique=True)
+    password = db.Column(db.String(40))
+    email = db.Column(db.String(255))
 
     def __init__(self, name, password, email):
         self.name = name
@@ -33,13 +32,17 @@ class User(db.Model):
 
 
 class Issue(db.Model):
-    id = Column(Integer, primary_key=True)
-    title = Column(String(255))
-    description = Column(Text())
-    owner = Column(Integer, ForeignKey('user.id'))
-    completed = Column(Boolean())
-    public = Column(Boolean())
-    deadline = Column(DateTime(), nullable=True)
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(255))
+    description = db.Column(db.Text())
+    owner = db.Column(db.Integer, db.ForeignKey('user.id'))
+    completed = db.Column(db.Boolean())
+    public = db.Column(db.Boolean())
+    deadline = db.Column(db.DateTime(), nullable=True)
+    comments = db.relationship('Comment', backref='issue',
+                                lazy='dynamic')
+    labels = db.relationship('Label', secondary=issues_labels,
+        backref=db.backref('pages', lazy='dynamic'))
 
     def __init__(self, title, description, owner, public, deadline=None):
         self.title = title
@@ -50,23 +53,22 @@ class Issue(db.Model):
         self.deadline = deadline
 
 class Comment(db.Model):
-    issue = Column(Integer, ForeignKey('issue.id'), primary_key=True)
-    user = Column(Integer, ForeignKey('user.id'), primary_key=True)
-    text = Column(Text())
-    time = Column(DateTime(), primary_key=True)
+    issue = db.Column(db.Integer, db.ForeignKey('issue.id'), primary_key=True)
+    user = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
+    text = db.Column(db.Text())
+    time = db.Column(db.DateTime(), primary_key=True)
 
-    def __init__(self, issue, user, text, time):
+    def __init__(self, issue, user, text):
         self.issue = issue
         self.user = user
         self.text = text
-        self.time = time
+        self.time = datetime.now()
 
 class Label(db.Model):
-    id = Column(Integer, primary_key=True)
-    name = Column(String(80), unique=True)
-    colour = Column(String(40))
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(80), unique=True)
+    colour = db.Column(db.String(40))
 
     def __init__(self, name, colour):
         self.name = name
         self.colour = colour
-
