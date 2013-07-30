@@ -193,16 +193,10 @@ class AppRouter extends Backbone.Router
 			if name == id then panel.show() else panel.hide()
 
 
-window.init = (issues) ->
-	# FIXME Temporary user, this data should come from the initialisation
-	user = 
-		id: 1
-		name: 'Jelmer'
-		email: 'jelmer@ikhoefgeen.nl'
-
+window.init = (data) ->
 	app = new AppRouter
-		user:user
-		issues:issues
+		user: data.user
+		issues: data.issues
 
 	# Hide the new-issue panel for now
 	jQuery('#new-issue-panel').hide()

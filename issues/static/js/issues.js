@@ -377,16 +377,10 @@
 
   })(Backbone.Router);
 
-  window.init = function(issues) {
-    var user;
-    user = {
-      id: 1,
-      name: 'Jelmer',
-      email: 'jelmer@ikhoefgeen.nl'
-    };
+  window.init = function(data) {
     app = new AppRouter({
-      user: user,
-      issues: issues
+      user: data.user,
+      issues: data.issues
     });
     jQuery('#new-issue-panel').hide();
     jQuery('#issue-details-panel').hide();

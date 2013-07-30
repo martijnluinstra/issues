@@ -95,7 +95,10 @@
 	<script src="/static/js/issues.js"></script>
 	<script>
 		{% autoescape false %}
-		var app = init({{ issues }});
+		var app = init({
+			user: {{current_user}},
+			issues: {{ issues }}
+		});
 		{% endautoescape %}
 	</script>
 </body>

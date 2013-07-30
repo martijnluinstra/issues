@@ -13,4 +13,6 @@ def jsonify(data):
 def view_frontend(path=None):
     issues = Issue.query.filter_by(public=not is_admin()).all()
     data = [issue.to_dict() for issue in issues]
-    return render_template('index.html', issues=jsonify(data))
+    return render_template('index.html',
+        current_user=jsonify(current_user.to_dict()),
+        issues=jsonify(data))
