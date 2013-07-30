@@ -27,14 +27,14 @@
 		<div id="issue-list-panel" class="panel">
 			<div class="btn-toolbar">
 				<div class="btn-group">
-					<button type="button" class="btn btn-default">New Issue</button>
+					<a href="/issues/new" class="btn btn-default">New Issue</a>
 				</div>
 				<div class="btn-group">
 					<button type="button" class="btn btn-default">Archive</button>
 					<button type="button" class="btn btn-default">Done</button>
 				</div>
 			</div>
-			<ol id="issue-list" class="list-group"></ol>
+			<ol class="issue-list" class="list-group"></ol>
 		</div>
 
 		<div id="issue-details-panel" class="panel">
@@ -60,10 +60,10 @@
 			<div class="panel-heading">
 				<h3 class="panel-title">New Issue</h3>
 			</div>
-			<form method="post" action="/issues/create">
+			<form method="post" action="/issues/new">
 				<div class="form-group">
 					<label for="issue-title">Title:</label>
-					<input type="text" id="issue-title" name="title" class="form-control">
+					<input type="text" id="issue-title" name="title" class="form-control" required>
 				</div>
 				<div class="form-group">
 					<label for="issue-description">Description:</label>
