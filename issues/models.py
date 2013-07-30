@@ -18,11 +18,13 @@ class User(db.Model):
     name = db.Column(db.String(80), unique=True)
     password = db.Column(db.String(40))
     email = db.Column(db.String(255))
+    admin = db.Column(db.Boolean())
 
-    def __init__(self, name, password, email):
+    def __init__(self, name, password, email, admin):
         self.name = name
         self.self.set_password(password)
         self.email = email
+        self.admin = admin
 
     def set_password(self, password):
         self.pw_hash = generate_password_hash(password)
