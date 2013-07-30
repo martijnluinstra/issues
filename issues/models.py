@@ -15,9 +15,9 @@ notifications = db.Table('notifications',
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(80), unique=True)
+    name = db.Column(db.String(80))
     password = db.Column(db.String(40))
-    email = db.Column(db.String(255))
+    email = db.Column(db.String(255), unique=True)
     admin = db.Column(db.Boolean())
 
     def __init__(self, name, password, email, admin=False):

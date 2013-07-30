@@ -21,9 +21,9 @@ def load_user(userid):
 def login():
     error = None
     if request.method == 'POST':
-        user = User.query.filter_by(name = request.form['username']).first()
+        user = User.query.filter_by(email = request.form['email']).first()
         if user is None:
-            error = 'Invalid username'
+            error = 'Invalid email'
         elif not user.check_password(request.form['password']):
             error = 'Invalid password'
         else:
