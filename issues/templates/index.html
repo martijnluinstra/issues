@@ -37,14 +37,26 @@
 	</div>
 
 	<script id="tpl-issue-list-item" type="text/x-template">
-		<a href="/issues/<%= id %>"><%= title %></a>
+		<li>
+			<a href="/issues/<%= id %>"><%= title %></a>
+		</li>
 	</script>
 
 	<script id="tpl-issue-details" type="text/x-template">
-		<dl>
-			<dt>Title:</dt>
-			<dd><%= title %></dd>
-		</dl>
+		<div id="issue-details">
+			<dl>
+				<dt>Title:</dt>
+				<dd><%= title %></dd>
+			</dl>
+			<div class="comments-list">
+				<p class="loading-message">Loading comments…</p>
+			</div>
+		</div>
+	</script>
+
+	<script id="tpl-comment-list-item" type="text/x-template">
+		<div class="comment-text"><%= text %></div>
+		<address class="author">by <span class="author"><%= user.name %></span></address>
 	</script>
 
 	<script src="/static/js/issues.js"></script>

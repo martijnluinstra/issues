@@ -1,4 +1,6 @@
 class Issue extends Backbone.Model
+	initialize: ->
+		@comments = new CommentCollection [], issue:this
 
 class Comment extends Backbone.Model
 
@@ -13,6 +15,7 @@ class IssueListView extends Backbone.View
 	tagName: 'ul'
 
 	initialize: ->
+		@el.id = 'issue-list'
 		@model.on 'reset', @render, this
 		(jQuery @el).addClass 'list-group'
 
@@ -37,8 +40,45 @@ class IssueView extends Backbone.View
 
 	template: _.template jQuery('#tpl-issue-details').text()
 
+	initialize: (options)->
+		@commentListView = new CommentListView model:@model.comments
+		@model.comments.fetch()
+
 	render: (eventName) ->
 		(jQuery @el).html(@template @model.toJSON()).show()
+
+		(jQuery @el).find('.comments-list').replaceWith @commentListView.render()
+
+		return @el
+
+class CommentCollection extends Backbone.Collection
+	model: Comment
+
+	initialize: (models, options) ->
+		@issue = options.issue
+		@url = "/api/issues/#{ @issue.get 'id' }/comments"
+
+class CommentListView extends Backbone.View	
+	tagName: 'ul'
+
+	initialize: ->
+		@model.on 'add', @addComment, this
+
+	render: (eventName) ->
+		@addComment comment for comment in @model.models
+		return @el
+
+	addComment: (comment) ->
+		view = new CommentListItemView model:comment
+		jQuery(@el).append view.render()
+
+class CommentListItemView extends Backbone.View
+	tagName: 'li'
+
+	template: _.template jQuery('#tpl-comment-list-item').text()
+
+	render: (eventName) ->
+		jQuery(@el).html @template @model.toJSON()
 
 class AppRouter extends Backbone.Router
 	initialize: (config) ->
@@ -51,12 +91,12 @@ class AppRouter extends Backbone.Router
 
 	list: ->
 		view = new IssueListView model:@issueCollection
-		(jQuery '#issue-list').html view.render()
+		(jQuery '#issue-list').replaceWith view.render()
 
 	showIssue: (id) ->
 		issue = @issueCollection.get id
 		view = new IssueView model:issue
-		(jQuery '#issue-details').html view.render()
+		(jQuery '#issue-details').replaceWith view.render()
 
 init = (issues) ->
 	app = new AppRouter issues:issues
