@@ -2,6 +2,7 @@ from flask import make_response, request
 from flask.ext.login import current_user, login_required
 from issues import app, db
 from models import Issue, Comment
+from session import admin_required
 import json
 
 def is_admin():
@@ -22,10 +23,26 @@ def view_issue(issue_id):
     return jsonify(issue.to_dict(compact=False))
 
 
+@app.route('/api/issues/todo', methods=['GET'])
+def list_todo_issues():
+    issues = Issue.query.filter_by(completed=False, public=not is_admin()).all()
+    return jsonify([issue.to_dict() for issue in issues])
+
+
 @app.route('/api/issues/all', methods=['GET'])
 def list_all_issues():
     issues = Issue.query.filter_by(public=not is_admin()).all()
     return jsonify([issue.to_dict() for issue in issues])
+
+
+@app.route('/api/issues/', methods=['POST'])
+@admin_required
+def add_issue():
+    data = request.get_json()
+    issue = Issue(data['title'], data['description'], data['owner_id'], data['public'], data['deadline'])
+    db.session.add(issue)
+    db.session.commit()
+    return 'OK'
 
 
 @app.route('/api/issues/<int:issue_id>/comments', methods=['GET'])
@@ -41,4 +58,4 @@ def add_comment(issue_id):
     comment = Comment(issue_id, current_user.id, request.get_json()['text'])
     db.session.add(comment)
     db.session.commit()
-    return ''
+    return 'OK'

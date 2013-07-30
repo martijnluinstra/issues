@@ -1,15 +1,18 @@
 <script src="/static/js/jquery-2.0.3.js"></script>
 <script>
 	var req = new XMLHttpRequest();
-	req.open('POST', '/api/issues/1/comments', true);
+	req.open('POST', '/api/issues/', true);
 	req.setRequestHeader('Content-Type', 'application/json');
 	req.onreadystatechange = function() {
 		if (req.readyState == 4)
 			jQuery('pre').text(req.responseText);
 	};
 	req.send(JSON.stringify({
-		id: 'topts',
-		text: 'appeltaart'
+		title: 'olifantjes',
+		description: 'roze olifantjes', 
+		owner_id: 1,
+		public: false,
+		deadline: null
 	}));
 </script>
 <pre></pre>
