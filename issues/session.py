@@ -1,7 +1,8 @@
-from flask import request, render_template, redirect
+from flask import request, render_template, redirect, url_for
 from issues import app, db, login_manager
 from models import User
-from flask.ext.login import login_user, logout_user, login_required
+from flask.ext.login import login_user, logout_user, login_required, current_user
+from functools import wraps
 
 def admin_required(f):
     @wraps(f)
