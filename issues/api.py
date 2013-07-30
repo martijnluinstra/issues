@@ -1,14 +1,17 @@
 from flask import make_response, request
 from flask.ext.login import current_user, login_required
 from issues import app, db
-from models import Issue, Comment
+from models import Issue, Comment, Label
 from session import admin_required
-import json
+import json, re
+
+TIME_FORMAT = '%Y:%m:%d %H:%M:%S'
+
 
 def is_admin():
-    if current_user is None or current_user.is_anonymous() or not current_user.admin:
-        return False
-    return True
+    return current_user is not None \
+        and not current_user.is_anonymous() \
+        and current_user.admin
 
 
 def jsonify(data):
@@ -17,10 +20,39 @@ def jsonify(data):
     return response
 
 
+@app.route('/api/issues', methods=['POST'])
+@admin_required
+def add_issue():
+    data = request.get_json()
+    issue = Issue(data['title'], data['description'], current_user.id)
+    db.session.add(issue)
+    db.session.commit()
+    return 'Issue added', 201
+
+
 @app.route('/api/issues/<int:issue_id>', methods=['GET'])
 def view_issue(issue_id):
     issue = Issue.query.filter_by(id=issue_id, public=not is_admin()).first_or_404()
     return jsonify(issue.to_dict(compact=False))
+
+
+@app.route('/api/issues/<int:issue_id>', methods=['PUT'])
+@admin_required
+def update_issue(issue_id):
+    data = request.get_json()
+    issue = Issue.query.filter_by(id=issue_id).first_or_404()
+    if 'title' in data:
+        issue.title = data['title']
+    if 'description' in data:
+        issue.description = data['description']
+    if 'completed' in data:
+        issue.completed = data['completed']
+    if 'public' in data:
+        issue.public = data['public']
+    if 'deadline' in data:
+        issue.deadline = datetime.strptime(data['deadline'], TIME_FORMAT)
+    db.session.commit()
+    return 'OK'
 
 
 @app.route('/api/issues/todo', methods=['GET'])
@@ -33,16 +65,6 @@ def list_todo_issues():
 def list_all_issues():
     issues = Issue.query.filter_by(public=not is_admin()).all()
     return jsonify([issue.to_dict() for issue in issues])
-
-
-@app.route('/api/issues/', methods=['POST'])
-@admin_required
-def add_issue():
-    data = request.get_json()
-    issue = Issue(data['title'], data['description'], data['owner_id'], data['public'], data['deadline'])
-    db.session.add(issue)
-    db.session.commit()
-    return 'OK'
 
 
 @app.route('/api/issues/<int:issue_id>/comments', methods=['GET'])
@@ -58,4 +80,28 @@ def add_comment(issue_id):
     comment = Comment(issue_id, current_user.id, request.get_json()['text'])
     db.session.add(comment)
     db.session.commit()
-    return 'OK'
+    return 'Comment added', 201
+
+@app.route('/api/issues/<int:issue_id>/labels', methods=['POST'])
+@admin_required
+def add_label(issue_id):
+    data = request.get_json()
+    label = None
+    if 'name' in data:
+        label = Label.query.filter_by(name=data['name']).first()
+        if label is None:
+            if re.match('^[\w]+[\w-]*$', data['name']) is None:
+                return 'Incorrect label name', 500
+            label = Label(data['name'])
+            db.session.add(label)
+        issue = Issue.query.filter_by(id=issue_id).first_or_404()
+        issue.labels.append(label)
+        db.session.commit()
+        return 'Label added', 201
+    return 'No label name', 500
+
+@app.route('/api/labels/<names>', methods=['GET'])
+def view_label(names):
+    labels = names.split('+')
+    issues = Issue.query.filter(Issue.labels.any(Label.name.in_(labels))).all()
+    return jsonify([issue.to_dict() for issue in issues])

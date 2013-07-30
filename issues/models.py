@@ -2,8 +2,6 @@ from issues import db
 from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 
-TIME_FORMAT = '%Y:%m:%d %H:%M:%S'
-
 issues_labels = db.Table('issues_labels',
     db.Column('issue', db.Integer, db.ForeignKey('issue.id')),
     db.Column('label', db.Integer, db.ForeignKey('label.id'))
