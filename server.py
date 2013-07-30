@@ -1,14 +1,15 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 from copy import deepcopy
 import json
 
 class Issue(object):
-	def __init__(self, id, title):
+	def __init__(self, id, title, description):
 		self.id = id
 		self.title = title
+		self.description = description
 
 class Comment(object):
 	def __init__(self, id, text, author_name):
@@ -31,9 +32,9 @@ app = Flask(__name__,
 	template_folder='issues/templates')
 
 dummy_issues = [
-	Issue(1, 'Test Issue 1'),
-	Issue(2, 'Test Issue 2'),
-	Issue(3, 'Test Issue 3')
+	Issue(1, 'Test Issue 1', 'This is <strong>Awesome</strong>'),
+	Issue(2, 'Test Issue 2', 'This is <em>Awesome</em>'),
+	Issue(3, 'Test Issue 3', 'This is <strong>Awesome</strong>')
 ]
 
 dummy_comments = [
