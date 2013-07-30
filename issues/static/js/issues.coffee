@@ -24,20 +24,18 @@ class IssueListView extends Backbone.View
 class IssueListItemView extends Backbone.View
 	tagName: 'li'
 
+	template: _.template jQuery('#tpl-issue-list-item').text()
+
 	initialize: ->
 		(jQuery @el).addClass 'list-group-item'
 
 	render: (eventName) ->
-		(jQuery @el).text @model.title
+		(jQuery @el).html @template @model.toJSON()
 
 class IssueView extends Backbone.View
 	tagName: 'div'
 
-	initialize: ->
-		@template = _.template jQuery('#tpl-issue-details').text()
-
-		(jQuery @el).click ->
-			@remove()
+	template: _.template jQuery('#tpl-issue-details').text()
 
 	render: (eventName) ->
 		(jQuery @el).html(@template @model.toJSON()).show()
@@ -59,3 +57,12 @@ class AppRouter extends Backbone.Router
 		issue = @issueCollection.get id
 		view = new IssueView model:issue
 		(jQuery '#issue-details').html view.render()
+
+init = (issues) ->
+	app = new AppRouter issues:issues
+
+	Backbone.history.start pushState:true
+
+	jQuery("a:not([href^='http://'])").click (evt) ->
+		evt.preventDefault()
+		app.navigate (jQuery this).attr('href'), true

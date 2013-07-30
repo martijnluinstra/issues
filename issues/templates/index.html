@@ -11,8 +11,6 @@
 </head>
 <body>
 	<div id="issue-tracker">
-		<p class="loading-message">Loading…</p>
-
 		<div id="issue-list"></div>
 
 		<div id="issue-details"></div>
@@ -37,15 +35,23 @@
 			</fieldset>
 		</form>
 	</div>
+
+	<script id="tpl-issue-list-item" type="text/x-template">
+		<a href="/issues/<%= id %>"><%= title %></a>
+	</script>
+
+	<script id="tpl-issue-details" type="text/x-template">
+		<dl>
+			<dt>Title:</dt>
+			<dd><%= title %></dd>
+		</dl>
+	</script>
+
 	<script src="/static/js/issues.js"></script>
 	<script>
 		{% autoescape false %}
-		var app = new AppRouter({
-			issues: {{ jsonify(issues) }}
-		});
+		var app = init({{ jsonify(issues) }});
 		{% endautoescape %}
-
-		Backbone.history.start();
 	</script>
 </body>
 </html>
