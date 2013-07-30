@@ -26,6 +26,18 @@ class User(db.Model):
         self.email = email
         self.admin = admin
 
+    def is_authenticated(self):
+        return True
+
+    def is_active(self):
+        return True
+
+    def is_anonymous(self):
+        return False
+
+    def get_id(self):
+        return self.id
+
     def set_password(self, password):
         self.password = generate_password_hash(password)
 
@@ -66,6 +78,14 @@ class Comment(db.Model):
         self.text = text
         self.time = datetime.now()
 
+    def to_dict(self):
+        return {
+            'issue': self.issue_id
+            'user': self.user_id
+            'text': self.text
+            'time': self.time
+        }
+
 class Label(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80), unique=True)
@@ -74,3 +94,10 @@ class Label(db.Model):
     def __init__(self, name, colour):
         self.name = name
         self.colour = colour
+
+    def to_dict(self):
+        return {
+            'id': self.id
+            'name': self.name
+            'colour': self.colour
+        }
