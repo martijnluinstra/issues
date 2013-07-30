@@ -63,7 +63,7 @@ class Issue(db.Model):
     labels = db.relationship('Label', secondary=issues_labels,
         backref=db.backref('issues', lazy='dynamic'))
 
-    def __init__(self, title, description, owner_id, public, deadline=None):
+    def __init__(self, title, description, owner_id, public=False, deadline=None):
         self.title = title
         self.description = description
         self.owner_id = owner_id
@@ -78,10 +78,9 @@ class Issue(db.Model):
                 'id': self.id,
                 'title': self.title,
                 'description': self.description,
-                'owner': owner.to_dict(),
                 'completed': self.completed,
                 'deadline': self.deadline,
-                'labels': self.labels
+                'labels': list([label.to_dict() for label in self.labels])
             }
         comments = self.comments.all()
         return {
@@ -92,7 +91,7 @@ class Issue(db.Model):
             'completed': self.completed,
             'deadline': self.deadline,
             'public': self. public,
-            'labels': self.labels,
+            'labels': [label.to_dict() for label in self.labels],
             'deadline': self.deadline.isoformat() if self.deadline is not None else None,
             'comments': list([comment.to_dict() for comment in comments])
         }
@@ -120,9 +119,9 @@ class Comment(db.Model):
 class Label(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80), unique=True)
-    colour = db.Column(db.String(40))
+    colour = db.Column(db.String(40), nullable=True)
 
-    def __init__(self, name, colour):
+    def __init__(self, name, colour=None):
         self.name = name
         self.colour = colour
 
