@@ -1,17 +1,11 @@
 from flask import make_response, request
-from flask.ext.login import current_user, login_required
+from flask.ext.login import current_user
 from issues import app, db
 from models import Issue, Comment, Label
-from session import admin_required
+from session import api_login_required, api_admin_required, is_admin
 import json, re
 
 TIME_FORMAT = '%Y:%m:%d %H:%M:%S'
-
-
-def is_admin():
-    return current_user is not None \
-        and not current_user.is_anonymous() \
-        and current_user.admin
 
 
 def jsonify(data):
@@ -21,7 +15,7 @@ def jsonify(data):
 
 
 @app.route('/api/issues', methods=['POST'])
-@admin_required
+@api_admin_required
 def add_issue():
     data = request.get_json()
     issue = Issue(data['title'], data['description'], current_user.id)
@@ -37,7 +31,7 @@ def view_issue(issue_id):
 
 
 @app.route('/api/issues/<int:issue_id>', methods=['PUT'])
-@admin_required
+@api_admin_required
 def update_issue(issue_id):
     data = request.get_json()
     issue = Issue.query.filter_by(id=issue_id).first_or_404()
@@ -75,15 +69,19 @@ def list_comments(issue_id):
 
 
 @app.route('/api/issues/<int:issue_id>/comments', methods=['POST'])
-@login_required
+@api_login_required
 def add_comment(issue_id):
-    comment = Comment(issue_id, current_user.id, request.get_json()['text'])
-    db.session.add(comment)
-    db.session.commit()
-    return 'Comment added', 201
+    data = request.get_json()
+    if 'text' in data:
+        comment = Comment(issue_id, current_user.id, data['text'])
+        db.session.add(comment)
+        db.session.commit()
+        return 'Comment added', 201
+    return 'No text', 500
+
 
 @app.route('/api/issues/<int:issue_id>/labels', methods=['POST'])
-@admin_required
+@api_admin_required
 def add_label(issue_id):
     data = request.get_json()
     label = None
@@ -99,6 +97,17 @@ def add_label(issue_id):
         db.session.commit()
         return 'Label added', 201
     return 'No label name', 500
+
+
+@app.route('/api/labels/<name>', methods=['PUT'])
+def update_label(name):
+    data = request.get_json()
+    label = Label.query.filter_by(name=name).first_or_404()
+    if 'colour' in data:
+        label.colour = data['colour']
+    db.session.commit()
+    return 'OK'
+
 
 @app.route('/api/labels/<names>', methods=['GET'])
 def view_label(names):

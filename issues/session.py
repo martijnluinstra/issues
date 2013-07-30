@@ -4,13 +4,34 @@ from models import User
 from flask.ext.login import login_user, logout_user, login_required, current_user
 from functools import wraps
 
+def is_admin():
+    return current_user is not None \
+        and not current_user.is_anonymous() \
+        and current_user.admin
+
 def admin_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        if current_user is None or current_user.is_anonymous():
-            return redirect(url_for('login'))
-        if not current_user.admin:
-            return 'You are not allowed to enter this realm'
+        if not current_user.is_authenticated():
+            return current_app.login_manager.unauthorized()
+        elif not is_admin():
+            return 'You are not allowed perform this action!', 403
+        return f(*args, **kwargs)
+    return decorated_function
+
+def api_admin_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not is_admin():
+            return 'You are not allowed perform this action!', 403
+        return f(*args, **kwargs)
+    return decorated_function
+
+def api_login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not current_user.is_authenticated():
+            return 'You are not allowed perform this action!', 403
         return f(*args, **kwargs)
     return decorated_function
 

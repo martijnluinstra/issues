@@ -2,12 +2,8 @@ from flask import render_template
 from flask.ext.login import current_user
 from issues import app, db
 from models import Issue
+from session import is_admin
 import json
-
-def is_admin():
-    return current_user is not None \
-        and not current_user.is_anonymous() \
-        and current_user.admin
 
 def jsonify(data):
     return json.dumps(data, indent=2, ensure_ascii=False).encode('utf-8')
