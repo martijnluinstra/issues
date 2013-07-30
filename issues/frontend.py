@@ -5,7 +5,9 @@ from models import Issue
 import json
 
 def is_admin():
-    return current_user is not None and current_user.admin
+    return current_user is not None \
+        and not current_user.is_anonymous() \
+        and current_user.admin
 
 def jsonify(data):
     return json.dumps(data, indent=2, ensure_ascii=False).encode('utf-8')
