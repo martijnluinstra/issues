@@ -1,3 +1,7 @@
+# The app variable is 'global' for this module and contains things like the
+# router and the currently logged in user's data.
+app = null
+
 class Issue extends Backbone.Model
 	initialize: ->
 		@comments = new CommentCollection [], issue:this
@@ -47,7 +51,7 @@ class IssueView extends Backbone.View
 	render: (eventName) ->
 		(jQuery @el).html(@template @model.toJSON()).show()
 
-		(jQuery @el).find('.comments-list').replaceWith @commentListView.render()
+		(jQuery @el).find('.comments').replaceWith @commentListView.render()
 
 		return @el
 
@@ -59,18 +63,42 @@ class CommentCollection extends Backbone.Collection
 		@url = "/api/issues/#{ @issue.get 'id' }/comments"
 
 class CommentListView extends Backbone.View	
-	tagName: 'ul'
+	template: _.template jQuery('#tpl-comment-list').text()
 
 	initialize: ->
-		@model.on 'add', @addComment, this
+		@model.on 'add', @renderComment, this
 
 	render: (eventName) ->
-		@addComment comment for comment in @model.models
+		@el = jQuery(@template issue:@model.issue)
+
+		# submit callback
+		addComment = =>
+			@model.create
+				issue_id: @model.issue.get 'id'
+				user: app.user
+				text: @el.find('textarea[name=text]').val()
+
+			@el.find('form').get(0).reset()
+
+		# catch the submit-event of the comment form
+		@el.find('form').submit (evt) ->
+			addComment()
+			evt.preventDefault()
+
+		# Also catch the cmd/ctrl+enter key combination on the textarea
+		@el.find('textarea[name=text]').keydown (evt) ->
+			if evt.keyCode == 13 and (evt.ctrlKey or evt.metaKey)
+				addComment()
+			
+		
+		# Render all the comments that are already in the model
+		@renderComment comment for comment in @model.models
+
 		return @el
 
-	addComment: (comment) ->
+	renderComment: (comment) ->
 		view = new CommentListItemView model:comment
-		jQuery(@el).append view.render()
+		@el.find('.comment-list').append view.render()
 
 class CommentListItemView extends Backbone.View
 	tagName: 'li'
@@ -78,13 +106,15 @@ class CommentListItemView extends Backbone.View
 	template: _.template jQuery('#tpl-comment-list-item').text()
 
 	render: (eventName) ->
-		jQuery(@el).html @template @model.toJSON()
+		@el = jQuery @template @model.toJSON()
 
 class AppRouter extends Backbone.Router
 	initialize: (config) ->
 		@route '', 'list'
 		@route 'issues/:id', 'showIssue'
 		@route 'labels/:name', 'showLabel'
+
+		@user = config.user
 
 		@issueCollection = new IssueCollection config.issues
 		@list()
@@ -98,11 +128,23 @@ class AppRouter extends Backbone.Router
 		view = new IssueView model:issue
 		(jQuery '#issue-details').replaceWith view.render()
 
-init = (issues) ->
-	app = new AppRouter issues:issues
+window.init = (issues) ->
+	# FIXME Temporary user, this data should come from the initialisation
+	user = 
+		id: 1
+		name: 'Jelmer'
+		email: 'jelmer@ikhoefgeen.nl'
 
+	app = new AppRouter
+		user:user
+		issues:issues
+
+	# Let Backbone do the routing :)
 	Backbone.history.start pushState:true
 
+	# Catch all internal links and route them through the app
 	jQuery("a:not([href^='http://'])").click (evt) ->
 		evt.preventDefault()
 		app.navigate (jQuery this).attr('href'), true
+
+	return app
