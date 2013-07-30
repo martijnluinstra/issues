@@ -2,9 +2,9 @@ from flask import Flask, render_template
 import json
 
 class Issue(object):
-	def __init__(self, id, name):
+	def __init__(self, id, title):
 		self.id = id
-		self.name = name
+		self.title = title
 
 
 class IssueEncoder(json.JSONEncoder):

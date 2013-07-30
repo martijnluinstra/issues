@@ -24,20 +24,18 @@ class IssueListView extends Backbone.View
 class IssueListItemView extends Backbone.View
 	tagName: 'li'
 
+	template: _.template jQuery('#tpl-issue-list-item').text()
+
 	initialize: ->
 		(jQuery @el).addClass 'list-group-item'
 
 	render: (eventName) ->
-		(jQuery @el).text @model.title
+		(jQuery @el).html @template @model.toJSON()
 
 class IssueView extends Backbone.View
 	tagName: 'div'
 
-	initialize: ->
-		@template = _.template jQuery('#tpl-issue-details').text()
-
-		(jQuery @el).click ->
-			@remove()
+	template: _.template jQuery('#tpl-issue-details').text()
 
 	render: (eventName) ->
 		(jQuery @el).html(@template @model.toJSON()).show()

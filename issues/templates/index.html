@@ -35,6 +35,18 @@
 			</fieldset>
 		</form>
 	</div>
+
+	<script id="tpl-issue-list-item" type="text/x-template">
+		<a href="/issues/<%= id %>"><%= title %></a>
+	</script>
+
+	<script id="tpl-issue-details" type="text/x-template">
+		<dl>
+			<dt>Title:</dt>
+			<dd><%= title %></dd>
+		</dl>
+	</script>
+
 	<script src="/static/js/issues.js"></script>
 	<script>
 		{% autoescape false %}
