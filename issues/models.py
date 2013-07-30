@@ -79,13 +79,12 @@ class Issue(db.Model):
             'title': self.title,
             'description': self.description,
             'completed': self.completed,
-            'deadline': self.deadline,
+            'deadline': self.deadline.isoformat() if self.deadline is not None else None,
             'labels': [label.to_dict() for label in self.labels]
         }
         if details:
             data['owner']= owner.to_dict()
             data['public']= self. public
-            data['deadline']= self.deadline.isoformat() if self.deadline is not None else None
             data['comments']= [comment.to_dict() for comment in comments]
         return data
 
