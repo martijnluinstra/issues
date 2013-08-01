@@ -79,17 +79,9 @@
 		<a href="/issues/<%= id %>"><%= title %></a>
 	</script>
 
-	<script id="tpl-comment-list" type="text/x-template">
-		<div class="comments">
-			
-		</div>
-	</script>
-
 	<script id="tpl-comment-list-item" type="text/x-template">
-		<li class="comment">
-			<div class="comment-text"><%= text %></div>
-			<address class="author">by <span class="author"><%= user.name %></span></address>
-		</li>
+		<div class="comment-text"><%= text %></div>
+		<address class="author">by <span class="author"><%= user.name %></span></address>
 	</script>
 
 	<script src="/static/js/issues.js"></script>

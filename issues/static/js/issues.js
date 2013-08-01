@@ -4,6 +4,74 @@
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
+  Backbone.CollectionView = (function(_super) {
+    __extends(CollectionView, _super);
+
+    function CollectionView(options) {
+      this.children = [];
+      if (options.childView != null) {
+        this.childView = options.childView;
+      }
+      if (this.childView == null) {
+        console.error('childView option is missing');
+      }
+      CollectionView.__super__.constructor.call(this, options);
+    }
+
+    CollectionView.prototype.initialize = function() {
+      this.listenTo(this.model, 'add', this.addChildView);
+      return this.listenTo(this.model, 'remove', this.removeChildModel);
+    };
+
+    CollectionView.prototype.addChildView = function(childModel) {
+      childModel._view = new this.childView({
+        model: childModel
+      });
+      childModel._view.render();
+      this.children.push(childModel._view);
+      return this.$el.append(childModel._view.$el);
+    };
+
+    CollectionView.prototype.removeChildModel = function(childModel) {
+      var index;
+      index = this.children.indexOf(childModel._view);
+      if (index === -1) {
+        return;
+      }
+      childModel._view.remove();
+      childModel._view = null;
+      return this.children.splice(index, 1);
+    };
+
+    CollectionView.prototype.render = function() {
+      var model, _i, _len, _ref, _results;
+      _ref = this.model.models;
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        model = _ref[_i];
+        if (!model._view) {
+          _results.push(this.addChildView(model));
+        } else {
+          _results.push(void 0);
+        }
+      }
+      return _results;
+    };
+
+    CollectionView.prototype.remove = function() {
+      var child, _i, _len, _ref;
+      _ref = this.children;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        child = _ref[_i];
+        child.remove();
+      }
+      return CollectionView.__super__.remove.call(this);
+    };
+
+    return CollectionView;
+
+  })(Backbone.View);
+
   app = null;
 
   jQuery.fn.serializeObject = function() {
@@ -79,49 +147,12 @@
 
   })(Backbone.Collection);
 
-  IssueListView = (function(_super) {
-    __extends(IssueListView, _super);
-
-    function IssueListView() {
-      _ref4 = IssueListView.__super__.constructor.apply(this, arguments);
-      return _ref4;
-    }
-
-    IssueListView.prototype.initialize = function() {
-      this.model.on('reset', this.render, this);
-      return this.model.on('add', this.renderIssue, this);
-    };
-
-    IssueListView.prototype.render = function(eventName) {
-      var issue, _i, _len, _ref5, _results;
-      this.$el.html('');
-      _ref5 = this.model.models;
-      _results = [];
-      for (_i = 0, _len = _ref5.length; _i < _len; _i++) {
-        issue = _ref5[_i];
-        _results.push(this.renderIssue(issue));
-      }
-      return _results;
-    };
-
-    IssueListView.prototype.renderIssue = function(issue) {
-      var view;
-      view = new IssueListItemView({
-        model: issue
-      });
-      return this.$el.append(view.render());
-    };
-
-    return IssueListView;
-
-  })(Backbone.View);
-
   IssueListItemView = (function(_super) {
     __extends(IssueListItemView, _super);
 
     function IssueListItemView() {
-      _ref5 = IssueListItemView.__super__.constructor.apply(this, arguments);
-      return _ref5;
+      _ref4 = IssueListItemView.__super__.constructor.apply(this, arguments);
+      return _ref4;
     }
 
     IssueListItemView.prototype.tagName = 'li';
@@ -140,6 +171,20 @@
 
   })(Backbone.View);
 
+  IssueListView = (function(_super) {
+    __extends(IssueListView, _super);
+
+    function IssueListView() {
+      _ref5 = IssueListView.__super__.constructor.apply(this, arguments);
+      return _ref5;
+    }
+
+    IssueListView.prototype.childView = IssueListItemView;
+
+    return IssueListView;
+
+  })(Backbone.CollectionView);
+
   IssueView = (function(_super) {
     __extends(IssueView, _super);
 
@@ -148,21 +193,39 @@
       return _ref6;
     }
 
+    IssueView.prototype.events = {
+      'submit form': function(evt) {
+        evt.preventDefault();
+        return this.addComment();
+      },
+      'keypress textarea': function(evt) {
+        if (evt.keyCode === 13 && (evt.ctrlKey || evt.metaKey)) {
+          return this.addComment();
+        }
+      }
+    };
+
     IssueView.prototype.initialize = function() {
+      this.listenTo(this.model, 'change', this.render);
+      this.commentListView = new CommentListView({
+        model: this.model.comments,
+        el: this.$el.find('.comment-list')
+      });
       return this.model.comments.fetch();
     };
 
     IssueView.prototype.render = function(eventName) {
-      var commentListView;
-      console.log('rending to', this.$el.get(0));
       this.$el.find('.issue-title').text(this.model.get('title'));
-      this.$el.find('.issue-description').html(this.model.get('description'));
-      commentListView = new CommentListView({
-        model: this.model.comments,
-        el: this.$el.find('.comments')
+      return this.$el.find('.issue-description').html(this.model.get('description'));
+    };
+
+    IssueView.prototype.addComment = function() {
+      this.model.create({
+        issue_id: this.model.issue.get('id'),
+        user: app.user,
+        text: this.$('.comments textarea[name=text]').val()
       });
-      commentListView.render();
-      return this.el;
+      return this.$el.find('.comments form').get(0).reset();
     };
 
     return IssueView;
@@ -188,82 +251,43 @@
 
   })(Backbone.Collection);
 
-  CommentListView = (function(_super) {
-    __extends(CommentListView, _super);
-
-    function CommentListView() {
-      _ref8 = CommentListView.__super__.constructor.apply(this, arguments);
-      return _ref8;
-    }
-
-    CommentListView.prototype.events = {
-      'submit form': function(evt) {
-        evt.preventDefault();
-        return this.addComment();
-      },
-      'keypress textarea': function(evt) {
-        if (evt.keyCode === 13 && (evt.ctrlKey || evt.metaKey)) {
-          return this.addComment();
-        }
-      }
-    };
-
-    CommentListView.prototype.initialize = function() {
-      return this.model.on('add', this.renderComment, this);
-    };
-
-    CommentListView.prototype.render = function(eventName) {
-      var comment, _i, _len, _ref9, _results;
-      _ref9 = this.model.models;
-      _results = [];
-      for (_i = 0, _len = _ref9.length; _i < _len; _i++) {
-        comment = _ref9[_i];
-        _results.push(this.renderComment(comment));
-      }
-      return _results;
-    };
-
-    CommentListView.prototype.renderComment = function(comment) {
-      var view;
-      view = new CommentListItemView({
-        model: comment
-      });
-      return this.$el.find('.comment-list').append(view.render());
-    };
-
-    CommentListView.prototype.addComment = function() {
-      this.model.create({
-        issue_id: this.model.issue.get('id'),
-        user: app.user,
-        text: this.$el.find('textarea[name=text]').val()
-      });
-      return this.$el.find('form').get(0).reset();
-    };
-
-    return CommentListView;
-
-  })(Backbone.View);
-
   CommentListItemView = (function(_super) {
     __extends(CommentListItemView, _super);
 
     function CommentListItemView() {
-      _ref9 = CommentListItemView.__super__.constructor.apply(this, arguments);
-      return _ref9;
+      _ref8 = CommentListItemView.__super__.constructor.apply(this, arguments);
+      return _ref8;
     }
 
     CommentListItemView.prototype.tagName = 'li';
 
     CommentListItemView.prototype.template = _.template(jQuery('#tpl-comment-list-item').text());
 
+    CommentListItemView.prototype.initialize = function() {
+      return this.listenTo(this.model, 'change', this.render);
+    };
+
     CommentListItemView.prototype.render = function(eventName) {
-      this.setElement(jQuery(this.template(this.model.toJSON())));
-      return this.el;
+      return this.$el.html(this.template(this.model.toJSON()));
     };
 
     return CommentListItemView;
 
   })(Backbone.View);
+
+  CommentListView = (function(_super) {
+    __extends(CommentListView, _super);
+
+    function CommentListView() {
+      _ref9 = CommentListView.__super__.constructor.apply(this, arguments);
+      return _ref9;
+    }
+
+    CommentListView.prototype.childView = CommentListItemView;
+
+    return CommentListView;
+
+  })(Backbone.CollectionView);
 
   Panel = (function() {
     function Panel(el) {

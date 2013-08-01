@@ -9,6 +9,7 @@ jQuery.fn.serializeObject = ->
 
 	data
 
+
 class Issue extends Backbone.Model
 	defaults:
 		id: null
@@ -18,31 +19,17 @@ class Issue extends Backbone.Model
 	initialize: ->
 		@comments = new CommentCollection [], issue:this
 
+
 class Comment extends Backbone.Model
+
 
 class Label extends Backbone.Model
 
+
 class IssueCollection extends Backbone.Collection
 	model: Issue
-
 	url: '/api/issues'
 
-class IssueListView extends Backbone.View
-	initialize: ->
-		@model.on 'reset', @render, this
-		@model.on 'add', @renderIssue, this
-
-	render: (eventName) ->
-		# clear all issues from view
-		@$el.html ''
-
-		# Render all issues
-		@renderIssue issue for issue in @model.models
-
-	renderIssue: (issue) ->
-		view = new IssueListItemView model:issue
-		@$el.append view.render()
-			
 
 class IssueListItemView extends Backbone.View
 	tagName: 'li'
@@ -55,34 +42,12 @@ class IssueListItemView extends Backbone.View
 	render: (eventName) ->
 		@$el.html @template @model.toJSON()
 
+
+class IssueListView extends Backbone.CollectionView
+	childView: IssueListItemView
+
+
 class IssueView extends Backbone.View
-	initialize: ->
-		@model.comments.fetch()
-
-	render: (eventName) ->
-		console.log 'rending to', @$el.get(0)
-
-		@$el.find('.issue-title').text @model.get 'title'
-
-		@$el.find('.issue-description').html @model.get 'description'
-
-		# also initialize a view for the comment list
-		commentListView = new CommentListView
-			model: @model.comments
-			el: @$el.find('.comments')
-
-		commentListView.render()
-
-		return @el
-
-class CommentCollection extends Backbone.Collection
-	model: Comment
-
-	initialize: (models, options) ->
-		@issue = options.issue
-		@url = "/api/issues/#{ @issue.get 'id' }/comments"
-
-class CommentListView extends Backbone.View	
 	events:
 		# catch the submit-event of the comment form
 		'submit form': (evt) ->
@@ -95,33 +60,50 @@ class CommentListView extends Backbone.View
 				@addComment()
 
 	initialize: ->
-		@model.on 'add', @renderComment, this
+		@listenTo @model, 'change', @render
+
+		@commentListView = new CommentListView
+			model: @model.comments
+			el: @$el.find('.comment-list')
+
+		@model.comments.fetch()
 
 	render: (eventName) ->
-		# Render all the comments that are already in the model
-		@renderComment comment for comment in @model.models
-
-	renderComment: (comment) ->
-		view = new CommentListItemView model:comment
-		@$el.find('.comment-list').append view.render()
+		@$el.find('.issue-title').text @model.get 'title'
+		@$el.find('.issue-description').html @model.get 'description'
 
 	addComment: ->
 		@model.create
 			issue_id: @model.issue.get 'id'
 			user: app.user
-			text: @$el.find('textarea[name=text]').val()
+			text: @$('.comments textarea[name=text]').val()
 
-		@$el.find('form').get(0).reset()	
+		@$el.find('.comments form').get(0).reset()
+
+
+class CommentCollection extends Backbone.Collection
+	model: Comment
+
+	initialize: (models, options) ->
+		@issue = options.issue
+		@url = "/api/issues/#{ @issue.get 'id' }/comments"
+
 
 class CommentListItemView extends Backbone.View
 	tagName: 'li'
 
 	template: _.template jQuery('#tpl-comment-list-item').text()
 
-	render: (eventName) ->
-		@setElement jQuery @template @model.toJSON()
+	initialize: ->
+		@listenTo @model, 'change', @render
 
-		return @el
+	render: (eventName) ->
+		@$el.html @template @model.toJSON()
+
+
+class CommentListView extends Backbone.CollectionView
+	childView: CommentListItemView
+
 
 class Panel
 	constructor: (el) ->
@@ -132,6 +114,7 @@ class Panel
 
 	hide: ->
 		@$el.hide()
+
 
 class NewIssuePanel extends Panel
 	constructor: (el, @model) ->
@@ -146,6 +129,7 @@ class NewIssuePanel extends Panel
 			wait: yes
 			success: (model, reponse) ->
 				model.set 'id', response
+
 
 class AppRouter extends Backbone.Router
 	initialize: (config) ->
@@ -170,7 +154,7 @@ class AppRouter extends Backbone.Router
 
 	list: ->
 		view = new IssueListView
-			el: @panels.listIssues.$el.find('.issue-list').get(0)
+			el: @panels.listIssues.$el.find('.issue-list').get 0
 			model: @issueCollection
 		view.render()
 		@showPanel 'listIssues'

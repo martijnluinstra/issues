@@ -27,71 +27,31 @@ class IssueView extends Backbone.View
 		@$('.issue-title').text @model.get 'title'
 		@$('.issue-description').text @model.get 'description'
 
-class CollectionView extends Backbone.View
-	constructor: (options) ->
-		@children = []
-		
-		if not options.childView?
-			console.error 'childView option is missing'
-
-		{@childView} = options
-
-		super options
-
-	initialize: ->
-		@listenTo @model, 'add', @addChildView
-		@listenTo @model, 'remove', @removeChildModel
-
-	addChildView: (childModel) ->
-		console.log 'new childModel', childModel, 'added to', this
-
-		childModel._view = new @childView
-			model: childModel
-
-		childModel._view.render()
-
-		@children.push childModel._view
-		@$el.append childModel._view.$el
-
-	removeChildModel: (childModel) ->
-		console.log 'childModel', childModel, 'removed from', this
-
-		index = @children.indexOf childModel._view
-
-		# is this one of our views?
-		if index == -1
-			return
-
-		# Let the view remove itself
-		childModel._view.remove()
-
-		# and remove it from our index
-		@children.splice index, 1
-
-	remove: ->
-		# First, neatly remove all the children.
-		# (But intentionally bypass the removeChildModel method)
-		for child in @children
-			child.remove()
-
-		# And then the rest :)
-		super()
-
-jQuery ->
-	window.collection = new IssueCollection []
-
-	window.view = new CollectionView
+initView = (collection) ->
+	view = new Backbone.CollectionView
 		model: collection
 		childView: IssueView
 
 	jQuery(document.body).append view.el
 
-	issue_1 = collection.create
-		title: 'Issue 1'
-		description: 'Awesome'
+	window.view = view
 
-	issue_2 = collection.create
-		title: 'Issue 2'
-		description: 'Less awesome'
+addDummyIssue = (collection, n) ->
+	collection.create
+		title: "Issue #{n}"
+		description: "Awesome dummy issue #{n}"
 
-	
+jQuery ->
+	collection = new IssueCollection []
+
+	for n in [1..5]
+		addDummyIssue collection, n
+
+	view = initView collection
+
+	view.render()
+
+	for n in [10..15]
+		addDummyIssue collection, n
+
+	view.render()
