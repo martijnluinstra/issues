@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Test</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="/static/css/bootstrap.css">
+	<link rel="stylesheet" href="/static/css/issues.css">
+	<script src="/static/js/jquery-2.0.3.js"></script>
+	<script src="/static/js/underscore.js"></script>
+	<script src="/static/js/backbone.js"></script>
+</head>
+<body>
+	<button onclick="window.view.remove()">Remove Collection view</button>
+	
+	<!-- playground -->
+	<script id="tpl-issue" type="text/x-handlebars">
+		<h3 class="issue-title">[Issue Title]</h3>
+		<small>
+			<a href="#" class="delete">destroy</a>
+		</small>
+		<p class="issue-description"></p>
+	</script>
+
+	<!-- Init app -->
+	<script src="/static/test/collectionview.js"></script>
+</body>
+</html>
