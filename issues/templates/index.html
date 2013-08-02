@@ -10,7 +10,7 @@
 	<script src="/static/js/backbone.js"></script>
 	<script src="/static/js/bootstrap.js"></script>
 </head>
-<body>
+<body class="{{page_attributes}}">
 	<div class="issue-tracker">
 		<div id="label-panel" class="panel">
 			<div class="panel-heading">
@@ -47,7 +47,7 @@
 			<div class="comments">
 				<ol class="comment-list"></ol>
 
-				<form method="post">
+				<form method="post" class="requires-login">
 					<div class="form-group">
 						<textarea id="comment-text" name="text" class="form-control" placeholder="Type your comment here…"></textarea>
 					</div>

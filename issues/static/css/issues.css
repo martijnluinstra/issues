@@ -23,3 +23,7 @@
 .issue-list {
 	padding: 0;
 }
+
+.user-not-logged-in .requires-login {
+	display: none;
+}

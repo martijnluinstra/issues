@@ -4,10 +4,11 @@ from models import User
 from flask.ext.login import login_user, logout_user, login_required, current_user
 from functools import wraps
 
+def is_logged_in():
+    return current_user is not None and not current_user.is_anonymous()
+
 def is_admin():
-    return current_user is not None \
-        and not current_user.is_anonymous() \
-        and current_user.admin
+    return is_logged_in() and current_user.admin
 
 def admin_required(f):
     @wraps(f)
