@@ -89,10 +89,12 @@ class Issue(db.Model):
         return data
 
 class Comment(db.Model):
-    issue_id = db.Column(db.Integer, db.ForeignKey('issue.id'), primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
+    issue_id = db.Column(db.Integer, db.ForeignKey('issue.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    user = db.relationship('User')
     text = db.Column(db.Text())
-    time = db.Column(db.DateTime(), primary_key=True)
+    time = db.Column(db.DateTime())
 
     def __init__(self, issue_id, user_id, text):
         self.issue_id = issue_id
@@ -102,8 +104,9 @@ class Comment(db.Model):
 
     def to_dict(self):
         return {
+            'id': self.id,
             'issue': self.issue_id,
-            'user': self.user_id,
+            'user': self.user.to_dict(),
             'text': self.text,
             'time': self.time.isoformat()
         }

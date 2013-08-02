@@ -1,12 +1,16 @@
 COFFEE=coffee
 COFFEE_FLAGS=
 
-.PHONY: all run
+.PHONY: all run clean
 
 all: issues/static/js/issues.js
 
 run:
 	python ./run.py
+
+clean:
+	rm -f database.db
+	find . -name "*.pyc" -exec rm {} \;
 
 issues/static/js/issues.js: \
 	issues/static/coffee/CollectionView.coffee \
@@ -20,5 +24,6 @@ issues/static/test/collectionview.js: \
 	issues/static/test/collectionview.coffee
 	$(COFFEE) $(COFFEE_FLAGS) --compile --join $@ $^
 
-database.db: issues/models.py
-	echo "from issues import db\ndb.create_all()" | python -
+database.db: issues/models.py setup.py
+	rm -f database.db
+	python ./setup.py
