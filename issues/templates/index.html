@@ -16,11 +16,18 @@
 			<div class="panel-heading">
 				<h3 class="panel-title">Labels</h3>
 			</div>
-			<ol>
-				<li><a href="/">Inbox</a></li>
-				<li>Label 1</li>
-				<li>Label 2</li>
-				<li>Label 3</li>
+			<ol class="view-list list-group list-group-flush">
+				<li class="list-group-item"><a href="/">Inbox</a></li>
+				<li class="list-group-item"><a href="/archive">Archive</a></li>
+			</ol>
+
+			<ol class="label-list list-group list-group-flush">
+				<li class="list-group-item"><a href="/labels/secretaris">Secretaris</a></li>
+				<li class="list-group-item"><a href="/labels/penningmeester">Penningmeester</a></li>
+				<li class="list-group-item"><a href="/labels/kiso">KISO</a></li>
+				<li class="list-group-item"><a href="/labels/actie">Actie</a></li>
+				<li class="list-group-item"><a href="/labels/prcie">PRCie</a></li>
+				<li class="list-group-item"><a href="/labels/oc">OC</a></li>
 			</ol>
 		</div>
 
@@ -34,7 +41,7 @@
 					<button type="button" class="btn btn-default">Done</button>
 				</div>
 			</div>
-			<ol class="issue-list" class="list-group"></ol>
+			<ol class="issue-list list-group list-group-flush"></ol>
 		</div>
 
 		<div id="issue-details-panel" class="panel">
