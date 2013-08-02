@@ -10,6 +10,8 @@ run:
 
 issues/static/js/issues.js: \
 	issues/static/coffee/CollectionView.coffee \
+	issues/static/coffee/models.coffee \
+	issues/static/coffee/views.coffee \
 	issues/static/coffee/issues.coffee
 	$(COFFEE) $(COFFEE_FLAGS) --compile --join $@ $^
 
