@@ -8,12 +8,7 @@ import json
 def jsonify(data):
     return json.dumps(data, indent=2, ensure_ascii=False).encode('utf-8')
 
-@app.route('/', methods=['GET'])
-@app.route('/<path:path>', methods=['GET'])
-def view_frontend(path=None):
-    issues = Issue.query.filter_by(public=not is_admin()).all()
-    data = [issue.to_dict() for issue in issues]
-
+def page_attributes():
     attributes = []
 
     if is_logged_in():
@@ -26,7 +21,21 @@ def view_frontend(path=None):
     else:
         attributes.append('user-is-not-admin')
 
+    return attributes
+
+def uncompleted_issues():
+    conditions = {'completed': False}
+
+    # Only show public issues to non-admins
+    if not is_admin():
+        conditions['public'] = True
+
+    return Issue.query.filter_by(**conditions).all()
+
+@app.route('/', methods=['GET'])
+@app.route('/<path:path>', methods=['GET'])
+def view_frontend(path=None):
     return render_template('index.html',
-        page_attributes=' '.join(attributes),
+        page_attributes=' '.join(page_attributes()),
         current_user=jsonify(current_user.to_dict() if is_logged_in() else None),
-        issues=jsonify(data))
+        issues=jsonify([issue.to_dict() for issue in uncompleted_issues()]))

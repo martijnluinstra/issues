@@ -26,7 +26,10 @@ def add_issue():
 
 @app.route('/api/issues/<int:issue_id>', methods=['GET'])
 def view_issue(issue_id):
-    issue = Issue.query.filter_by(id=issue_id, public=not is_admin()).first_or_404()
+    conditions = {'id': issue_id}
+    if not is_admin():
+        conditions['public'] = True
+    issue = Issue.query.filter_by(**conditions).first_or_404()
     return jsonify(issue.to_dict(details=True))
 
 
@@ -51,19 +54,29 @@ def update_issue(issue_id):
 
 @app.route('/api/issues/todo', methods=['GET'])
 def list_todo_issues():
-    issues = Issue.query.filter_by(completed=False, public=not is_admin()).all()
+    conditions = {'completed': False}
+    # Only show public issues to non-admins
+    if not is_admin():
+        contidions.public = True
+    issues = Issue.query.filter_by(**contidions).all()
     return jsonify([issue.to_dict() for issue in issues])
 
 
 @app.route('/api/issues/all', methods=['GET'])
 def list_all_issues():
-    issues = Issue.query.filter_by(public=not is_admin()).all()
+    conditions = {}
+    if not is_admin():
+        conditions['public'] = True
+    issues = Issue.query.filter_by(**conditions).all()
     return jsonify([issue.to_dict() for issue in issues])
 
 
 @app.route('/api/issues/<int:issue_id>/comments', methods=['GET'])
 def list_comments(issue_id):
-    issue = Issue.query.filter_by(id=issue_id, public=not is_admin()).first_or_404()
+    conditions = {'id': issue_id}
+    if not is_admin():
+        conditions['public'] = True
+    issue = Issue.query.filter_by(**conditions).first_or_404()
     comments = issue.comments.all()
     return jsonify([comment.to_dict() for comment in comments])
 
