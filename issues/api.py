@@ -35,7 +35,7 @@ def add_issue():
         issue = Issue(data['title'].strip(), data['description'].strip(), current_user.id)
         db.session.add(issue)
         db.session.commit()
-        return str(issue.id), 201
+        return jsonify(issue.to_dict()), 201
     return 'Invalid title or description', 422
 
 

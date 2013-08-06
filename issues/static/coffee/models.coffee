@@ -5,14 +5,19 @@ class Issue extends Backbone.Model
 		description: ''
 
 	initialize: ->
-		@comments = new CommentCollection [], issue:this
+		@comments = new CommentCollection
+		@labels = new LabelCollection
 
-		@labels = new LabelCollection [], issue:this
+		@on 'change:id', @updateURLs, this
+		@updateURLs()
+
+	updateURLs: ->
+		@comments.url = "/api/issues/#{ @get 'id' }/comments"
+		@labels.url = "/api/issues/#{ @get 'id' }/labels"
 
 
 class IssueCollection extends Backbone.Collection
 	model: Issue
-	url: '/api/issues'
 
 
 # Comments
@@ -24,10 +29,6 @@ class Comment extends Backbone.Model
 
 class CommentCollection extends Backbone.Collection
 	model: Comment
-
-	initialize: (models, options) ->
-		@issue = options.issue
-		@url = "/api/issues/#{ @issue.get 'id' }/comments"
 
 
 # Labels

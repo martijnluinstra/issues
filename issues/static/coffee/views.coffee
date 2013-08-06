@@ -36,6 +36,8 @@ class IssueView extends Backbone.View
 				@addComment()
 
 	initialize: ->
+		console.assert @model?, 'IssueView has no model'
+		
 		@setElement @template.clone().get 0
 
 		@listenTo @model, 'change', @render
