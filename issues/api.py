@@ -20,10 +20,12 @@ def jsonify(data):
 def add_issue():
     """ Create an issue """
     data = request.get_json()
-    issue = Issue(data['title'], data['description'], current_user.id)
-    db.session.add(issue)
-    db.session.commit()
-    return issue.id, 201
+    if 'title' in data and 'description' in data and data['title'].strip() and data ['description'].strip():
+        issue = Issue(data['title'].strip(), data['description'].strip(), current_user.id)
+        db.session.add(issue)
+        db.session.commit()
+        return str(issue.id), 201
+    return 'Invalid title or description', 422
 
 
 @app.route('/api/issues/<int:issue_id>', methods=['GET'])
@@ -42,10 +44,14 @@ def update_issue(issue_id):
     """ Update an issue """
     data = request.get_json()
     issue = Issue.query.filter_by(id=issue_id).first_or_404()
-    if 'title' in data:
-        issue.title = data['title']
-    if 'description' in data:
-        issue.description = data['description']
+    if 'title' in data and data['title'].strip():
+        issue.title = data['title'].strip()
+    else:
+        return 'Invalid title', 422
+    if 'description' in data and data['description'].strip():
+        issue.description = data['description'].strip()
+    else:
+        return 'Invalid description', 422
     if 'completed' in data:
         issue.completed = data['completed']
     if 'public' in data:
@@ -93,12 +99,12 @@ def list_comments(issue_id):
 def add_comment(issue_id):
     """ Add a comment to an issue """
     data = request.get_json()
-    if 'text' in data:
-        comment = Comment(issue_id, current_user.id, data['text'])
+    if 'text' in data and data['text'].strip():
+        comment = Comment(issue_id, current_user.id, data['text'].strip())
         db.session.add(comment)
         db.session.commit()
         return 'Comment added', 201
-    return 'No text', 500
+    return 'Invalid text', 422
 
 
 @app.route('/api/issues/<int:issue_id>/labels', methods=['POST'])
@@ -107,12 +113,13 @@ def add_label(issue_id):
     """ Add a label to an issue """
     data = request.get_json()
     label = None
-    if 'name' in data:
-        label = Label.query.filter_by(name=data['name']).first()
+    if 'name' in data and data["name"].strip():
+        name = data["name"].strip()
+        label = Label.query.filter_by(name=name).first()
         if label is None:
-            if re.match('^[\w]+[\w-]*$', data['name']) is None:
-                return 'Incorrect label name', 500
-            label = Label(data['name'])
+            if re.match('^[\w]+[\w-]*$', name) is None:
+                return 'Invalid label name', 422
+            label = Label(name)
             db.session.add(label)
         issue = Issue.query.filter_by(id=issue_id).first_or_404()
         issue.labels.append(label)
@@ -153,8 +160,8 @@ def update_label(name):
     """ Update label (change colour) """
     data = request.get_json()
     label = Label.query.filter_by(name=name).first_or_404()
-    if 'colour' in data:
-        label.colour = data['colour']
+    if 'colour' in data and data['colour'].strip():
+        label.colour = data['colour'].strip()
     db.session.commit()
     return 'OK'
 
