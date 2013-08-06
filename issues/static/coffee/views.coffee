@@ -16,8 +16,13 @@ class IssueListItemView extends Backbone.View
 class IssueListView extends Backbone.CollectionView
 	childView: IssueListItemView
 
+	initialize: ->
+		super()
+		@$el.addClass 'issue-list'
 
 class IssueView extends Backbone.View
+	template: jQuery('#tpl-issue-details-panel').detach()
+
 	events:
 		# catch the submit-event of the comment form
 		'submit form': (evt) ->
@@ -31,17 +36,20 @@ class IssueView extends Backbone.View
 				@addComment()
 
 	initialize: ->
+		@setElement @template.clone().get 0
+
 		@listenTo @model, 'change', @render
 
 		@commentListView = new CommentListView
 			model: @model.comments
-			el: @$el.find('.comment-list')
+			el: @$ '.comment-list'
 
 		@model.comments.fetch()
 
 	render: (eventName) ->
-		@$el.find('.issue-title').text @model.get 'title'
-		@$el.find('.issue-description').html @model.get 'description'
+		@$('.issue-title').text @model.get 'title'
+		@$('.issue-description').html @model.get 'description'
+		@commentListView.render()
 
 	addComment: ->
 		comment =
@@ -54,6 +62,10 @@ class IssueView extends Backbone.View
 
 		if @model.comments.create comment, options
 			@$('.comments form').get(0).reset()
+
+	remove: ->
+		@commentListView.remove()
+		super()
 
 
 class CommentListItemView extends Backbone.View

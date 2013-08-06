@@ -7,8 +7,10 @@
   Backbone.CollectionView = (function(_super) {
     __extends(CollectionView, _super);
 
+    CollectionView.prototype.tagName = 'ol';
+
     function CollectionView(options) {
-      this.children = [];
+      this.children = {};
       if (options.childView != null) {
         this.childView = options.childView;
       }
@@ -24,32 +26,31 @@
     };
 
     CollectionView.prototype.addChildView = function(childModel) {
-      childModel._view = new this.childView({
+      var view;
+      view = new this.childView({
         model: childModel
       });
-      childModel._view.render();
-      this.children.push(childModel._view);
-      return this.$el.append(childModel._view.$el);
+      view.render();
+      this.children[childModel.cid] = view;
+      return this.$el.append(view.el);
     };
 
     CollectionView.prototype.removeChildModel = function(childModel) {
-      var index;
-      index = this.children.indexOf(childModel._view);
-      if (index === -1) {
-        return;
+      if (this.children[childModel.cid] == null) {
+        return false;
       }
-      childModel._view.remove();
-      childModel._view = null;
-      return this.children.splice(index, 1);
+      this.children[childModel.cid].remove();
+      return delete this.children[childModel.cid];
     };
 
     CollectionView.prototype.render = function() {
       var model, _i, _len, _ref, _results;
+      this.clear();
       _ref = this.model.models;
       _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         model = _ref[_i];
-        if (!model._view) {
+        if (this.children[model.cid] == null) {
           _results.push(this.addChildView(model));
         } else {
           _results.push(void 0);
@@ -59,13 +60,18 @@
     };
 
     CollectionView.prototype.remove = function() {
-      var child, _i, _len, _ref;
+      this.clear();
+      return CollectionView.__super__.remove.call(this);
+    };
+
+    CollectionView.prototype.clear = function() {
+      var child, cid, _ref;
       _ref = this.children;
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        child = _ref[_i];
+      for (cid in _ref) {
+        child = _ref[cid];
         child.remove();
       }
-      return CollectionView.__super__.remove.call(this);
+      return this.children = {};
     };
 
     return CollectionView;
