@@ -88,7 +88,7 @@ def list_todo_issues():
     conditions = {'completed': None}
     # Only show public issues to non-admins
     if not is_admin():
-        conditions.public = True
+        conditions['public'] = True
     issues = Issue.query.filter_by(**conditions).all()
     return jsonify([issue.to_dict() for issue in issues])
 
