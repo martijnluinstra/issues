@@ -579,6 +579,9 @@
       pushState: true
     });
     jQuery(document.body).on('click', 'a', function(evt) {
+      if (jQuery(this).data('external')) {
+        return;
+      }
       evt.preventDefault();
       return app.navigate((jQuery(this)).attr('href'), true);
     });

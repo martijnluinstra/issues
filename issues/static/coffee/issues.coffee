@@ -132,6 +132,10 @@ window.init = (data) ->
 
 	# Catch all internal links and route them through the app
 	jQuery(document.body).on 'click', 'a', (evt) ->
+		# This one is not part of the app, reroute!
+		if jQuery(this).data('external')
+			return;
+
 		evt.preventDefault()
 		app.navigate (jQuery this).attr('href'), true
 

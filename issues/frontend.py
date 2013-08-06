@@ -39,6 +39,7 @@ def uncompleted_issues():
 def view_frontend(path=None):
     return render_template('index.html',
         page_attributes=' '.join(page_attributes()),
+        user_name=current_user.name if is_logged_in() else None,
         current_user=jsonify(current_user.to_dict() if is_logged_in() else None),
         issues=jsonify([issue.to_dict() for issue in uncompleted_issues()]))
 

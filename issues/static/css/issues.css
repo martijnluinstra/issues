@@ -6,7 +6,7 @@
 
 
 #label-panel {
-	position: fixed;
+	position: absolute;
 	top: 12px;
 	left: 12px;
 	width: 200px;
@@ -20,6 +20,14 @@
 	right: 12px;
 	left: 224px;
 	bottom: 12px;
+}
+
+.issue-tracker {
+	position: absolute;
+	top: 50px;
+	right: 0;
+	bottom: 0;
+	left: 0;
 }
 
 .issue-list {

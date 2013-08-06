@@ -11,6 +11,24 @@
 	<script src="/static/js/bootstrap.js"></script>
 </head>
 <body class="{{page_attributes}}">
+	<div class="navbar navbar-static-top">
+		<a href="/" class="navbar-brand">Issues</a>
+		{% if user_name %}
+		<div class="navbar-text pull-right dropdown">Signed in as
+			<a href="#" class="dropdown-toggle" data-toggle="dropdown">{{user_name}}</a>
+			<ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu">
+				<li><a href="{{ url_for('change_password') }}" data-external="true">Change password</a></li>
+				<li class="divider"></li>
+				<li><a href="{{ url_for('logout') }}" data-external="true">Sign out</a></li>
+			</ul>
+		</div>
+		{% else %}
+		<div class="navbar-text pull-right dropdown">
+			<a href="{{ url_for('login') }}" data-external="true">Sign in</a>
+		</div>
+		{% endif %}
+	</div>
+
 	<div class="issue-tracker">
 		<div id="label-panel" class="panel">
 			<div class="panel-heading">
