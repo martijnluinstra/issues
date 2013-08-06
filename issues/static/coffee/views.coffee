@@ -7,7 +7,10 @@ class IssueListItemView extends Backbone.View
 		@$el.addClass 'list-group-item'
 
 	render: (eventName) ->
-		@$el.html @template @model.toJSON()
+		@$el.html @template
+			id: @model.escape 'id'
+			title: @model.escape 'title'
+			description: @model.strip 'description'
 
 
 class IssueListView extends Backbone.CollectionView

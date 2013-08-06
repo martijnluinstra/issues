@@ -83,7 +83,10 @@
 
 	<script id="tpl-issue-list-item" type="text/x-template">
 		<input type="checkbox">
-		<a href="/issues/<%= id %>"><%= title %></a>
+		<a href="/issues/<%= id %>">
+			<strong><%= title %></strong>
+			<%= description %>
+		</a>
 	</script>
 
 	<script id="tpl-comment-list-item" type="text/x-template">

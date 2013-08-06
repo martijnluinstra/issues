@@ -195,7 +195,11 @@
     };
 
     IssueListItemView.prototype.render = function(eventName) {
-      return this.$el.html(this.template(this.model.toJSON()));
+      return this.$el.html(this.template({
+        id: this.model.escape('id'),
+        title: this.model.escape('title'),
+        description: this.model.strip('description')
+      }));
     };
 
     return IssueListItemView;
@@ -317,6 +321,10 @@
       return data[pair.name] = pair.value;
     });
     return data;
+  };
+
+  Backbone.Model.prototype.strip = function(attribute) {
+    return jQuery("<p>" + (this.get(attribute)) + "</p>").wrap('p').text();
   };
 
   Panel = (function() {

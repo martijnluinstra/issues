@@ -2,12 +2,21 @@
 # router and the currently logged in user's data.
 app = null
 
+# Serializes a form element to a JavaScript object. Note that
+# this will fail when a form contains multiple elements with
+# the same name.
 jQuery.fn.serializeObject = ->
 	data = {}
 	jQuery(jQuery(this).serializeArray()).each (i, pair) ->
 		data[pair.name] = pair.value
 
 	data
+
+# Get an attribute of the model with all the HTML tags stripped.
+# Note: don't use this on untrusted input (e.g. still do server
+# side cleaning on the input, please!)
+Backbone.Model::strip = (attribute) ->
+	jQuery("<p>#{@get attribute}</p>").wrap('p').text()
 
 
 class Panel
