@@ -55,8 +55,10 @@ class Issue(db.Model):
     title = db.Column(db.String(255))
     description = db.Column(db.Text())
     owner_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    completed = db.Column(db.Boolean())
     public = db.Column(db.Boolean())
+    added = db.Column(db.DateTime())
+    modified = db.Column(db.DateTime(), nullable=True)
+    completed = db.Column(db.DateTime(),nullable=True)
     deadline = db.Column(db.DateTime(), nullable=True)
     comments = db.relationship('Comment', backref='issue',
                                 lazy='dynamic')
@@ -67,26 +69,24 @@ class Issue(db.Model):
         self.title = title
         self.description = description
         self.owner_id = owner_id
-        self.completed = False
         self.public = public
         self.deadline = deadline
+        self.added = datetime.now()
 
-    def to_dict(self, details=False):
+    def to_dict(self):
         owner = User.query.filter_by(id=self.owner_id).first()
-        comments = self.comments.all()
-        data = {
+        return {
             'id': self.id,
             'title': self.title,
             'description': self.description,
-            'completed': self.completed,
+            'owner': owner.to_dict(),
+            'public': self. public,
             'deadline': self.deadline.isoformat() if self.deadline is not None else None,
+            'added': self.added.isoformat() if self.added is not None else None,
+            'modified': self.modified.isoformat() if self.modified is not None else None,
+            'completed': self.completed.isoformat() if self.completed is not None else None,
             'labels': [label.to_dict() for label in self.labels]
         }
-        if details:
-            data['owner']= owner.to_dict()
-            data['public']= self. public
-            data['comments']= [comment.to_dict() for comment in comments]
-        return data
 
 class Comment(db.Model):
     id = db.Column(db.Integer, primary_key=True)

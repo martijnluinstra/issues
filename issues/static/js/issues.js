@@ -307,6 +307,7 @@
     };
 
     IssueView.prototype.initialize = function() {
+      console.assert(this.model != null, 'IssueView has no model');
       this.setElement(this.template.clone().get(0));
       this.listenTo(this.model, 'change', this.render);
       this.commentListView = new CommentListView({

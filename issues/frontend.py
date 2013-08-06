@@ -24,7 +24,7 @@ def page_attributes():
     return attributes
 
 def uncompleted_issues():
-    conditions = {'completed': False}
+    conditions = {'completed': None}
 
     # Only show public issues to non-admins
     if not is_admin():
