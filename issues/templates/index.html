@@ -45,13 +45,25 @@
 
 		<div id="issue-details-panel" class="panel"></div>
 
-		<div id="tpl-issue-details-panel" class="panel">
-			<div class="panel-heading">
-				<h3 class="panel-title issue-title"></h3>
-				<button class="btn btn-small issue-completed-button">Mark completed</button>
+		<div id="tpl-issue-details-panel" class="issue">
+			<div class="read-issue">
+				<div class="panel-heading">
+					<h3 class="panel-title issue-title"></h3>
+					<button class="btn btn-small edit-issue-button">Edit</button>
+					<button class="btn btn-small complete-issue-button">Mark completed</button>
+				</div>
+
+				<div class="issue-description"></div>
 			</div>
 
-			<div class="issue-description"></div>
+			<form class="edit-issue">
+				<div class="panel-heading">
+					<input type="text" name="title" class="issue-title" placeholder="Issue title…" required>
+					<button type="submit" class="btn btn-small finish-editing-issue-button">Done</button>
+				</div>
+
+				<textarea name="description" class="issue-description" placeholder="Optional description of the issue…"></textarea>
+			</form>
 
 			<div class="comments">
 				<ol class="comment-list"></ol>

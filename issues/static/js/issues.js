@@ -301,7 +301,7 @@
     IssueView.prototype.template = jQuery('#tpl-issue-details-panel').detach();
 
     IssueView.prototype.events = {
-      'submit form': function(evt) {
+      'submit .comments form': function(evt) {
         evt.preventDefault();
         return this.addComment();
       },
@@ -311,13 +311,24 @@
           return this.addComment();
         }
       },
-      'click .issue-completed-button': function(evt) {
+      'click .complete-issue-button': function(evt) {
         evt.preventDefault();
         return this.model.save({
           'completed': true
         }, {
           patch: true
         });
+      },
+      'click .edit-issue-button': function(evt) {
+        evt.preventDefault();
+        return this.$el.addClass('editable');
+      },
+      'submit .edit-issue': function(evt) {
+        evt.preventDefault();
+        this.model.save(this.$('.edit-issue').serializeObject(), {
+          patch: true
+        });
+        return this.$el.removeClass('editable');
       }
     };
 
@@ -333,8 +344,10 @@
     };
 
     IssueView.prototype.render = function(eventName) {
-      this.$('.issue-title').text(this.model.get('title'));
-      this.$('.issue-description').html(this.model.get('description'));
+      this.$('.read-issue .issue-title').text(this.model.get('title'));
+      this.$('.read-issue .issue-description').html(this.model.get('description'));
+      this.$('.edit-issue .issue-title').val(this.model.get('title'));
+      this.$('.edit-issue .issue-description').val(this.model.get('description'));
       this.$el.toggleClass('issue-completed', !!this.model.get('completed'));
       return this.commentListView.render();
     };

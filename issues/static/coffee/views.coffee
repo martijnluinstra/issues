@@ -28,7 +28,7 @@ class IssueView extends Backbone.View
 
 	events:
 		# catch the submit-event of the comment form
-		'submit form': (evt) ->
+		'submit .comments form': (evt) ->
 			evt.preventDefault()
 			@addComment()
 
@@ -39,9 +39,18 @@ class IssueView extends Backbone.View
 				@addComment()
 
 		# Completed button
-		'click .issue-completed-button': (evt) ->
+		'click .complete-issue-button': (evt) ->
 			evt.preventDefault()
 			@model.save ('completed': yes), patch: yes
+
+		'click .edit-issue-button': (evt) ->
+			evt.preventDefault()
+			@$el.addClass 'editable'
+
+		'submit .edit-issue': (evt) ->
+			evt.preventDefault()
+			@model.save @$('.edit-issue').serializeObject(), patch: yes
+			@$el.removeClass 'editable'
 	
 	initialize: ->
 		console.assert @model?, 'IssueView has no model'
@@ -57,8 +66,12 @@ class IssueView extends Backbone.View
 		@model.comments.fetch()
 
 	render: (eventName) ->
-		@$('.issue-title').text @model.get 'title'
-		@$('.issue-description').html @model.get 'description'
+		@$('.read-issue .issue-title').text @model.get 'title'
+		@$('.read-issue .issue-description').html @model.get 'description'
+
+		@$('.edit-issue .issue-title').val @model.get 'title'
+		@$('.edit-issue .issue-description').val @model.get 'description'
+
 		@$el.toggleClass 'issue-completed', !! @model.get 'completed'
 		@commentListView.render()
 

@@ -36,6 +36,18 @@
 	background: green;
 }
 
-.issue-completed .issue-completed-button {
+.issue-completed .complete-issue-button {
+	display: none;
+}
+
+.issue .edit-issue {
+	display: none;
+}
+
+.issue.editable .edit-issue {
+	display: block;
+}
+
+.issue.editable .read-issue {
 	display: none;
 }
