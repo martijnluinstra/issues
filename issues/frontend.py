@@ -1,8 +1,10 @@
-from flask import render_template
+from flask import render_template, redirect, url_for
 from flask.ext.login import current_user
+from sqlalchemy.exc import IntegrityError
 from issues import app, db
-from models import Issue
+from models import Issue, User
 from session import is_admin, is_logged_in
+from forms import AddUserForm
 import json
 
 def jsonify(data):
@@ -39,3 +41,17 @@ def view_frontend(path=None):
         page_attributes=' '.join(page_attributes()),
         current_user=jsonify(current_user.to_dict() if is_logged_in() else None),
         issues=jsonify([issue.to_dict() for issue in uncompleted_issues()]))
+
+@app.route('/users/add', methods=['GET', 'POST'])
+def add_user(path=None):
+    form = AddUserForm()
+    if form.validate_on_submit():
+        try:
+            user = User(form.name.data, form.password.data, form.email.data)
+            db.session.add(user)
+            db.session.commit()
+            return redirect(url_for('view_frontend'))
+        except IntegrityError:
+            form.email.errors.append('Email address is not unique')
+    return render_template('add_user.html', form=form)
+
