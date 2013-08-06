@@ -1,5 +1,6 @@
 from flask import make_response, request
 from flask.ext.login import current_user
+from datetime import datetime
 from issues import app, db
 from models import Issue, Comment, Label
 from session import api_login_required, api_admin_required, is_admin
@@ -35,7 +36,7 @@ def view_issue(issue_id):
     if not is_admin():
         conditions['public'] = True
     issue = Issue.query.filter_by(**conditions).first_or_404()
-    return jsonify(issue.to_dict(details=True))
+    return jsonify(issue.to_dict())
 
 
 @app.route('/api/issues/<int:issue_id>', methods=['PUT'])
@@ -53,11 +54,18 @@ def update_issue(issue_id):
     else:
         return 'Invalid description', 422
     if 'completed' in data:
-        issue.completed = data['completed']
+        if data['completed']:
+            issue.completed = datetime.now()
+        else: 
+            issue.completed = None
     if 'public' in data:
-        issue.public = data['public']
+        issue.public = bool(data['public'])
     if 'deadline' in data:
-        issue.deadline = datetime.strptime(data['deadline'], TIME_FORMAT)
+        try:
+            issue.deadline = datetime.strptime(data['deadline'], TIME_FORMAT)
+        except ValueError:
+            return 'Invalid datetime format', 422
+    issue.modified = datetime.now()
     db.session.commit()
     return 'OK'
 
@@ -65,11 +73,11 @@ def update_issue(issue_id):
 @app.route('/api/issues/todo', methods=['GET'])
 def list_todo_issues():
     """ Get a list containing all uncompleted issues """
-    conditions = {'completed': False}
+    conditions = {'completed': None}
     # Only show public issues to non-admins
     if not is_admin():
-        contidions.public = True
-    issues = Issue.query.filter_by(**contidions).all()
+        conditions.public = True
+    issues = Issue.query.filter_by(**conditions).all()
     return jsonify([issue.to_dict() for issue in issues])
 
 
