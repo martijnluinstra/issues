@@ -49,20 +49,29 @@ class NewIssuePanel extends Panel
 	createIssue: (data) ->
 		@model.create data,
 			wait: yes
-			success: (model, reponse) ->
-				model.set 'id', response
 
 
 class AppRouter extends Backbone.Router
 	initialize: (config) ->
-		@route '', 'list'
+		@route '', ->
+			@navigate '/todo', true
+
 		@route /^issues\/new$/, 'newIssue'
 		@route /^issues\/(\d+)$/, 'showIssue'
 		@route /^labels\/([a-zA-Z0-9-]+)$/, 'showLabel'
+		@route /^todo$/, 'listTodoIssues'
+		@route /^archive$/, 'listAllIssues'
 
 		@user = config.user
 
-		@issueCollection = new IssueCollection config.issues
+		@issueCollection = new IssueCollection config.issues,
+			url: '/api/issues'
+
+		@todoCollection = new Backbone.Subset
+			superset: @issueCollection
+			url: '/api/issues/todo'
+			filter: (issue) ->
+				not issue.get 'completed'
 
 		@panels =
 			newIssue:   new NewIssuePanel '#new-issue-panel', @issueCollection
@@ -72,15 +81,26 @@ class AppRouter extends Backbone.Router
 		# Hide all panels
 		@showPanel null
 
-		@list()
+	listTodoIssues: ->
+		view = new IssueListView
+			model: @todoCollection
 
-	list: ->
+		# Update the local collection
+		@todoCollection.fetch()
+
+		@showPanel 'listIssues', view
+
+	listAllIssues: ->
 		view = new IssueListView
 			model: @issueCollection
+
+		# Update the local collection
+		@issueCollection.fetch()
+
 		@showPanel 'listIssues', view
 
 	newIssue: ->
-		@showPanel 'newIssue'
+		@showPanel 'newIssue', 
 
 	showIssue: (id) ->
 		issue = @issueCollection.get id
@@ -91,7 +111,7 @@ class AppRouter extends Backbone.Router
 	showPanel: (id, view) ->
 		for name, panel of @panels
 			if name == id
-				panel.render view
+				if view? then panel.render view
 				panel.show()
 			else
 				panel.hide()

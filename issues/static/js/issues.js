@@ -78,6 +78,62 @@
 
   })(Backbone.View);
 
+  Backbone.Subset = (function(_super) {
+    __extends(Subset, _super);
+
+    function Subset(options) {
+      if (!options.superset instanceof Backbone.Collection) {
+        throw 'options.superset has to be an instance of Backbone.Collection';
+      }
+      if (options.filter == null) {
+        throw 'options.filter has to be a function';
+      }
+      this.superset = options.superset, this.filter = options.filter;
+      Subset.__super__.constructor.call(this, [], options);
+      this.superset.on('add', this.filterAdd, this);
+      this.superset.on('remove', this.filterRemove, this);
+      this.superset.on('change', this.filterChange, this);
+      this.on('change', this.filterChange, this);
+    }
+
+    Subset.prototype.sync = function(action, model, options) {
+      if (action === 'read' && (this.url != null)) {
+        return Subset.__super__.sync.call(this, action, model, options);
+      } else {
+        return this.superset.sync(action, this.superset, options);
+      }
+    };
+
+    Subset.prototype.filterAdd = function(model) {
+      if (this.filter(model)) {
+        return Subset.__super__.add.call(this, model);
+      }
+    };
+
+    Subset.prototype.filterRemove = function(model) {
+      return Subset.__super__.remove.call(this, model);
+    };
+
+    Subset.prototype.filterChange = function(model) {
+      if (this.filter(model)) {
+        return Subset.__super__.add.call(this, model);
+      } else {
+        return Subset.__super__.remove.call(this, model);
+      }
+    };
+
+    Subset.prototype.add = function(models, options) {
+      return this.superset.add(models, options);
+    };
+
+    Subset.prototype.remove = function(models, options) {
+      return this.superset.remove(models, options);
+    };
+
+    return Subset;
+
+  })(Backbone.Collection);
+
   Issue = (function(_super) {
     __extends(Issue, _super);
 
@@ -93,12 +149,15 @@
     };
 
     Issue.prototype.initialize = function() {
-      this.comments = new CommentCollection([], {
-        issue: this
-      });
-      return this.labels = new LabelCollection([], {
-        issue: this
-      });
+      this.comments = new CommentCollection;
+      this.labels = new LabelCollection;
+      this.on('change:id', this.updateURLs, this);
+      return this.updateURLs();
+    };
+
+    Issue.prototype.updateURLs = function() {
+      this.comments.url = "/api/issues/" + (this.get('id')) + "/comments";
+      return this.labels.url = "/api/issues/" + (this.get('id')) + "/labels";
     };
 
     return Issue;
@@ -114,8 +173,6 @@
     }
 
     IssueCollection.prototype.model = Issue;
-
-    IssueCollection.prototype.url = '/api/issues';
 
     return IssueCollection;
 
@@ -148,11 +205,6 @@
     }
 
     CommentCollection.prototype.model = Comment;
-
-    CommentCollection.prototype.initialize = function(models, options) {
-      this.issue = options.issue;
-      return this.url = "/api/issues/" + (this.issue.get('id')) + "/comments";
-    };
 
     return CommentCollection;
 
@@ -389,10 +441,7 @@
 
     NewIssuePanel.prototype.createIssue = function(data) {
       return this.model.create(data, {
-        wait: true,
-        success: function(model, reponse) {
-          return model.set('id', response);
-        }
+        wait: true
       });
     };
 
@@ -409,26 +458,48 @@
     }
 
     AppRouter.prototype.initialize = function(config) {
-      this.route('', 'list');
+      this.route('', function() {
+        return this.navigate('/todo', true);
+      });
       this.route(/^issues\/new$/, 'newIssue');
       this.route(/^issues\/(\d+)$/, 'showIssue');
       this.route(/^labels\/([a-zA-Z0-9-]+)$/, 'showLabel');
+      this.route(/^todo$/, 'listTodoIssues');
+      this.route(/^archive$/, 'listAllIssues');
       this.user = config.user;
-      this.issueCollection = new IssueCollection(config.issues);
+      this.issueCollection = new IssueCollection(config.issues, {
+        url: '/api/issues'
+      });
+      this.todoCollection = new Backbone.Subset({
+        superset: this.issueCollection,
+        url: '/api/issues/todo',
+        filter: function(issue) {
+          return !issue.get('completed');
+        }
+      });
       this.panels = {
         newIssue: new NewIssuePanel('#new-issue-panel', this.issueCollection),
         showIssue: new Panel('#issue-details-panel'),
         listIssues: new Panel('#issue-list-panel')
       };
-      this.showPanel(null);
-      return this.list();
+      return this.showPanel(null);
     };
 
-    AppRouter.prototype.list = function() {
+    AppRouter.prototype.listTodoIssues = function() {
+      var view;
+      view = new IssueListView({
+        model: this.todoCollection
+      });
+      this.todoCollection.fetch();
+      return this.showPanel('listIssues', view);
+    };
+
+    AppRouter.prototype.listAllIssues = function() {
       var view;
       view = new IssueListView({
         model: this.issueCollection
       });
+      this.issueCollection.fetch();
       return this.showPanel('listIssues', view);
     };
 
@@ -452,7 +523,9 @@
       for (name in _ref12) {
         panel = _ref12[name];
         if (name === id) {
-          panel.render(view);
+          if (view != null) {
+            panel.render(view);
+          }
           _results.push(panel.show());
         } else {
           _results.push(panel.hide());
