@@ -26,6 +26,18 @@
 	padding: 0;
 }
 
+.issue-list .issue-completed {
+	text-decoration: line-through;
+}
+
 .user-not-logged-in .requires-login {
+	display: none;
+}
+
+.issue-completed .panel-heading {
+	background: green;
+}
+
+.issue-completed .issue-completed-button {
 	display: none;
 }

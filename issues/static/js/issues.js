@@ -156,8 +156,13 @@
     };
 
     Issue.prototype.updateURLs = function() {
-      this.comments.url = "/api/issues/" + (this.get('id')) + "/comments";
-      return this.labels.url = "/api/issues/" + (this.get('id')) + "/labels";
+      if (this.has('id')) {
+        this.url = "/api/issues/" + (this.get('id'));
+        this.comments.url = this.url + "/comments";
+        return this.labels.url = this.url + "/labels";
+      } else {
+        return this.url = '/api/issues';
+      }
     };
 
     return Issue;
@@ -249,15 +254,17 @@
     IssueListItemView.prototype.template = _.template(jQuery('#tpl-issue-list-item').text());
 
     IssueListItemView.prototype.initialize = function() {
-      return this.$el.addClass('list-group-item');
+      return this.listenTo(this.model, 'change', this.render);
     };
 
     IssueListItemView.prototype.render = function(eventName) {
-      return this.$el.html(this.template({
+      this.$el.html(this.template({
         id: this.model.escape('id'),
         title: this.model.escape('title'),
         description: this.model.strip('description')
       }));
+      this.$el.addClass('list-group-item');
+      return this.$el.toggleClass('issue-completed', !!this.model.get('completed'));
     };
 
     return IssueListItemView;
@@ -303,6 +310,14 @@
           evt.preventDefault();
           return this.addComment();
         }
+      },
+      'click .issue-completed-button': function(evt) {
+        evt.preventDefault();
+        return this.model.save({
+          'completed': true
+        }, {
+          patch: true
+        });
       }
     };
 
@@ -320,6 +335,7 @@
     IssueView.prototype.render = function(eventName) {
       this.$('.issue-title').text(this.model.get('title'));
       this.$('.issue-description').html(this.model.get('description'));
+      this.$el.toggleClass('issue-completed', !!this.model.get('completed'));
       return this.commentListView.render();
     };
 

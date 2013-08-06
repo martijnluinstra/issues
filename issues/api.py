@@ -49,7 +49,7 @@ def view_issue(issue_id):
     return jsonify(issue.to_dict())
 
 
-@app.route('/api/issues/<int:issue_id>', methods=['PUT'])
+@app.route('/api/issues/<int:issue_id>', methods=['PUT', 'PATCH'])
 @api_admin_required
 def update_issue(issue_id):
     """ Update an issue """
