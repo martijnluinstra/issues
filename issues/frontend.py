@@ -1,10 +1,10 @@
 from flask import render_template, redirect, url_for
-from flask.ext.login import current_user
+from flask.ext.login import current_user, login_required
 from sqlalchemy.exc import IntegrityError
 from issues import app, db
 from models import Issue, User
 from session import is_admin, is_logged_in
-from forms import AddUserForm
+from forms import AddUserForm, ChangePasswordForm
 import json
 
 def jsonify(data):
@@ -43,7 +43,7 @@ def view_frontend(path=None):
         issues=jsonify([issue.to_dict() for issue in uncompleted_issues()]))
 
 @app.route('/users/add', methods=['GET', 'POST'])
-def add_user(path=None):
+def add_user():
     form = AddUserForm()
     if form.validate_on_submit():
         try:
@@ -53,5 +53,19 @@ def add_user(path=None):
             return redirect(url_for('view_frontend'))
         except IntegrityError:
             form.email.errors.append('Email address is not unique')
-    return render_template('add_user.html', form=form)
+    return render_template('user_add.html', form=form)
+
+@app.route('/users/change-password', methods=['GET', 'POST'])
+@login_required
+def change_password():
+    form = ChangePasswordForm()
+    if form.validate_on_submit():
+        if current_user.check_password(form.current_password.data):
+            user = User.query.filter_by(id=current_user.get_id()).first_or_404()
+            user.set_password(form.new_password.data)
+            db.session.commit()
+            return redirect(url_for('view_frontend'))
+        else: 
+            form.current_password.errors.append('Wrong password')
+    return render_template('user_change_password.html', form=form)
 
