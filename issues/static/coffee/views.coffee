@@ -4,13 +4,16 @@ class IssueListItemView extends Backbone.View
 	template: _.template jQuery('#tpl-issue-list-item').text()
 
 	initialize: ->
-		@$el.addClass 'list-group-item'
+		@listenTo @model, 'change', @render
 
 	render: (eventName) ->
 		@$el.html @template
 			id: @model.escape 'id'
 			title: @model.escape 'title'
 			description: @model.strip 'description'
+
+		@$el.addClass 'list-group-item'
+		@$el.toggleClass 'issue-completed', !! @model.get 'completed'
 
 
 class IssueListView extends Backbone.CollectionView
@@ -35,9 +38,14 @@ class IssueView extends Backbone.View
 				evt.preventDefault()
 				@addComment()
 
+		# Completed button
+		'click .issue-completed-button': (evt) ->
+			evt.preventDefault()
+			@model.save ('completed': yes), patch: yes
+	
 	initialize: ->
 		console.assert @model?, 'IssueView has no model'
-		
+
 		@setElement @template.clone().get 0
 
 		@listenTo @model, 'change', @render
@@ -51,6 +59,7 @@ class IssueView extends Backbone.View
 	render: (eventName) ->
 		@$('.issue-title').text @model.get 'title'
 		@$('.issue-description').html @model.get 'description'
+		@$el.toggleClass 'issue-completed', !! @model.get 'completed'
 		@commentListView.render()
 
 	addComment: ->
