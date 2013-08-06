@@ -17,6 +17,9 @@ class IssueCollection extends Backbone.Collection
 
 # Comments
 class Comment extends Backbone.Model
+	validate: (attr, options) ->
+		if (jQuery.trim attr.text) == ''
+			return 'The comment has no text'
 		
 
 class CommentCollection extends Backbone.Collection

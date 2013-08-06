@@ -123,6 +123,12 @@
       return _ref2;
     }
 
+    Comment.prototype.validate = function(attr, options) {
+      if ((jQuery.trim(attr.text)) === '') {
+        return 'The comment has no text';
+      }
+    };
+
     return Comment;
 
   })(Backbone.Model);
@@ -224,7 +230,8 @@
         return this.addComment();
       },
       'keypress textarea': function(evt) {
-        if (evt.keyCode === 13 && (evt.ctrlKey || evt.metaKey)) {
+        if (evt.keyCode === 13 && evt.ctrlKey) {
+          evt.preventDefault();
           return this.addComment();
         }
       }
@@ -245,12 +252,18 @@
     };
 
     IssueView.prototype.addComment = function() {
-      this.model.create({
-        issue_id: this.model.issue.get('id'),
+      var comment, options;
+      comment = {
+        issue_id: this.model.get('id'),
         user: app.user,
-        text: this.$('.comments textarea[name=text]').val()
-      });
-      return this.$el.find('.comments form').get(0).reset();
+        text: this.$('.comments form textarea[name=text]').val()
+      };
+      options = {
+        validate: true
+      };
+      if (this.model.comments.create(comment, options)) {
+        return this.$('.comments form').get(0).reset();
+      }
     };
 
     return IssueView;
