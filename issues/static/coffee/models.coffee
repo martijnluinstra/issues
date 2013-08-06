@@ -12,9 +12,12 @@ class Issue extends Backbone.Model
 		@updateURLs()
 
 	updateURLs: ->
-		@url = "/api/issues/#{ @get 'id' }"
-		@comments.url = @url + "/comments"
-		@labels.url = @url + "/labels"
+		if @has 'id'
+			@url = "/api/issues/#{ @get 'id' }"
+			@comments.url = @url + "/comments"
+			@labels.url = @url + "/labels"
+		else
+			@url = '/api/issues'
 
 
 class IssueCollection extends Backbone.Collection

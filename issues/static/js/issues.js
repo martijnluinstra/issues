@@ -156,9 +156,13 @@
     };
 
     Issue.prototype.updateURLs = function() {
-      this.url = "/api/issues/" + (this.get('id'));
-      this.comments.url = this.url + "/comments";
-      return this.labels.url = this.url + "/labels";
+      if (this.has('id')) {
+        this.url = "/api/issues/" + (this.get('id'));
+        this.comments.url = this.url + "/comments";
+        return this.labels.url = this.url + "/labels";
+      } else {
+        return this.url = '/api/issues';
+      }
     };
 
     return Issue;
