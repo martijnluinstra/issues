@@ -1,6 +1,8 @@
 class Backbone.CollectionView extends Backbone.View
+	tagName: 'ol'
+
 	constructor: (options) ->
-		@children = []
+		@children = {}
 
 		if options.childView?
 			@childView = options.childView
@@ -15,42 +17,41 @@ class Backbone.CollectionView extends Backbone.View
 		@listenTo @model, 'remove', @removeChildModel
 
 	addChildView: (childModel) ->
-		#console.log 'new childModel', childModel, 'added to', this
-
-		childModel._view = new @childView
+		view = new @childView
 			model: childModel
 
-		childModel._view.render()
+		view.render()
 
-		@children.push childModel._view
-		@$el.append childModel._view.$el
+		@children[childModel.cid] = view
+		@$el.append view.el
 
 	removeChildModel: (childModel) ->
-		#console.log 'childModel', childModel, 'removed from', this
-
-		index = @children.indexOf childModel._view
-
-		# is this one of our views?
-		if index == -1
-			return
+		if not @children[childModel.cid]?
+			return false
 
 		# Let the view remove itself
-		childModel._view.remove()
-		childModel._view = null
-
+		@children[childModel.cid].remove()
+		
 		# and remove it from our index
-		@children.splice index, 1
+		delete @children[childModel.cid]
 
 	render: ->
+		@clear()
+
 		for model in @model.models
-			if not model._view
+			if not @children[model.cid]?
 				@addChildView model
 
 	remove: ->
 		# First, neatly remove all the children.
 		# (But intentionally bypass the removeChildModel method)
-		for child in @children
-			child.remove()
+		@clear()
 
 		# And then the rest :)
 		super()
+
+	clear: ->
+		for cid, child of @children
+			child.remove()
+
+		@children = {}

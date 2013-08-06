@@ -7,14 +7,22 @@ class IssueListItemView extends Backbone.View
 		@$el.addClass 'list-group-item'
 
 	render: (eventName) ->
-		@$el.html @template @model.toJSON()
+		@$el.html @template
+			id: @model.escape 'id'
+			title: @model.escape 'title'
+			description: @model.strip 'description'
 
 
 class IssueListView extends Backbone.CollectionView
 	childView: IssueListItemView
 
+	initialize: ->
+		super()
+		@$el.addClass 'issue-list'
 
 class IssueView extends Backbone.View
+	template: jQuery('#tpl-issue-details-panel').detach()
+
 	events:
 		# catch the submit-event of the comment form
 		'submit form': (evt) ->
@@ -23,29 +31,41 @@ class IssueView extends Backbone.View
 
 		# Also catch the cmd/ctrl+enter key combination on the textarea
 		'keypress textarea': (evt) ->
-			if evt.keyCode == 13 and (evt.ctrlKey or evt.metaKey)
+			if evt.keyCode == 13 and evt.ctrlKey
+				evt.preventDefault()
 				@addComment()
 
 	initialize: ->
+		@setElement @template.clone().get 0
+
 		@listenTo @model, 'change', @render
 
 		@commentListView = new CommentListView
 			model: @model.comments
-			el: @$el.find('.comment-list')
+			el: @$ '.comment-list'
 
 		@model.comments.fetch()
 
 	render: (eventName) ->
-		@$el.find('.issue-title').text @model.get 'title'
-		@$el.find('.issue-description').html @model.get 'description'
+		@$('.issue-title').text @model.get 'title'
+		@$('.issue-description').html @model.get 'description'
+		@commentListView.render()
 
 	addComment: ->
-		@model.create
-			issue_id: @model.issue.get 'id'
+		comment =
+			issue_id: @model.get 'id'
 			user: app.user
-			text: @$('.comments textarea[name=text]').val()
+			text: @$('.comments form textarea[name=text]').val(),
+		
+		options = 
+			validate: yes
 
-		@$el.find('.comments form').get(0).reset()
+		if @model.comments.create comment, options
+			@$('.comments form').get(0).reset()
+
+	remove: ->
+		@commentListView.remove()
+		super()
 
 
 class CommentListItemView extends Backbone.View

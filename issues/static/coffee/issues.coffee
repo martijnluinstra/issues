@@ -2,6 +2,9 @@
 # router and the currently logged in user's data.
 app = null
 
+# Serializes a form element to a JavaScript object. Note that
+# this will fail when a form contains multiple elements with
+# the same name.
 jQuery.fn.serializeObject = ->
 	data = {}
 	jQuery(jQuery(this).serializeArray()).each (i, pair) ->
@@ -9,10 +12,24 @@ jQuery.fn.serializeObject = ->
 
 	data
 
+# Get an attribute of the model with all the HTML tags stripped.
+# Note: don't use this on untrusted input (e.g. still do server
+# side cleaning on the input, please!)
+Backbone.Model::strip = (attribute) ->
+	jQuery("<p>#{@get attribute}</p>").wrap('p').text()
+
 
 class Panel
 	constructor: (el) ->
 		@$el = jQuery el
+
+	render: (view) ->
+		if @view? and @view != view
+			@view.remove()
+
+		@view = view
+		@view.render()
+		@view.$el.appendTo @$el
 
 	show: ->
 		@$el.show()
@@ -59,10 +76,8 @@ class AppRouter extends Backbone.Router
 
 	list: ->
 		view = new IssueListView
-			el: @panels.listIssues.$el.find('.issue-list').get 0
 			model: @issueCollection
-		view.render()
-		@showPanel 'listIssues'
+		@showPanel 'listIssues', view
 
 	newIssue: ->
 		@showPanel 'newIssue'
@@ -70,16 +85,16 @@ class AppRouter extends Backbone.Router
 	showIssue: (id) ->
 		issue = @issueCollection.get id
 		view = new IssueView
-			el: @panels.showIssue.$el
 			model: issue
-		
-		view.render()
+		@showPanel 'showIssue', view
 
-		@showPanel 'showIssue'
-
-	showPanel: (id) ->
+	showPanel: (id, view) ->
 		for name, panel of @panels
-			if name == id then panel.show() else panel.hide()
+			if name == id
+				panel.render view
+				panel.show()
+			else
+				panel.hide()
 
 
 window.init = (data) ->

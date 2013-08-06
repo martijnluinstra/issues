@@ -7,8 +7,10 @@
   Backbone.CollectionView = (function(_super) {
     __extends(CollectionView, _super);
 
+    CollectionView.prototype.tagName = 'ol';
+
     function CollectionView(options) {
-      this.children = [];
+      this.children = {};
       if (options.childView != null) {
         this.childView = options.childView;
       }
@@ -24,32 +26,31 @@
     };
 
     CollectionView.prototype.addChildView = function(childModel) {
-      childModel._view = new this.childView({
+      var view;
+      view = new this.childView({
         model: childModel
       });
-      childModel._view.render();
-      this.children.push(childModel._view);
-      return this.$el.append(childModel._view.$el);
+      view.render();
+      this.children[childModel.cid] = view;
+      return this.$el.append(view.el);
     };
 
     CollectionView.prototype.removeChildModel = function(childModel) {
-      var index;
-      index = this.children.indexOf(childModel._view);
-      if (index === -1) {
-        return;
+      if (this.children[childModel.cid] == null) {
+        return false;
       }
-      childModel._view.remove();
-      childModel._view = null;
-      return this.children.splice(index, 1);
+      this.children[childModel.cid].remove();
+      return delete this.children[childModel.cid];
     };
 
     CollectionView.prototype.render = function() {
       var model, _i, _len, _ref, _results;
+      this.clear();
       _ref = this.model.models;
       _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         model = _ref[_i];
-        if (!model._view) {
+        if (this.children[model.cid] == null) {
           _results.push(this.addChildView(model));
         } else {
           _results.push(void 0);
@@ -59,13 +60,18 @@
     };
 
     CollectionView.prototype.remove = function() {
-      var child, _i, _len, _ref;
+      this.clear();
+      return CollectionView.__super__.remove.call(this);
+    };
+
+    CollectionView.prototype.clear = function() {
+      var child, cid, _ref;
       _ref = this.children;
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        child = _ref[_i];
+      for (cid in _ref) {
+        child = _ref[cid];
         child.remove();
       }
-      return CollectionView.__super__.remove.call(this);
+      return this.children = {};
     };
 
     return CollectionView;
@@ -122,6 +128,12 @@
       _ref2 = Comment.__super__.constructor.apply(this, arguments);
       return _ref2;
     }
+
+    Comment.prototype.validate = function(attr, options) {
+      if ((jQuery.trim(attr.text)) === '') {
+        return 'The comment has no text';
+      }
+    };
 
     return Comment;
 
@@ -189,7 +201,11 @@
     };
 
     IssueListItemView.prototype.render = function(eventName) {
-      return this.$el.html(this.template(this.model.toJSON()));
+      return this.$el.html(this.template({
+        id: this.model.escape('id'),
+        title: this.model.escape('title'),
+        description: this.model.strip('description')
+      }));
     };
 
     return IssueListItemView;
@@ -206,6 +222,11 @@
 
     IssueListView.prototype.childView = IssueListItemView;
 
+    IssueListView.prototype.initialize = function() {
+      IssueListView.__super__.initialize.call(this);
+      return this.$el.addClass('issue-list');
+    };
+
     return IssueListView;
 
   })(Backbone.CollectionView);
@@ -218,39 +239,55 @@
       return _ref8;
     }
 
+    IssueView.prototype.template = jQuery('#tpl-issue-details-panel').detach();
+
     IssueView.prototype.events = {
       'submit form': function(evt) {
         evt.preventDefault();
         return this.addComment();
       },
       'keypress textarea': function(evt) {
-        if (evt.keyCode === 13 && (evt.ctrlKey || evt.metaKey)) {
+        if (evt.keyCode === 13 && evt.ctrlKey) {
+          evt.preventDefault();
           return this.addComment();
         }
       }
     };
 
     IssueView.prototype.initialize = function() {
+      this.setElement(this.template.clone().get(0));
       this.listenTo(this.model, 'change', this.render);
       this.commentListView = new CommentListView({
         model: this.model.comments,
-        el: this.$el.find('.comment-list')
+        el: this.$('.comment-list')
       });
       return this.model.comments.fetch();
     };
 
     IssueView.prototype.render = function(eventName) {
-      this.$el.find('.issue-title').text(this.model.get('title'));
-      return this.$el.find('.issue-description').html(this.model.get('description'));
+      this.$('.issue-title').text(this.model.get('title'));
+      this.$('.issue-description').html(this.model.get('description'));
+      return this.commentListView.render();
     };
 
     IssueView.prototype.addComment = function() {
-      this.model.create({
-        issue_id: this.model.issue.get('id'),
+      var comment, options;
+      comment = {
+        issue_id: this.model.get('id'),
         user: app.user,
-        text: this.$('.comments textarea[name=text]').val()
-      });
-      return this.$el.find('.comments form').get(0).reset();
+        text: this.$('.comments form textarea[name=text]').val()
+      };
+      options = {
+        validate: true
+      };
+      if (this.model.comments.create(comment, options)) {
+        return this.$('.comments form').get(0).reset();
+      }
+    };
+
+    IssueView.prototype.remove = function() {
+      this.commentListView.remove();
+      return IssueView.__super__.remove.call(this);
     };
 
     return IssueView;
@@ -306,10 +343,23 @@
     return data;
   };
 
+  Backbone.Model.prototype.strip = function(attribute) {
+    return jQuery("<p>" + (this.get(attribute)) + "</p>").wrap('p').text();
+  };
+
   Panel = (function() {
     function Panel(el) {
       this.$el = jQuery(el);
     }
+
+    Panel.prototype.render = function(view) {
+      if ((this.view != null) && this.view !== view) {
+        this.view.remove();
+      }
+      this.view = view;
+      this.view.render();
+      return this.view.$el.appendTo(this.$el);
+    };
 
     Panel.prototype.show = function() {
       return this.$el.show();
@@ -377,11 +427,9 @@
     AppRouter.prototype.list = function() {
       var view;
       view = new IssueListView({
-        el: this.panels.listIssues.$el.find('.issue-list').get(0),
         model: this.issueCollection
       });
-      view.render();
-      return this.showPanel('listIssues');
+      return this.showPanel('listIssues', view);
     };
 
     AppRouter.prototype.newIssue = function() {
@@ -392,20 +440,19 @@
       var issue, view;
       issue = this.issueCollection.get(id);
       view = new IssueView({
-        el: this.panels.showIssue.$el,
         model: issue
       });
-      view.render();
-      return this.showPanel('showIssue');
+      return this.showPanel('showIssue', view);
     };
 
-    AppRouter.prototype.showPanel = function(id) {
+    AppRouter.prototype.showPanel = function(id, view) {
       var name, panel, _ref12, _results;
       _ref12 = this.panels;
       _results = [];
       for (name in _ref12) {
         panel = _ref12[name];
         if (name === id) {
+          panel.render(view);
           _results.push(panel.show());
         } else {
           _results.push(panel.hide());

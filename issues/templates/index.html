@@ -41,10 +41,11 @@
 					<button type="button" class="btn btn-default">Done</button>
 				</div>
 			</div>
-			<ol class="issue-list list-group list-group-flush"></ol>
 		</div>
 
-		<div id="issue-details-panel" class="panel">
+		<div id="issue-details-panel" class="panel"></div>
+
+		<div id="tpl-issue-details-panel" class="panel">
 			<div class="panel-heading">
 				<h3 class="panel-title issue-title"></h3>
 			</div>
@@ -56,7 +57,7 @@
 
 				<form method="post" class="requires-login">
 					<div class="form-group">
-						<textarea id="comment-text" name="text" class="form-control" placeholder="Type your comment here…"></textarea>
+						<textarea id="comment-text" name="text" class="form-control" placeholder="Type your comment here…" required></textarea>
 					</div>
 					<button type="submit" class="btn btn-default">Post Comment</button>
 				</form>
@@ -83,7 +84,10 @@
 
 	<script id="tpl-issue-list-item" type="text/x-template">
 		<input type="checkbox">
-		<a href="/issues/<%= id %>"><%= title %></a>
+		<a href="/issues/<%= id %>">
+			<strong><%= title %></strong>
+			<%= description %>
+		</a>
 	</script>
 
 	<script id="tpl-comment-list-item" type="text/x-template">
