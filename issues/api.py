@@ -16,6 +16,16 @@ def jsonify(data):
     return response
 
 
+@app.route('/api/issues', methods=['GET'])
+def list_all_issues():
+    """ Get a list containing all issues """  
+    conditions = {}
+    if not is_admin():
+        conditions['public'] = True
+    issues = Issue.query.filter_by(**conditions).all()
+    return jsonify([issue.to_dict() for issue in issues])
+
+
 @app.route('/api/issues', methods=['POST'])
 @api_admin_required
 def add_issue():
@@ -77,16 +87,6 @@ def list_todo_issues():
     # Only show public issues to non-admins
     if not is_admin():
         conditions.public = True
-    issues = Issue.query.filter_by(**conditions).all()
-    return jsonify([issue.to_dict() for issue in issues])
-
-
-@app.route('/api/issues/all', methods=['GET'])
-def list_all_issues():
-    """ Get a list containing all issues """  
-    conditions = {}
-    if not is_admin():
-        conditions['public'] = True
     issues = Issue.query.filter_by(**conditions).all()
     return jsonify([issue.to_dict() for issue in issues])
 
