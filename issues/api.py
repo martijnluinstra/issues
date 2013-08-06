@@ -55,14 +55,16 @@ def update_issue(issue_id):
     """ Update an issue """
     data = request.get_json()
     issue = Issue.query.filter_by(id=issue_id).first_or_404()
-    if 'title' in data and data['title'].strip():
-        issue.title = data['title'].strip()
-    else:
-        return 'Invalid title', 422
-    if 'description' in data and data['description'].strip():
-        issue.description = data['description'].strip()
-    else:
-        return 'Invalid description', 422
+    if 'title' in data:
+        if data['title'].strip():
+            issue.title = data['title'].strip()
+        else:
+            return 'Invalid title', 422
+    if 'description' in data:
+        if data['description'].strip():
+            issue.description = data['description'].strip()
+        else:
+            return 'Invalid description', 422
     if 'completed' in data:
         if data['completed']:
             issue.completed = datetime.now()
