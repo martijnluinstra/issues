@@ -1,7 +1,9 @@
-.login-panel {
+.login-panel,
+.user-panel {
 	max-width: 400px;
 	margin: 100px auto;
 }
+
 
 #label-panel {
 	position: fixed;
