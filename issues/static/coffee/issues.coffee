@@ -109,7 +109,7 @@ class AppRouter extends Backbone.Router
 		@showPanel 'listIssues', view
 
 	newIssue: ->
-		@showPanel 'newIssue', 
+		@showPanel 'newIssue'
 
 	showIssue: (id) ->
 		# First, try to get the issue from our global collection
