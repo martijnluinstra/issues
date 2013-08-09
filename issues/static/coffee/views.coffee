@@ -85,7 +85,7 @@ class IssueView extends Backbone.View
 		@commentListView.render()
 
 	addComment: ->
-		comment =
+		data =
 			issue_id: @model.get 'id'
 			user: app.user
 			text: @$('.comments form textarea[name=text]').val(),
@@ -93,7 +93,7 @@ class IssueView extends Backbone.View
 		options = 
 			validate: yes
 
-		if @model.comments.create comment, options
+		if @model.comments.create data, options
 			@$('.comments form').get(0).reset()
 
 	remove: ->
