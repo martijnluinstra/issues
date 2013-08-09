@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from flask import render_template, redirect, url_for
 from flask.ext.login import current_user, login_required
 from sqlalchemy.exc import IntegrityError
@@ -8,20 +10,20 @@ from forms import AddUserForm, ChangePasswordForm
 import json
 
 def jsonify(data):
-    return json.dumps(data, indent=2, ensure_ascii=False).encode('utf-8')
+    return unicode(json.dumps(data, indent=2, ensure_ascii=False))
 
 def page_attributes():
     attributes = []
 
     if is_logged_in():
-        attributes.append('user-logged-in')
+        attributes.append(u'user-logged-in')
     else:
-        attributes.append('user-not-logged-in')
+        attributes.append(u'user-not-logged-in')
 
     if is_admin():
-        attributes.append('user-is-admin')
+        attributes.append(u'user-is-admin')
     else:
-        attributes.append('user-is-not-admin')
+        attributes.append(u'user-is-not-admin')
 
     return attributes
 
@@ -38,8 +40,8 @@ def uncompleted_issues():
 @app.route('/<path:path>', methods=['GET'])
 def view_frontend(path=None):
     return render_template('index.html',
-        page_attributes=' '.join(page_attributes()),
-        user_name=current_user.name if is_logged_in() else None,
+        page_attributes=u' '.join(page_attributes()),
+        user_name=unicode(current_user.name) if is_logged_in() else None,
         current_user=jsonify(current_user.to_dict() if is_logged_in() else None),
         issues=jsonify([issue.to_dict() for issue in uncompleted_issues()]))
 
