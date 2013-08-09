@@ -8,6 +8,8 @@ class Backbone.Subset extends Backbone.Collection
 
 		{@superset, @filter} = options
 
+		@model = options.model || @superset.model
+
 		super [], options
 
 		@superset.on 'add', @filterAdd, this
