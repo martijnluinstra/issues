@@ -3,6 +3,7 @@ class Issue extends Backbone.Model
 		id: null
 		title: ''
 		description: ''
+		labels: []
 
 	urlRoot: '/api/issues'
 
@@ -11,7 +12,7 @@ class Issue extends Backbone.Model
 			url: =>
 				"#{@url()}/comments"
 
-		@labels = new LabelCollection [],
+		@labels = new LabelCollection (@get 'labels'),
 			url: =>
 				"#{@url()}/labels"
 
@@ -33,7 +34,13 @@ class CommentCollection extends Backbone.Collection
 
 # Labels
 class Label extends Backbone.Model
+	defaults:
+		id: null
+		name: ''
+		colour: 'grey'
+
+	urlRoot: '/api/labels'
 
 
-class LabelCollection extends Backbone.Model
+class LabelCollection extends Backbone.Collection
 	model: Label

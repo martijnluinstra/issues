@@ -60,7 +60,16 @@
 					<button type="button" class="btn close-issues-button btn-default">Close</button>
 				</div>
 			</div>
-			<ol class="issue-list"></ol>
+			<ol class="issue-list list-group list-group-flush">
+				<li id="tpl-issue-list-item" class="list-group-item">
+					<input type="checkbox">
+					<a href="/issues/{issue-id}" class="issue-link">
+						<strong class="issue-title">{issue-title}</strong>
+						<span class="issue-labels"></span>
+						<span class="issue-description">{issue-description}</span>
+					</a>
+				</li>
+			</ol>
 		</div>
 
 		<div id="issue-details-panel" class="panel"></div>
@@ -119,14 +128,6 @@
 			</form>
 		</div>
 	</div>
-
-	<script id="tpl-issue-list-item" type="text/x-template">
-		<input type="checkbox">
-		<a href="/issues/<%= id %>">
-			<strong><%= title %></strong>
-			<%= description %>
-		</a>
-	</script>
 
 	<script id="tpl-comment-list-item" type="text/x-template">
 		<div class="comment-text"><%= text %></div>

@@ -38,6 +38,17 @@
 	text-decoration: line-through;
 }
 
+.issue-list .issue-labels {
+	float: right;
+}
+
+.issue-list .issue-labels span {
+	display: inline-block;
+	margin: 0 0.1em;
+	padding: 0 0.2em;
+	border-radius: 2px;
+}
+
 .user-not-logged-in .requires-login {
 	display: none;
 }

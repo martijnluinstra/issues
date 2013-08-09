@@ -1,19 +1,22 @@
 class IssueListItemView extends Backbone.View
-	tagName: 'li'
-
-	template: _.template jQuery('#tpl-issue-list-item').text()
+	template: jQuery('#tpl-issue-list-item').detach()
 
 	initialize: ->
+		@setElement @template.clone().get 0
+
 		@listenTo @model, 'change', @render
 
-	render: (eventName) ->
-		@$el.html @template
-			id: @model.escape 'id'
-			title: @model.escape 'title'
-			description: @model.strip 'description'
+		@labelView = new Backbone.CollectionView
+			childView: InlineLabelListItemView
+			model: @model.labels
+			el: @$ '.issue-labels'
 
-		@$el.addClass 'list-group-item'
+	render: (eventName) ->
+		@$('.issue-link').attr 'href', "/issues/#{@model.get 'id'}"
+		@$('.issue-title').text @model.get 'title'
+		@$('.issue-description').text @model.strip 'description'
 		@$el.toggleClass 'issue-completed', !! @model.get 'completed'
+		@labelView.render()
 
 	isSelected: ->
 		@$('input[type=checkbox]').get(0).checked
@@ -139,3 +142,18 @@ class CommentListItemView extends Backbone.View
 
 class CommentListView extends Backbone.CollectionView
 	childView: CommentListItemView
+
+
+class InlineLabelListItemView extends Backbone.View
+	tagName: 'span'
+
+	initialize: ->
+		@listenTo @model, 'change', @render
+
+	render: ->
+		@$el.css
+			'color': bestContrastingColour @model.get 'colour'
+			'background-color': @model.get 'colour'
+
+		@$el.text @model.get 'name'
+
