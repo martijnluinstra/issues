@@ -16,6 +16,9 @@ class Backbone.CollectionView extends Backbone.View
 		@listenTo @model, 'add', @addChildView
 		@listenTo @model, 'remove', @removeChildModel
 
+	appendChildView: (el) ->
+		@$el.append el
+
 	addChildView: (childModel) ->
 		view = new @childView
 			model: childModel
@@ -23,7 +26,7 @@ class Backbone.CollectionView extends Backbone.View
 		view.render()
 
 		@children[childModel.cid] = view
-		@$el.append view.el
+		@appendChildView view.el
 
 	removeChildModel: (childModel) ->
 		if not @children[childModel.cid]?
