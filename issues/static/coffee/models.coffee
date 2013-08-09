@@ -4,20 +4,16 @@ class Issue extends Backbone.Model
 		title: ''
 		description: ''
 
+	urlRoot: '/api/issues'
+
 	initialize: ->
-		@comments = new CommentCollection
-		@labels = new LabelCollection
+		@comments = new CommentCollection [],
+			url: =>
+				"#{@urlRoot}/#{@get 'id'}/comments"
 
-		@on 'change:id', @updateURLs, this
-		@updateURLs()
-
-	updateURLs: ->
-		if @has 'id'
-			@url = "/api/issues/#{ @get 'id' }"
-			@comments.url = @url + "/comments"
-			@labels.url = @url + "/labels"
-		else
-			@url = '/api/issues'
+		@labels = new LabelCollection [],
+			url: =>
+				"#{@urlRoot}/#{@get 'id'}/labels"
 
 
 class IssueCollection extends Backbone.Collection

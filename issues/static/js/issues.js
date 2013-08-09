@@ -148,21 +148,20 @@
       description: ''
     };
 
-    Issue.prototype.initialize = function() {
-      this.comments = new CommentCollection;
-      this.labels = new LabelCollection;
-      this.on('change:id', this.updateURLs, this);
-      return this.updateURLs();
-    };
+    Issue.prototype.urlRoot = '/api/issues';
 
-    Issue.prototype.updateURLs = function() {
-      if (this.has('id')) {
-        this.url = "/api/issues/" + (this.get('id'));
-        this.comments.url = this.url + "/comments";
-        return this.labels.url = this.url + "/labels";
-      } else {
-        return this.url = '/api/issues';
-      }
+    Issue.prototype.initialize = function() {
+      var _this = this;
+      this.comments = new CommentCollection([], {
+        url: function() {
+          return "" + _this.urlRoot + "/" + (_this.get('id')) + "/comments";
+        }
+      });
+      return this.labels = new LabelCollection([], {
+        url: function() {
+          return "" + _this.urlRoot + "/" + (_this.get('id')) + "/labels";
+        }
+      });
     };
 
     return Issue;
