@@ -38,15 +38,24 @@ class IssueView extends Backbone.View
 				evt.preventDefault()
 				@addComment()
 
-		# Completed button
-		'click .complete-issue-button': (evt) ->
+		# Close issue button
+		'click .close-issue-button': (evt) ->
 			evt.preventDefault()
 			@model.save ('completed': yes), patch: yes
 
+		# Reopen issue button
+		'click .reopen-issue-button': (evt) ->
+			evt.preventDefault()
+			@model.save ('completed': no), patch: yes
+
+		# Edit issue button:
+		# This causes the edit form to appear
 		'click .edit-issue-button': (evt) ->
 			evt.preventDefault()
 			@$el.addClass 'editable'
 
+		# Finish editing issue button:
+		# This submits the data form the edit form and hides it again
 		'submit .edit-issue': (evt) ->
 			evt.preventDefault()
 			@model.save @$('.edit-issue').serializeObject(), patch: yes

@@ -46,9 +46,18 @@
 	background: green;
 }
 
-.issue-completed .complete-issue-button {
+.issue-completed .close-issue-button {
 	display: none;
 }
+
+.reopen-issue-button {
+	display: none;	
+}
+
+.issue-completed .reopen-issue-button {
+	display: inline-block;
+}
+
 
 .issue .edit-issue {
 	display: none;

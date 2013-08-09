@@ -311,10 +311,18 @@
           return this.addComment();
         }
       },
-      'click .complete-issue-button': function(evt) {
+      'click .close-issue-button': function(evt) {
         evt.preventDefault();
         return this.model.save({
           'completed': true
+        }, {
+          patch: true
+        });
+      },
+      'click .reopen-issue-button': function(evt) {
+        evt.preventDefault();
+        return this.model.save({
+          'completed': false
         }, {
           patch: true
         });
