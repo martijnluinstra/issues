@@ -72,8 +72,9 @@ class AppRouter extends Backbone.Router
 
 		@user = config.user
 
-		@issueCollection = new IssueCollection config.issues,
-			url: '/api/issues'
+		@issueCollection = new IssueCollection config.issues
+		@issueCollection.url = '/api/issues' # (Cannot be passed as an option
+			# because then it will also be passed to all the issues preloaded)
 
 		@todoCollection = new Backbone.Subset
 			superset: @issueCollection
