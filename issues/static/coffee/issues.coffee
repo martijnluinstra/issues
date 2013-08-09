@@ -42,13 +42,21 @@ class NewIssuePanel extends Panel
 	constructor: (el, @model) ->
 		super el
 		@$el.on 'submit', 'form', (evt) =>
+			# Prevent the form from actually being submitted
 			evt.preventDefault()
-			@createIssue jQuery(evt.target).serializeObject()
-			evt.target.reset()
+			
+			data = jQuery(evt.target).serializeObject()
 
-	createIssue: (data) ->
-		@model.create data,
-			wait: yes
+			# When the issue is saved (and has an id), go to it.
+			options =
+				success: (issue) ->
+					app.navigate "/issues/#{issue.get 'id'}", true
+
+			# Clear the form if the issue was created
+			issue = new Issue
+			if issue.save data, options
+				@model.add issue
+				evt.target.reset()
 
 
 class AppRouter extends Backbone.Router

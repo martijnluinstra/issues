@@ -360,8 +360,8 @@
     };
 
     IssueView.prototype.addComment = function() {
-      var comment, options;
-      comment = {
+      var data, options;
+      data = {
         issue_id: this.model.get('id'),
         user: app.user,
         text: this.$('.comments form textarea[name=text]').val()
@@ -369,7 +369,7 @@
       options = {
         validate: true
       };
-      if (this.model.comments.create(comment, options)) {
+      if (this.model.comments.create(data, options)) {
         return this.$('.comments form').get(0).reset();
       }
     };
@@ -470,17 +470,21 @@
       this.model = model;
       NewIssuePanel.__super__.constructor.call(this, el);
       this.$el.on('submit', 'form', function(evt) {
+        var data, issue, options;
         evt.preventDefault();
-        _this.createIssue(jQuery(evt.target).serializeObject());
-        return evt.target.reset();
+        data = jQuery(evt.target).serializeObject();
+        options = {
+          success: function(issue) {
+            return app.navigate("/issues/" + (issue.get('id')), true);
+          }
+        };
+        issue = new Issue;
+        if (issue.save(data, options)) {
+          _this.model.add(issue);
+          return evt.target.reset();
+        }
       });
     }
-
-    NewIssuePanel.prototype.createIssue = function(data) {
-      return this.model.create(data, {
-        wait: true
-      });
-    };
 
     return NewIssuePanel;
 
