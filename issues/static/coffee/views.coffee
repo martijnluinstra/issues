@@ -104,6 +104,7 @@ class IssueView extends Backbone.View
 		@$('.edit-issue .issue-title').val @model.get 'title'
 		@$('.edit-issue .issue-description').val @model.get 'description'
 
+		@$el.toggleClass 'loading', !@model.get 'added'
 		@$el.toggleClass 'issue-completed', !! @model.get 'completed'
 		@commentListView.render()
 

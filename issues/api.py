@@ -4,7 +4,7 @@ from datetime import datetime
 from issues import app, db
 from models import Issue, Comment, Label
 from session import api_login_required, api_admin_required, is_admin
-import json, re
+import json, re, time
 
 TIME_FORMAT = '%Y:%m:%d %H:%M:%S'
 
@@ -42,6 +42,7 @@ def add_issue():
 @app.route('/api/issues/<int:issue_id>', methods=['GET'])
 def view_issue(issue_id):
     """ Get all details of an issue """
+    time.sleep(1)
     conditions = {'id': issue_id}
     if not is_admin():
         conditions['public'] = True

@@ -112,9 +112,19 @@ class AppRouter extends Backbone.Router
 		@showPanel 'newIssue', 
 
 	showIssue: (id) ->
+		# First, try to get the issue from our global collection
 		issue = @issueCollection.get id
+
+		# If it isn't there (collection not yet loaded or something) try to
+		# fetch it manually
+		if not issue
+			issue = new Issue id: id
+			issue.fetch()
+		
+		# Give it a view and render it
 		view = new IssueView
 			model: issue
+
 		@showPanel 'showIssue', view
 
 	showPanel: (id, view) ->

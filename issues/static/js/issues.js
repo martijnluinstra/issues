@@ -392,6 +392,7 @@
       this.$('.read-issue .issue-description').html(this.model.get('description'));
       this.$('.edit-issue .issue-title').val(this.model.get('title'));
       this.$('.edit-issue .issue-description').val(this.model.get('description'));
+      this.$el.toggleClass('loading', !this.model.get('added'));
       this.$el.toggleClass('issue-completed', !!this.model.get('completed'));
       return this.commentListView.render();
     };
@@ -587,6 +588,12 @@
     AppRouter.prototype.showIssue = function(id) {
       var issue, view;
       issue = this.issueCollection.get(id);
+      if (!issue) {
+        issue = new Issue({
+          id: id
+        });
+        issue.fetch();
+      }
       view = new IssueView({
         model: issue
       });
