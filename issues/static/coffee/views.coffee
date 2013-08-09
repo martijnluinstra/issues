@@ -15,13 +15,36 @@ class IssueListItemView extends Backbone.View
 		@$el.addClass 'list-group-item'
 		@$el.toggleClass 'issue-completed', !! @model.get 'completed'
 
+	isSelected: ->
+		@$('input[type=checkbox]').get(0).checked
+
 
 class IssueListView extends Backbone.CollectionView
 	childView: IssueListItemView
 
+	template: jQuery('#tpl-issue-list-panel').detach()
+
+	events:
+		# 'Close' selection button
+		'click .close-issues-button': (evt) ->
+			evt.preventDefault()
+
+			for cid, child of @children
+				if child.isSelected()
+					child.model.save (completed: yes), patch: yes
+
 	initialize: ->
+		# Initialize the CollectionView (register model listeners)
 		super()
-		@$el.addClass 'issue-list'
+
+		# Create the actual DOM by cloning our template
+		@setElement @template.clone().get 0
+
+	# Override CollectionView's appendChildView to append it to the
+	# issue-list element, not the root element.
+	appendChildView: (el) ->
+		@$('.issue-list').append el
+
 
 class IssueView extends Backbone.View
 	template: jQuery('#tpl-issue-details-panel').detach()

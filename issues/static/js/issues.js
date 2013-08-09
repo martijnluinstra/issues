@@ -25,6 +25,10 @@
       return this.listenTo(this.model, 'remove', this.removeChildModel);
     };
 
+    CollectionView.prototype.appendChildView = function(el) {
+      return this.$el.append(el);
+    };
+
     CollectionView.prototype.addChildView = function(childModel) {
       var view;
       view = new this.childView({
@@ -32,7 +36,7 @@
       });
       view.render();
       this.children[childModel.cid] = view;
-      return this.$el.append(view.el);
+      return this.appendChildView(view.el);
     };
 
     CollectionView.prototype.removeChildModel = function(childModel) {
@@ -89,6 +93,7 @@
         throw 'options.filter has to be a function';
       }
       this.superset = options.superset, this.filter = options.filter;
+      this.model = options.model || this.superset.model;
       Subset.__super__.constructor.call(this, [], options);
       this.superset.on('add', this.filterAdd, this);
       this.superset.on('remove', this.filterRemove, this);
@@ -154,12 +159,12 @@
       var _this = this;
       this.comments = new CommentCollection([], {
         url: function() {
-          return "" + _this.urlRoot + "/" + (_this.get('id')) + "/comments";
+          return "" + (_this.url()) + "/comments";
         }
       });
       return this.labels = new LabelCollection([], {
         url: function() {
-          return "" + _this.urlRoot + "/" + (_this.get('id')) + "/labels";
+          return "" + (_this.url()) + "/labels";
         }
       });
     };
@@ -266,6 +271,10 @@
       return this.$el.toggleClass('issue-completed', !!this.model.get('completed'));
     };
 
+    IssueListItemView.prototype.isSelected = function() {
+      return this.$('input[type=checkbox]').get(0).checked;
+    };
+
     return IssueListItemView;
 
   })(Backbone.View);
@@ -280,9 +289,37 @@
 
     IssueListView.prototype.childView = IssueListItemView;
 
+    IssueListView.prototype.template = jQuery('#tpl-issue-list-panel').detach();
+
+    IssueListView.prototype.events = {
+      'click .close-issues-button': function(evt) {
+        var child, cid, _ref8, _results;
+        evt.preventDefault();
+        _ref8 = this.children;
+        _results = [];
+        for (cid in _ref8) {
+          child = _ref8[cid];
+          if (child.isSelected()) {
+            _results.push(child.model.save({
+              completed: true
+            }, {
+              patch: true
+            }));
+          } else {
+            _results.push(void 0);
+          }
+        }
+        return _results;
+      }
+    };
+
     IssueListView.prototype.initialize = function() {
       IssueListView.__super__.initialize.call(this);
-      return this.$el.addClass('issue-list');
+      return this.setElement(this.template.clone().get(0));
+    };
+
+    IssueListView.prototype.appendChildView = function(el) {
+      return this.$('.issue-list').append(el);
     };
 
     return IssueListView;
@@ -508,9 +545,8 @@
       this.route(/^todo$/, 'listTodoIssues');
       this.route(/^archive$/, 'listAllIssues');
       this.user = config.user;
-      this.issueCollection = new IssueCollection(config.issues, {
-        url: '/api/issues'
-      });
+      this.issueCollection = new IssueCollection(config.issues);
+      this.issueCollection.url = '/api/issues';
       this.todoCollection = new Backbone.Subset({
         superset: this.issueCollection,
         url: '/api/issues/todo',
