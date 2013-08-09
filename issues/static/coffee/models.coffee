@@ -9,11 +9,11 @@ class Issue extends Backbone.Model
 	initialize: ->
 		@comments = new CommentCollection [],
 			url: =>
-				"#{@urlRoot}/#{@get 'id'}/comments"
+				"#{@url()}/comments"
 
 		@labels = new LabelCollection [],
 			url: =>
-				"#{@urlRoot}/#{@get 'id'}/labels"
+				"#{@url()}/labels"
 
 
 class IssueCollection extends Backbone.Collection
