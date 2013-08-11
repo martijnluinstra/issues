@@ -42,11 +42,12 @@
 	float: right;
 }
 
-.issue-list .issue-labels span {
+.issue-labels span {
 	display: inline-block;
 	margin: 0 0.1em;
 	padding: 0 0.2em;
 	border-radius: 2px;
+	font-size: 0.8em;
 }
 
 .user-not-logged-in .requires-login {
@@ -70,16 +71,16 @@
 }
 
 
-.issue .edit-issue {
+.issue .edit-issue,
+.issue .finish-editing-issue-button,
+.issue.editable .read-issue,
+.issue.editable .edit-issue-button {
 	display: none;
 }
 
-.issue.editable .edit-issue {
+.issue.editable .edit-issue,
+.issue.editable .finish-editing-issue-button {
 	display: block;
-}
-
-.issue.editable .read-issue {
-	display: none;
 }
 
 .issue .loading-overlay {

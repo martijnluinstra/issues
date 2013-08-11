@@ -80,6 +80,10 @@ class IssueView extends Backbone.View
 			evt.preventDefault()
 			@$el.addClass 'editable'
 
+		'click .finish-editing-issue-button': (evt) ->
+			evt.preventDefault()
+			@$('.edit-issue').submit()
+
 		# Finish editing issue button:
 		# This submits the data form the edit form and hides it again
 		'submit .edit-issue': (evt) ->
@@ -98,6 +102,16 @@ class IssueView extends Backbone.View
 			model: @model.comments
 			el: @$ '.comment-list'
 
+		@labelListView = new Backbone.CollectionView
+			childView: InlineLabelListItemView
+			model: @model.labels
+			el: @$ '.issue-labels'
+
+		@labelDropdownView = new DropdownLabelListView
+			model: app.labelCollection
+			selected: @model.labels
+			el: @$ '.label-dropdown'
+
 		@model.comments.fetch()
 
 	render: (eventName) ->
@@ -109,7 +123,10 @@ class IssueView extends Backbone.View
 
 		@$el.toggleClass 'loading', !@model.get 'added'
 		@$el.toggleClass 'issue-completed', !! @model.get 'completed'
+
 		@commentListView.render()
+		@labelListView.render()
+		@labelDropdownView.render()
 
 	addComment: ->
 		data =
@@ -156,4 +173,49 @@ class InlineLabelListItemView extends Backbone.View
 			'background-color': @model.get 'colour'
 
 		@$el.text @model.get 'name'
+
+
+class DropdownLabelListItemView extends Backbone.View
+	template: jQuery('#tpl-dropdown-label-list-item').detach()
+
+	events:
+		'change .label-selected': (evt) ->
+			if evt.target.checked
+				@selected.add @model
+			else
+				@selected.remove @model
+
+	initialize: ->
+		@setElement @template.clone().get 0
+
+		@listenTo @model, 'change', @render
+
+	render: ->
+		@$el.css
+			'color': bestContrastingColour @model.get 'colour'
+			'background-color': @model.get 'colour'
+
+		@$('.label-name').text @model.get 'name'
+		@$('.label-selected').attr 'checked', !! @selected.get @model.get 'id'
+
+class DropdownLabelListView extends Backbone.CollectionView
+	childView: DropdownLabelListItemView
+
+	initialize: (options) ->
+		super options
+		
+		@selected = options.selected
+		@listenTo @selected, 'add', @updateChildren
+		@listenTo @selected, 'remove', @updateChildren
+
+	createChildView: (model) ->
+		view = super model
+		view.selected = @selected
+		return view
+
+	updateChildren: ->
+		for cid, child in @children
+			child.render()
+
+
 

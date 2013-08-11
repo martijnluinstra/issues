@@ -72,44 +72,66 @@
 			</ol>
 		</div>
 
-		<div id="issue-details-panel" class="panel"></div>
+		<div id="issue-details-panel"></div>
 
 		<div id="tpl-issue-details-panel" class="issue">
-			<div class="read-issue">
-				<div class="panel-heading">
-					<h3 class="panel-title issue-title"></h3>
-					<button class="btn btn-small edit-issue-button requires-login">Edit</button>
-					<button class="btn btn-small close-issue-button requires-login">Mark completed</button>
-					<button class="btn btn-small reopen-issue-button requires-login">Reopen</button>
-				</div>
+			<div class="btn-group">
+				<button class="btn btn-small edit-issue-button requires-login">Edit</button>
 
-				<div class="issue-description"></div>
+				<button class="btn btn-small finish-editing-issue-button">Done</button>
+						
+				<button class="btn btn-small close-issue-button requires-login">Mark completed</button>
+				<button class="btn btn-small reopen-issue-button requires-login">Reopen</button>
+
+				<div class="btn-group">
+					<button class="btn btn-small label-issue-button requires-login dropdown-toggle" data-toggle="dropdown">
+						Labels <span class="caret"></span>
+					</button>
+					<ul class="label-dropdown dropdown-menu list-group"></ul>
+				</div>
 			</div>
 
-			<form class="edit-issue">
-				<div class="panel-heading">
-					<input type="text" name="title" class="issue-title" placeholder="Issue title…" required>
-					<button type="submit" class="btn btn-small finish-editing-issue-button">Done</button>
+			<div class="panel">
+				<div class="read-issue">
+					<div class="panel-heading">
+						<h3 class="panel-title issue-title"></h3>
+						<span class="issue-labels"></span>
+					</div>
+
+					<div class="issue-description"></div>
 				</div>
 
-				<textarea name="description" class="issue-description" placeholder="Optional description of the issue…"></textarea>
-			</form>
-
-			<div class="comments">
-				<ol class="comment-list"></ol>
-
-				<form method="post" class="requires-login">
-					<div class="form-group">
-						<textarea id="comment-text" name="text" class="form-control" placeholder="Type your comment here…" required></textarea>
+				<form class="edit-issue">
+					<div class="panel-heading">
+						<input type="text" name="title" class="issue-title" placeholder="Issue title…" required>
 					</div>
-					<button type="submit" class="btn btn-default">Post Comment</button>
+
+					<textarea name="description" class="issue-description" placeholder="Optional description of the issue…"></textarea>
 				</form>
+
+				<div class="comments">
+					<ol class="comment-list"></ol>
+
+					<form method="post" class="requires-login">
+						<div class="form-group">
+							<textarea id="comment-text" name="text" class="form-control" placeholder="Type your comment here…" required></textarea>
+						</div>
+						<button type="submit" class="btn btn-default">Post Comment</button>
+					</form>
+				</div>
 			</div>
 
 			<div class="loading-overlay">
 				<p>Loading issue…</p>
 			</div>
 		</div>
+
+		<li id="tpl-dropdown-label-list-item" class="list-group-item">
+			<label>
+				<input type="checkbox" class="label-selected">
+				<span class="label-name">{label-name}</span>
+			</label>
+		</li>
 
 		<div id="new-issue-panel" class="panel">
 			<div class="panel-heading">
@@ -139,7 +161,8 @@
 		{% autoescape false %}
 		var app = init({
 			user: {{current_user}},
-			issues: {{ issues }}
+			issues: {{ issues }},
+			labels: {{ labels }}
 		});
 		{% endautoescape %}
 	</script>

@@ -16,12 +16,15 @@ class Backbone.CollectionView extends Backbone.View
 		@listenTo @model, 'add', @addChildView
 		@listenTo @model, 'remove', @removeChildModel
 
+	createChildView: (model) ->
+		new @childView
+			model: model
+
 	appendChildView: (el) ->
 		@$el.append el
 
 	addChildView: (childModel) ->
-		view = new @childView
-			model: childModel
+		view = @createChildView childModel
 
 		view.render()
 

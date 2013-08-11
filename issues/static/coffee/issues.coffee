@@ -82,6 +82,8 @@ class AppRouter extends Backbone.Router
 			filter: (issue) ->
 				not issue.get 'completed'
 
+		@labelCollection = new LabelCollection config.labels
+
 		@panels =
 			newIssue:   new NewIssuePanel '#new-issue-panel', @issueCollection
 			showIssue:  new Panel '#issue-details-panel'
@@ -140,6 +142,7 @@ window.init = (data) ->
 	app = new AppRouter
 		user: data.user
 		issues: data.issues
+		labels: data.labels
 
 	# Hide the new-issue panel for now
 	jQuery('#new-issue-panel').hide()

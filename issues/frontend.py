@@ -4,7 +4,7 @@ from flask import render_template, redirect, url_for
 from flask.ext.login import current_user, login_required
 from sqlalchemy.exc import IntegrityError
 from issues import app, db
-from models import Issue, User
+from models import Issue, User, Label
 from session import is_admin, is_logged_in
 from forms import AddUserForm, ChangePasswordForm
 import json
@@ -36,6 +36,9 @@ def uncompleted_issues():
 
     return Issue.query.filter_by(**conditions).all()
 
+def labels():
+    return Label.query.all()
+
 @app.route('/', methods=['GET'])
 @app.route('/<path:path>', methods=['GET'])
 def view_frontend(path=None):
@@ -43,7 +46,8 @@ def view_frontend(path=None):
         page_attributes=u' '.join(page_attributes()),
         user_name=unicode(current_user.name) if is_logged_in() else None,
         current_user=jsonify(current_user.to_dict() if is_logged_in() else None),
-        issues=jsonify([issue.to_dict() for issue in uncompleted_issues()]))
+        issues=jsonify([issue.to_dict() for issue in uncompleted_issues()]),
+        labels=jsonify([label.to_dict() for label in labels()]))
 
 @app.route('/users/add', methods=['GET', 'POST'])
 def add_user():
