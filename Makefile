@@ -14,7 +14,7 @@ clean:
 
 issues/static/js/issues.js: \
 	issues/static/coffee/CollectionView.coffee \
-	issues/static/coffee/Subset.coffee \
+	issues/static/coffee/backbone.collectionsubset.coffee \
 	issues/static/coffee/colour.coffee \
 	issues/static/coffee/models.coffee \
 	issues/static/coffee/views.coffee \
@@ -24,10 +24,6 @@ issues/static/js/issues.js: \
 issues/static/test/collectionview.js: \
 	issues/static/coffee/CollectionView.coffee \
 	issues/static/test/collectionview.coffee
-	$(COFFEE) $(COFFEE_FLAGS) --compile --join $@ $^
-
-issues/static/test/subset.js: \
-	issues/static/coffee/Subset.coffee
 	$(COFFEE) $(COFFEE_FLAGS) --compile --join $@ $^
 
 database.db: issues/models.py setup.py

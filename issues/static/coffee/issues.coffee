@@ -76,12 +76,14 @@ class AppRouter extends Backbone.Router
 		@issueCollection.url = '/api/issues' # (Cannot be passed as an option
 			# because then it will also be passed to all the issues preloaded)
 
-		@todoCollection = new Backbone.Subset
-			superset: @issueCollection
-			url: '/api/issues/todo'
+		@todoCollection = @issueCollection.subcollection
 			filter: (issue) ->
 				not issue.get 'completed'
 
+		# Give the subcollection its own API endpoint for efficient fetching of
+		# issues.
+		@todoCollection.url = '/api/issues/todo'
+		
 		@labelCollection = new LabelCollection config.labels
 
 		@panels =
