@@ -118,36 +118,47 @@ def add_comment(issue_id):
     return 'Invalid text', 422
 
 
-@app.route('/api/issues/<int:issue_id>/labels', methods=['POST'])
+@app.route('/api/issues/<int:issue_id>/labels', methods=['PUT'])
 @api_admin_required
 def add_label(issue_id):
-    """ Add a label to an issue """
+    """ Update the labels of an issue """
     data = request.get_json()
-    label = None
-    if 'name' in data and data["name"].strip():
-        name = data["name"].strip()
+
+    issue = Issue.query.filter_by(id=issue_id).first_or_404()
+
+    # Clear all current labels
+    issue.labels = []
+
+    for label_data in data:
+        label = None
+
+        if not 'name' in label_data:
+            return 'One of the labels is missing a label name', 500
+
+        if not label_data['name'].strip():
+            return 'One of the labels has an empty name', 500
+
+        name = label_data["name"].strip()
+
+        # Find the label
         label = Label.query.filter_by(name=name).first()
+
+        # Label not found? Create a new one
         if label is None:
             if re.match('^[\w]+[\w-]*$', name) is None:
-                return 'Invalid label name', 422
+                return 'Invalid label name "' + name + '"', 422
+
             label = Label(name)
             db.session.add(label)
-        issue = Issue.query.filter_by(id=issue_id).first_or_404()
+
+        # Add label to the issue
         issue.labels.append(label)
-        db.session.commit()
-        return 'Label added', 201
-    return 'No label name', 500
 
-
-@app.route('/api/issues/<int:issue_id>/labels/<name>', methods=['DELETE'])
-@api_admin_required
-def remove_label(issue_id, name):
-    """ Remove a label from an issue """
-    label = Label.query.filter_by(name=name).first_or_404()
-    issue = Issue.query.filter_by(id=issue_id).first_or_404()
-    issue.labels.remove(label)
+    # Save the changes to the issue
+    db.session.add(issue)
     db.session.commit()
-    return 'Label removed'
+
+    return jsonify([label.to_dict() for label in issue.labels]), 201
 
 
 @app.route('/api/labels', methods=['GET'])

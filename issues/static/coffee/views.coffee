@@ -179,11 +179,15 @@ class DropdownLabelListItemView extends Backbone.View
 	template: jQuery('#tpl-dropdown-label-list-item').detach()
 
 	events:
+		# Add or remove a label from the issue
 		'change .label-selected': (evt) ->
 			if evt.target.checked
 				@selected.add @model
 			else
 				@selected.remove @model
+
+			# Sync with server
+			@selected.save()
 
 	initialize: ->
 		@setElement @template.clone().get 0

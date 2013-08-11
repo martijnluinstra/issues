@@ -44,3 +44,7 @@ class Label extends Backbone.Model
 
 class LabelCollection extends Backbone.Collection
 	model: Label
+
+	save: ->
+		Backbone.sync 'update', this,
+			url: @url()

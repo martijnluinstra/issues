@@ -458,6 +458,12 @@
 
     LabelCollection.prototype.model = Label;
 
+    LabelCollection.prototype.save = function() {
+      return Backbone.sync('update', this, {
+        url: this.url()
+      });
+    };
+
     return LabelCollection;
 
   })(Backbone.Collection);
@@ -733,10 +739,11 @@
     DropdownLabelListItemView.prototype.events = {
       'change .label-selected': function(evt) {
         if (evt.target.checked) {
-          return this.selected.add(this.model);
+          this.selected.add(this.model);
         } else {
-          return this.selected.remove(this.model);
+          this.selected.remove(this.model);
         }
+        return this.selected.save();
       }
     };
 
