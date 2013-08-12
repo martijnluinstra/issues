@@ -18,8 +18,12 @@ jQuery.fn.serializeObject = ->
 Backbone.Model::strip = (attribute) ->
 	jQuery("<p>#{@get attribute}</p>").wrap('p').text()
 
+Backbone.Collection::containsWhere = (attributes) ->
+	@findWhere attributes is not null
+
 defer = (fn) ->
 	setTimeout fn, 1
+
 
 class Panel
 	constructor: (el) ->
@@ -68,7 +72,7 @@ class AppRouter extends Backbone.Router
 
 		@route /^issues\/new$/, 'newIssue'
 		@route /^issues\/(\d+)$/, 'showIssue'
-		@route /^labels\/([a-zA-Z0-9-]+)$/, 'showLabel'
+		@route /^labels\/([^\/]+)$/, 'listIssuesWithLabel'
 		@route /^todo$/, 'listTodoIssues'
 		@route /^archive$/, 'listAllIssues'
 
@@ -93,24 +97,37 @@ class AppRouter extends Backbone.Router
 			showIssue:  new Panel '#issue-details-panel'
 			listIssues: new Panel '#issue-list-panel'
 
+		@labelListView = new Backbone.CollectionView
+			childView: LabelListItemView
+			model: @labelCollection
+			el: jQuery('#label-panel ol').get 0
+
+		@labelListView.render()
+
 		# Hide all panels
 		@showPanel null
 
 	listTodoIssues: ->
-		view = new IssueListView
-			model: @todoCollection
-
-		# Update the local collection
 		@todoCollection.fetch()
-
-		@showPanel 'listIssues', view
+		@listIssues @todoCollection
 
 	listAllIssues: ->
-		view = new IssueListView
-			model: @issueCollection
-
-		# Update the local collection
 		@issueCollection.fetch()
+		@listIssues @issueCollection
+
+	listIssuesWithLabel: (label) ->
+		console.log label
+		collection = @issueCollection.subcollection
+			filter: (issue) ->
+				issue.labels.containsWhere name: label
+
+		collection.url = "/api/labels/#{encodeURIComponent(label)}"
+		collection.fetch()
+		@listIssues collection
+
+	listIssues: (collection) ->
+		view = new IssueListView
+			model: collection
 
 		@showPanel 'listIssues', view
 

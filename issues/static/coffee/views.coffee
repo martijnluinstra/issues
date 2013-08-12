@@ -179,6 +179,27 @@ class InlineLabelListItemView extends Backbone.View
 		@$el.text @model.get 'name'
 
 
+class LabelListItemView extends Backbone.View
+	tagName: 'li'
+
+	initialize: ->
+		@$el.addClass 'list-group-item'
+		
+		@$el.html '<span class="swatch"></span><a></a>'
+		@swatch = @$ '.swatch'
+		@link = @$ 'a'
+		
+		@listenTo @model, 'change', @render
+
+	render: ->
+		if @model.has 'colour'
+			@swatch.css
+				'background-color': @model.get 'colour'
+
+		@link.attr 'href', "/labels/#{encodeURIComponent @model.get 'name'}"
+		@link.text @model.get 'name'
+
+
 class DropdownLabelListItemView extends Backbone.View
 	template: jQuery('#tpl-dropdown-label-list-item').detach()
 

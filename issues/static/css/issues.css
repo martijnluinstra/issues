@@ -22,6 +22,15 @@
 	bottom: 12px;
 }
 
+.swatch {
+	display: inline-block;
+	width: 12px;
+	height: 12px;
+	background-color: #ccc;
+	float: right;
+	margin: 4px 0;
+}
+
 .issue-tracker {
 	position: absolute;
 	top: 50px;
