@@ -100,7 +100,7 @@ class AppRouter extends Backbone.Router
 		@labelListView = new Backbone.CollectionView
 			childView: LabelListItemView
 			model: @labelCollection
-			el: jQuery('#label-panel ol').get 0
+			el: jQuery('#label-panel .label-list').get 0
 
 		@labelListView.render()
 
@@ -116,7 +116,6 @@ class AppRouter extends Backbone.Router
 		@listIssues @issueCollection
 
 	listIssuesWithLabel: (label) ->
-		console.log label
 		collection = @issueCollection.subcollection
 			filter: (issue) ->
 				issue.labels.containsWhere name: label

@@ -137,3 +137,41 @@
 .issue.loading .loading-overlay {
 	display: block;
 }
+
+.label-selector .popover-content {
+	padding: 0;
+	overflow: hidden;
+}
+
+.label-selector .label-filter {
+	outline: none;
+	margin: 4px;
+}
+
+.label-selector .label-list {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+
+.label-selector .label-list li {
+	display: none;
+}
+
+.label-selector .label-list li.visible {
+	display: list-item;
+}
+
+.label-selector .label-list label {
+	padding: 4px;
+	width: 100%;
+	font-weight: normal;
+}
+
+.label-selector .label-list li {
+	border-bottom: 1px solid #ccc;
+}
+
+.label-selector .label-list li:last-child {
+	border-bottom: none;
+}

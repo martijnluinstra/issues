@@ -830,6 +830,14 @@
           }
           evt.preventDefault();
         }
+        if (evt.keyCode === 13) {
+          evt.preventDefault();
+          this.hide();
+        }
+        if (evt.keyCode === 40) {
+          evt.preventDefault();
+          this.$('.label-list li:visible input').first().focus();
+        }
         return defer(function() {
           return _this.filter(_this.filterField.val());
         });
@@ -842,6 +850,20 @@
         if (label) {
           return this.selected.add(label);
         }
+      },
+      'keydown .label-list input': function(evt) {
+        if (evt.keyCode === 40) {
+          evt.preventDefault();
+          jQuery(evt.target).closest('li').next('.visible').find('input,button').focus();
+        }
+        if (evt.keyCode === 38) {
+          evt.preventDefault();
+          jQuery(evt.target).closest('li').prev('.visible').find('input,button').focus();
+        }
+        if (evt.keyCode === 27) {
+          evt.preventDefault();
+          return this.hide();
+        }
       }
     };
 
@@ -850,11 +872,10 @@
       this.selected = options.selected;
       this.listenTo(this.selected, 'add', this.updateChildren);
       this.listenTo(this.selected, 'remove', this.updateChildren);
-      console.log(this.template.get(0));
       this.setElement(this.template.clone().get(0));
       this.filterField = this.$('.label-filter');
       this.createLabelButton = this.$('.create-new-label-button');
-      this.hide();
+      this.$el.hide();
       return jQuery(document.body).append(this.el);
     };
 
@@ -886,11 +907,7 @@
       _ref15 = this.children;
       for (cid in _ref15) {
         child = _ref15[cid];
-        if (pattern.test(child.model.get('name'))) {
-          child.$el.show();
-        } else {
-          child.$el.hide();
-        }
+        child.$el.toggleClass('visible', pattern.test(child.model.get('name')));
       }
       if (query !== '') {
         this.createLabelButton.text("Create label '" + query + "'");
@@ -1045,7 +1062,7 @@
       this.labelListView = new Backbone.CollectionView({
         childView: LabelListItemView,
         model: this.labelCollection,
-        el: jQuery('#label-panel ol').get(0)
+        el: jQuery('#label-panel .label-list').get(0)
       });
       this.labelListView.render();
       return this.showPanel(null);
@@ -1063,7 +1080,6 @@
 
     AppRouter.prototype.listIssuesWithLabel = function(label) {
       var collection;
-      console.log(label);
       collection = this.issueCollection.subcollection({
         filter: function(issue) {
           return issue.labels.containsWhere({

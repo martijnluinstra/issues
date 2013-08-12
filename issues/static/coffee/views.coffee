@@ -244,8 +244,17 @@ class DropdownLabelListView extends Backbone.CollectionView
 				# Second press closes the filter field
 				else
 					@hide()
-				
+
 				evt.preventDefault()
+
+			
+			if evt.keyCode == 13
+				evt.preventDefault()
+				@hide()
+
+			if evt.keyCode == 40
+				evt.preventDefault()
+				@$('.label-list li:visible input').first().focus()
 
 			defer => @filter @filterField.val()
 
@@ -256,6 +265,19 @@ class DropdownLabelListView extends Backbone.CollectionView
 			# If creating a label went successfully, add it to the issue
 			if label
 				@selected.add label
+
+		'keydown .label-list input': (evt) ->
+			if evt.keyCode == 40
+				evt.preventDefault()
+				jQuery(evt.target).closest('li').next('.visible').find('input,button').focus()
+
+			if evt.keyCode == 38
+				evt.preventDefault()
+				jQuery(evt.target).closest('li').prev('.visible').find('input,button').focus()
+
+			if evt.keyCode == 27
+				evt.preventDefault()
+				@hide()
 	
 	initialize: (options) ->
 		super options
@@ -264,13 +286,11 @@ class DropdownLabelListView extends Backbone.CollectionView
 		@listenTo @selected, 'add', @updateChildren
 		@listenTo @selected, 'remove', @updateChildren
 
-		console.log @template.get 0
-
 		@setElement @template.clone().get 0
 		@filterField = @$ '.label-filter'
 		@createLabelButton = @$ '.create-new-label-button'
 
-		@hide()
+		@$el.hide()
 		jQuery(document.body).append @el
 
 	createChildView: (model) ->
@@ -289,11 +309,8 @@ class DropdownLabelListView extends Backbone.CollectionView
 		pattern = new RegExp '.*' + query.split('').join('.*') + '.*', 'i'
 
 		for cid, child of @children
-			if pattern.test child.model.get 'name'
-				child.$el.show()
-			else
-				child.$el.hide()
-
+			child.$el.toggleClass 'visible', pattern.test child.model.get 'name'
+		
 		if query != ''
 			@createLabelButton.text "Create label '#{query}'"
 			@createLabelButton.show()
