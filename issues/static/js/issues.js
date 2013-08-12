@@ -799,9 +799,13 @@
         });
       },
       'click .create-new-label-button': function() {
-        return this.model.create({
+        var label;
+        label = this.model.create({
           name: this.filterField.val()
         });
+        if (label) {
+          return this.selected.add(label);
+        }
       }
     };
 

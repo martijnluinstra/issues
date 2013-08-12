@@ -204,6 +204,7 @@ class DropdownLabelListItemView extends Backbone.View
 		@$('.label-name').text @model.get 'name'
 		@$('.label-selected').attr 'checked', !! @selected.get @model.get 'id'
 
+
 class DropdownLabelListView extends Backbone.CollectionView
 	childView: DropdownLabelListItemView
 
@@ -224,8 +225,12 @@ class DropdownLabelListView extends Backbone.CollectionView
 			defer => @filter @filterField.val()
 
 		'click .create-new-label-button': ->
-			@model.create
+			label = @model.create
 				name: @filterField.val()
+
+			# If creating a label went successfully, add it to the issue
+			if label
+				@selected.add label
 	
 	initialize: (options) ->
 		super options
