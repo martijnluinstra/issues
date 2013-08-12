@@ -887,6 +887,7 @@
     };
 
     DropdownLabelListView.prototype.appendChildView = function(el) {
+      jQuery(el).addClass('visible');
       return this.$('.label-list').append(el);
     };
 

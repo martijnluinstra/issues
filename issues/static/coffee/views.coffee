@@ -299,6 +299,7 @@ class DropdownLabelListView extends Backbone.CollectionView
 		return view
 
 	appendChildView: (el) ->
+		jQuery(el).addClass 'visible'
 		@$('.label-list').append el
 
 	updateChildren: ->
