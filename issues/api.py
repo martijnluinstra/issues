@@ -31,7 +31,7 @@ def list_all_issues():
 def add_issue():
     """ Create an issue """
     data = request.get_json()
-    if 'title' in data and 'description' in data and data['title'].strip() and data ['description'].strip():
+    if 'title' in data and 'description' in data and data['title'].strip():
         issue = Issue(data['title'].strip(), data['description'].strip(), current_user.id)
         db.session.add(issue)
         db.session.commit()
