@@ -159,7 +159,7 @@
 }
 
 .label-selector .popover-content {
-	padding: 32px 0 0 0;
+	padding: 33px 0 0 0;
 	overflow: hidden;
 }
 
@@ -187,17 +187,16 @@
 }
 
 .label-selector .label-list label {
-	padding: 4px;
+	padding: 0 5px;
+	line-height: 32px;
+	margin: 0;
 	width: 100%;
 	font-weight: normal;
+	cursor: pointer;
 }
 
 .label-selector .label-list li {
-	border-bottom: 1px solid #ccc;
-}
-
-.label-selector .label-list li:last-child {
-	border-bottom: none;
+	border-top: 1px solid #ccc;
 }
 
 .issue-description {
