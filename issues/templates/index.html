@@ -87,7 +87,6 @@
 					<button class="btn btn-small label-issue-button requires-login dropdown-toggle" data-toggle="dropdown">
 						Labels <span class="caret"></span>
 					</button>
-					<ul class="label-dropdown dropdown-menu list-group"></ul>
 				</div>
 			</div>
 
@@ -126,7 +125,18 @@
 			</div>
 		</div>
 
-		<li id="tpl-dropdown-label-list-item" class="list-group-item">
+		<div id="tpl-dropdown-label-list" class="popover bottom label-selector">
+			<div class="arrow"></div>
+			<div class="popover-content">
+				<input type="search" class="label-filter">
+
+				<ul class="label-list"></ul>
+
+				<button class="create-new-label-button">Create new label "…"</button>
+			</div>
+		</div>
+
+		<li id="tpl-dropdown-label-list-item">
 			<label>
 				<input type="checkbox" class="label-selected">
 				<span class="label-name">{label-name}</span>

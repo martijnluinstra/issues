@@ -90,6 +90,9 @@ class IssueView extends Backbone.View
 			evt.preventDefault()
 			@model.save @$('.edit-issue').serializeObject(), patch: yes
 			@$el.removeClass 'editable'
+
+		'click .label-issue-button': (evt) ->
+			@labelDropdownView.toggle evt.target
 	
 	initialize: ->
 		console.assert @model?, 'IssueView has no model'
@@ -186,9 +189,6 @@ class DropdownLabelListItemView extends Backbone.View
 			else
 				@selected.remove @model
 
-			# Sync with server
-			@selected.save()
-
 	initialize: ->
 		@setElement @template.clone().get 0
 
@@ -205,21 +205,61 @@ class DropdownLabelListItemView extends Backbone.View
 class DropdownLabelListView extends Backbone.CollectionView
 	childView: DropdownLabelListItemView
 
+	template: jQuery('#tpl-dropdown-label-list').detach()
+
+	events:
+		'keyup .label-filter': (evt) ->
+			if evt.keyCode == 27
+				@$('.label-filter').val('')
+				evt.preventDefault()
+
+			@filterList @$('.label-filter').val()
+
+		'click .create-new-label-button': ->
+			alert 'Not implemented yet ;)'
+	
 	initialize: (options) ->
 		super options
-		
+
 		@selected = options.selected
 		@listenTo @selected, 'add', @updateChildren
 		@listenTo @selected, 'remove', @updateChildren
+
+		console.log @template.get 0
+
+		@setElement @template.clone().get 0
+		@hide()
+		jQuery(document.body).append @el
 
 	createChildView: (model) ->
 		view = super model
 		view.selected = @selected
 		return view
 
+	appendChildView: (el) ->
+		@$('.label-list').append el
+
 	updateChildren: ->
 		for cid, child in @children
 			child.render()
 
+	show: (parent) ->
+		parent_pos = jQuery(parent).offset()
 
+		@$el.css
+			top: parent_pos.top + jQuery(parent).height() + 12
+			left: parent_pos.left + jQuery(parent).width() / 2 - @$el.width() / 2
+
+		@$el.show()
+		defer => @$('.label-filter').focus()
+
+	hide: ->
+		@$el.hide()
+		@selected.save()
+
+	toggle: (parent) ->
+		if @$el.is ':visible'
+			@hide()
+		else
+			@show parent
 

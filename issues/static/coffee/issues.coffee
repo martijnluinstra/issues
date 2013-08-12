@@ -18,6 +18,8 @@ jQuery.fn.serializeObject = ->
 Backbone.Model::strip = (attribute) ->
 	jQuery("<p>#{@get attribute}</p>").wrap('p').text()
 
+defer = (fn) ->
+	setTimeout fn, 1
 
 class Panel
 	constructor: (el) ->
