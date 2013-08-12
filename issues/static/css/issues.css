@@ -12,6 +12,18 @@
 	width: 200px;
 }
 
+#label-panel .label-list .list-group-item:first-child {
+	border-top-width: 4px;
+}
+
+#label-panel .list-group-flush:first-child {
+	margin-top: -15px;
+}
+
+#label-panel .list-group-flush:first-child .list-group-item:first-child {
+	border-top-width: 0;
+}
+
 #issue-list-panel,
 #issue-details-panel,
 #new-issue-panel {
@@ -90,13 +102,25 @@
 .issue .edit-issue,
 .issue .finish-editing-issue-button,
 .issue.editable .read-issue,
-.issue.editable .edit-issue-button {
+.issue.editable .edit-issue-button,
+.issue.editable .comments form {
 	display: none;
 }
 
 .issue.editable .edit-issue,
 .issue.editable .finish-editing-issue-button {
 	display: block;
+}
+
+.edit-issue .issue-title {
+	width: 100%;
+	font-size: 17.5px;
+	font-weight: 500;
+}
+
+.edit-issue .issue-description {
+	width: 100%;
+	min-height: 150px;
 }
 
 .issue .loading-overlay {

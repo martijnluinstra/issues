@@ -31,14 +31,10 @@
 
 	<div class="issue-tracker">
 		<div id="label-panel" class="panel">
-			<div class="panel-heading">
-				<h3 class="panel-title">Labels</h3>
-			</div>
 			<ol class="view-list list-group list-group-flush">
 				<li class="list-group-item"><a href="/todo">Todo</a></li>
 				<li class="list-group-item"><a href="/archive">Archive</a></li>
 			</ol>
-
 			<ol class="label-list list-group list-group-flush"></ol>
 		</div>
 
@@ -47,10 +43,10 @@
 		<div id="tpl-issue-list-panel">
 			<div class="btn-toolbar requires-login">
 				<div class="btn-group">
-					<a href="/issues/new" class="btn btn-default">New Issue</a>
+					<a href="/issues/new" class="btn btn-default btn-small">New Issue</a>
 				</div>
 				<div class="btn-group">
-					<button type="button" class="btn close-issues-button btn-default">Close</button>
+					<button type="button" class="btn close-issues-button btn-default btn-small">Close</button>
 				</div>
 			</div>
 			<ol class="issue-list list-group list-group-flush">
@@ -69,15 +65,15 @@
 
 		<div id="tpl-issue-details-panel" class="issue">
 			<div class="btn-group">
-				<button class="btn btn-small edit-issue-button requires-login">Edit</button>
+				<button class="btn btn-default btn-small edit-issue-button requires-login">Edit</button>
 
-				<button class="btn btn-small finish-editing-issue-button">Done</button>
+				<button class="btn btn-default btn-small finish-editing-issue-button">Done</button>
 						
-				<button class="btn btn-small close-issue-button requires-login">Mark completed</button>
-				<button class="btn btn-small reopen-issue-button requires-login">Reopen</button>
+				<button class="btn btn-default btn-small close-issue-button requires-login">Mark completed</button>
+				<button class="btn btn-default btn-small reopen-issue-button requires-login">Reopen</button>
 
 				<div class="btn-group">
-					<button class="btn btn-small label-issue-button requires-login dropdown-toggle" data-toggle="dropdown">
+					<button class="btn btn-default btn-small label-issue-button requires-login dropdown-toggle" data-toggle="dropdown">
 						Labels <span class="caret"></span>
 					</button>
 				</div>
@@ -125,7 +121,7 @@
 
 				<ul class="label-list"></ul>
 
-				<button class="create-new-label-button">Create new label "…"</button>
+				<button class="create-new-label-button btn btn-link">Create new label "…"</button>
 			</div>
 		</div>
 
