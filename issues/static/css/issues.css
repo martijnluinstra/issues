@@ -24,6 +24,10 @@
 	border-top-width: 0;
 }
 
+#label-panel .label-list li {
+	padding-right: 15px;
+}
+
 #issue-list-panel,
 #issue-details-panel,
 #new-issue-panel {
@@ -149,14 +153,23 @@
 	display: block;
 }
 
+.label-selector {
+	min-width: 140px;
+	max-width: 400px;
+}
+
 .label-selector .popover-content {
-	padding: 0;
+	padding: 32px 0 0 0;
 	overflow: hidden;
 }
 
 .label-selector .label-filter {
 	outline: none;
 	margin: 4px;
+	position: absolute;
+	left: 0;
+	right: 0;
+	top: 0;
 }
 
 .label-selector .label-list {
@@ -211,4 +224,5 @@
 
 .comment .author {
 	font-style: italic;
+	font-size: 11px;
 }
