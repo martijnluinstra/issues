@@ -80,6 +80,10 @@ class IssueView extends Backbone.View
 			evt.preventDefault()
 			@$el.addClass 'editable'
 
+		'dblclick .issue-title': (evt) ->
+			evt.preventDefault()
+			@$el.addClass 'editable'
+
 		'click .finish-editing-issue-button': (evt) ->
 			evt.preventDefault()
 			@$('.edit-issue').submit()

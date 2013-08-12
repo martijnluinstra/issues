@@ -592,6 +592,10 @@
         evt.preventDefault();
         return this.$el.addClass('editable');
       },
+      'dblclick .issue-title': function(evt) {
+        evt.preventDefault();
+        return this.$el.addClass('editable');
+      },
       'click .finish-editing-issue-button': function(evt) {
         evt.preventDefault();
         return this.$('.edit-issue').submit();
