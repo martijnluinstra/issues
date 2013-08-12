@@ -188,7 +188,8 @@ class LabelListItemView extends Backbone.View
 
 	events:
 		'click .delete-label-button': (evt) ->
-			@model.destroy()
+			if confirm "Do you want to delete the label #{@model.get 'name'}?"
+				@model.destroy()
 
 	initialize: ->
 		@setElement @template.clone().get 0

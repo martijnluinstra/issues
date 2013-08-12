@@ -752,7 +752,9 @@
 
     LabelListItemView.prototype.events = {
       'click .delete-label-button': function(evt) {
-        return this.model.destroy();
+        if (confirm("Do you want to delete the label " + (this.model.get('name')) + "?")) {
+          return this.model.destroy();
+        }
       }
     };
 
