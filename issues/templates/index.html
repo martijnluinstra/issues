@@ -160,10 +160,11 @@
 		</div>
 	</div>
 
-	<script id="tpl-comment-list-item" type="text/x-template">
-		<div class="comment-text"><%= text %></div>
-		<address class="author">by <span class="author"><%= user.name %></span></address>
-	</script>
+	<li id="tpl-comment-list-item" class="comment">
+		<img src="" class="gravatar">
+		<div class="comment-text"></div>
+		<address class="author">by <span class="user-name"></span></address>
+	</li>
 
 	<script src="/static/js/issues.js"></script>
 	<script>

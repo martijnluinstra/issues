@@ -92,8 +92,9 @@
 	display: none;
 }
 
-.issue-completed .panel-heading {
-	background: green;
+.issue-completed .panel-heading h3:before {
+	content: '✔ ';
+	color: green;
 }
 
 .issue-completed .close-issue-button {
@@ -184,4 +185,30 @@
 
 .label-selector .label-list li:last-child {
 	border-bottom: none;
+}
+
+.issue-description {
+	margin: 12px 0;
+}
+
+.comment-list {
+	list-style: none;
+	padding: 15px 15px 0 15px;
+	margin: 0 -15px;
+	border-top: 1px solid #ccc;
+}
+
+.comment {
+	clear: both;
+}
+
+.comment .gravatar {
+	width: 40px;
+	height: 40px;
+	margin: 0 4px 4px 0;
+	float: left;
+}
+
+.comment .author {
+	font-style: italic;
 }

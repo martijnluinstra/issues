@@ -481,7 +481,7 @@
       return _ref6;
     }
 
-    IssueListItemView.prototype.template = jQuery('#tpl-issue-list-item').detach();
+    IssueListItemView.prototype.template = jQuery('#tpl-issue-list-item').detach().removeAttr('id');
 
     IssueListItemView.prototype.initialize = function() {
       this.setElement(this.template.clone().get(0));
@@ -519,7 +519,7 @@
 
     IssueListView.prototype.childView = IssueListItemView;
 
-    IssueListView.prototype.template = jQuery('#tpl-issue-list-panel').detach();
+    IssueListView.prototype.template = jQuery('#tpl-issue-list-panel').detach().removeAttr('id');
 
     IssueListView.prototype.events = {
       'click .close-issues-button': function(evt) {
@@ -564,7 +564,7 @@
       return _ref8;
     }
 
-    IssueView.prototype.template = jQuery('#tpl-issue-details-panel').detach();
+    IssueView.prototype.template = jQuery('#tpl-issue-details-panel').detach().removeAttr('id');
 
     IssueView.prototype.events = {
       'submit .comments form': function(evt) {
@@ -682,16 +682,17 @@
       return _ref9;
     }
 
-    CommentListItemView.prototype.tagName = 'li';
-
-    CommentListItemView.prototype.template = _.template(jQuery('#tpl-comment-list-item').text());
+    CommentListItemView.prototype.template = jQuery('#tpl-comment-list-item').detach().removeAttr('id');
 
     CommentListItemView.prototype.initialize = function() {
+      this.setElement(this.template.clone().get(0));
       return this.listenTo(this.model, 'change', this.render);
     };
 
     CommentListItemView.prototype.render = function(eventName) {
-      return this.$el.html(this.template(this.model.toJSON()));
+      this.$('.gravatar').attr('src', (this.model.get('user')).gravatar);
+      this.$('.comment-text').text(this.model.get('text'));
+      return this.$('.user-name').text((this.model.get('user')).name);
     };
 
     return CommentListItemView;
@@ -748,7 +749,7 @@
       return _ref12;
     }
 
-    LabelListItemView.prototype.template = jQuery('#tpl-label-list-item').detach();
+    LabelListItemView.prototype.template = jQuery('#tpl-label-list-item').detach().removeAttr('id');
 
     LabelListItemView.prototype.events = {
       'click .delete-label-button': function(evt) {
@@ -785,7 +786,7 @@
       return _ref13;
     }
 
-    DropdownLabelListItemView.prototype.template = jQuery('#tpl-dropdown-label-list-item').detach();
+    DropdownLabelListItemView.prototype.template = jQuery('#tpl-dropdown-label-list-item').detach().removeAttr('id');
 
     DropdownLabelListItemView.prototype.events = {
       'change .label-selected': function(evt) {
@@ -827,7 +828,7 @@
 
     DropdownLabelListView.prototype.childView = DropdownLabelListItemView;
 
-    DropdownLabelListView.prototype.template = jQuery('#tpl-dropdown-label-list').detach();
+    DropdownLabelListView.prototype.template = jQuery('#tpl-dropdown-label-list').detach().removeAttr('id');
 
     DropdownLabelListView.prototype.events = {
       'keyup .label-filter': function(evt) {

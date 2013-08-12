@@ -1,4 +1,4 @@
-from issues import db
+from issues import db, gravatar
 from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -46,7 +46,8 @@ class User(db.Model):
     def to_dict(self):
         return {
             'name': self.name,
-            'email': self.email
+            'email': self.email,
+            'gravatar': gravatar(self.email)
         }
 
 

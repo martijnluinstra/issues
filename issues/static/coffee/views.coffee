@@ -1,5 +1,5 @@
 class IssueListItemView extends Backbone.View
-	template: jQuery('#tpl-issue-list-item').detach()
+	template: jQuery('#tpl-issue-list-item').detach().removeAttr 'id'
 
 	initialize: ->
 		@setElement @template.clone().get 0
@@ -25,7 +25,7 @@ class IssueListItemView extends Backbone.View
 class IssueListView extends Backbone.CollectionView
 	childView: IssueListItemView
 
-	template: jQuery('#tpl-issue-list-panel').detach()
+	template: jQuery('#tpl-issue-list-panel').detach().removeAttr 'id'
 
 	events:
 		# 'Close' selection button
@@ -50,7 +50,7 @@ class IssueListView extends Backbone.CollectionView
 
 
 class IssueView extends Backbone.View
-	template: jQuery('#tpl-issue-details-panel').detach()
+	template: jQuery('#tpl-issue-details-panel').detach().removeAttr 'id'
 
 	events:
 		# catch the submit-event of the comment form
@@ -153,15 +153,16 @@ class IssueView extends Backbone.View
 
 
 class CommentListItemView extends Backbone.View
-	tagName: 'li'
-
-	template: _.template jQuery('#tpl-comment-list-item').text()
+	template: jQuery('#tpl-comment-list-item').detach().removeAttr 'id'
 
 	initialize: ->
+		@setElement @template.clone().get 0
 		@listenTo @model, 'change', @render
 
 	render: (eventName) ->
-		@$el.html @template @model.toJSON()
+		@$('.gravatar').attr 'src', (@model.get 'user').gravatar
+		@$('.comment-text').text @model.get 'text'
+		@$('.user-name').text (@model.get 'user').name
 
 
 class CommentListView extends Backbone.CollectionView
@@ -184,7 +185,7 @@ class InlineLabelListItemView extends Backbone.View
 
 
 class LabelListItemView extends Backbone.View
-	template: jQuery('#tpl-label-list-item').detach()
+	template: jQuery('#tpl-label-list-item').detach().removeAttr 'id'
 
 	events:
 		'click .delete-label-button': (evt) ->
@@ -205,7 +206,7 @@ class LabelListItemView extends Backbone.View
 
 
 class DropdownLabelListItemView extends Backbone.View
-	template: jQuery('#tpl-dropdown-label-list-item').detach()
+	template: jQuery('#tpl-dropdown-label-list-item').detach().removeAttr 'id'
 
 	events:
 		# Add or remove a label from the issue
@@ -233,7 +234,7 @@ class DropdownLabelListItemView extends Backbone.View
 class DropdownLabelListView extends Backbone.CollectionView
 	childView: DropdownLabelListItemView
 
-	template: jQuery('#tpl-dropdown-label-list').detach()
+	template: jQuery('#tpl-dropdown-label-list').detach().removeAttr 'id'
 
 	events:
 		'keyup .label-filter': (evt) ->
