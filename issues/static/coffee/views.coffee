@@ -1,8 +1,14 @@
+template = (id) ->
+	element = jQuery "##{id}"
+	element.detach()
+	element.removeAttr 'id'
+	return -> element.clone().get 0
+
 class IssueListItemView extends Backbone.View
-	template: jQuery('#tpl-issue-list-item').detach().removeAttr 'id'
+	template: template 'tpl-issue-list-item'
 
 	initialize: ->
-		@setElement @template.clone().get 0
+		@setElement @template()
 
 		@listenTo @model, 'change', @render
 
@@ -25,7 +31,7 @@ class IssueListItemView extends Backbone.View
 class IssueListView extends Backbone.CollectionView
 	childView: IssueListItemView
 
-	template: jQuery('#tpl-issue-list-panel').detach().removeAttr 'id'
+	template: template 'tpl-issue-list-panel'
 
 	events:
 		# 'Close' selection button
@@ -41,7 +47,7 @@ class IssueListView extends Backbone.CollectionView
 		super()
 
 		# Create the actual DOM by cloning our template
-		@setElement @template.clone().get 0
+		@setElement @template()
 
 	# Override CollectionView's appendChildView to append it to the
 	# issue-list element, not the root element.
@@ -50,7 +56,7 @@ class IssueListView extends Backbone.CollectionView
 
 
 class IssueView extends Backbone.View
-	template: jQuery('#tpl-issue-details-panel').detach().removeAttr 'id'
+	template: template 'tpl-issue-details-panel'
 
 	events:
 		# catch the submit-event of the comment form
@@ -101,7 +107,7 @@ class IssueView extends Backbone.View
 	initialize: ->
 		console.assert @model?, 'IssueView has no model'
 
-		@setElement @template.clone().get 0
+		@setElement @template()
 
 		@listenTo @model, 'change', @render
 
@@ -153,10 +159,10 @@ class IssueView extends Backbone.View
 
 
 class CommentListItemView extends Backbone.View
-	template: jQuery('#tpl-comment-list-item').detach().removeAttr 'id'
+	template: template 'tpl-comment-list-item'
 
 	initialize: ->
-		@setElement @template.clone().get 0
+		@setElement @template()
 		@listenTo @model, 'change', @render
 
 	render: (eventName) ->
@@ -185,7 +191,7 @@ class InlineLabelListItemView extends Backbone.View
 
 
 class LabelListItemView extends Backbone.View
-	template: jQuery('#tpl-label-list-item').detach().removeAttr 'id'
+	template: template 'tpl-label-list-item'
 
 	events:
 		'click .delete-label-button': (evt) ->
@@ -193,7 +199,7 @@ class LabelListItemView extends Backbone.View
 				@model.destroy()
 
 	initialize: ->
-		@setElement @template.clone().get 0
+		@setElement @template()
 		@listenTo @model, 'change', @render
 
 	render: ->
@@ -206,7 +212,7 @@ class LabelListItemView extends Backbone.View
 
 
 class DropdownLabelListItemView extends Backbone.View
-	template: jQuery('#tpl-dropdown-label-list-item').detach().removeAttr 'id'
+	template: template 'tpl-dropdown-label-list-item'
 
 	events:
 		# Add or remove a label from the issue
@@ -217,7 +223,7 @@ class DropdownLabelListItemView extends Backbone.View
 				@selected.remove @model
 
 	initialize: ->
-		@setElement @template.clone().get 0
+		@setElement @template()
 
 		@listenTo @model, 'change', @render
 
@@ -234,7 +240,7 @@ class DropdownLabelListItemView extends Backbone.View
 class DropdownLabelListView extends Backbone.CollectionView
 	childView: DropdownLabelListItemView
 
-	template: jQuery('#tpl-dropdown-label-list').detach().removeAttr 'id'
+	template: template 'tpl-dropdown-label-list'
 
 	events:
 		'keyup .label-filter': (evt) ->
@@ -287,7 +293,7 @@ class DropdownLabelListView extends Backbone.CollectionView
 		@listenTo @selected, 'add', @updateChildren
 		@listenTo @selected, 'remove', @updateChildren
 
-		@setElement @template.clone().get 0
+		@setElement @template()
 		@filterField = @$ '.label-filter'
 		@createLabelButton = @$ '.create-new-label-button'
 
