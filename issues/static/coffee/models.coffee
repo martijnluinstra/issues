@@ -12,7 +12,15 @@ class Issue extends Backbone.Model
 			url: =>
 				"#{@url()}/comments"
 
-		@labels = new LabelCollection (@get 'labels'),
+		# This bit of ugly code is there to make sure all the labels used in the
+		# application are the same instances. So now when you destroy a label,
+		# it is deleted from all the issues their label collections as well.
+		label_ids = _.pluck (@get 'labels'), 'id'
+
+		labels = window.app.labelCollection.filter (label) ->
+			_.contains label_ids, label.get 'id'
+
+		@labels = new LabelCollection labels,
 			url: =>
 				"#{@url()}/labels"
 

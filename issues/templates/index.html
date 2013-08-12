@@ -61,6 +61,16 @@
 			</ol>
 		</div>
 
+		<li id="tpl-label-list-item" class="list-group-item">
+			<a href="#" class="label-name label-link"></a>
+			<span class="swatch dropdown-toggle" data-toggle="dropdown">
+				<span class="caret"></span>
+			</span>
+			<ul class="dropdown-menu" role="menu" aria-labeledby="dropdownMenu">
+				<li><button class="btn btn-link delete-label-button">Delete label…</button></li>
+			</ul>
+		</li>
+
 		<div id="issue-details-panel"></div>
 
 		<div id="tpl-issue-details-panel" class="issue">
@@ -158,7 +168,7 @@
 	<script src="/static/js/issues.js"></script>
 	<script>
 		{% autoescape false %}
-		var app = init({
+		init({
 			user: {{current_user}},
 			issues: {{ issues }},
 			labels: {{ labels }}

@@ -365,13 +365,18 @@
     Issue.prototype.urlRoot = '/api/issues';
 
     Issue.prototype.initialize = function() {
-      var _this = this;
+      var label_ids, labels,
+        _this = this;
       this.comments = new CommentCollection([], {
         url: function() {
           return "" + (_this.url()) + "/comments";
         }
       });
-      return this.labels = new LabelCollection(this.get('labels'), {
+      label_ids = _.pluck(this.get('labels'), 'id');
+      labels = window.app.labelCollection.filter(function(label) {
+        return _.contains(label_ids, label.get('id'));
+      });
+      return this.labels = new LabelCollection(labels, {
         url: function() {
           return "" + (_this.url()) + "/labels";
         }
@@ -743,24 +748,27 @@
       return _ref12;
     }
 
-    LabelListItemView.prototype.tagName = 'li';
+    LabelListItemView.prototype.template = jQuery('#tpl-label-list-item').detach();
+
+    LabelListItemView.prototype.events = {
+      'click .delete-label-button': function(evt) {
+        return this.model.destroy();
+      }
+    };
 
     LabelListItemView.prototype.initialize = function() {
-      this.$el.addClass('list-group-item');
-      this.$el.html('<span class="swatch"></span><a></a>');
-      this.swatch = this.$('.swatch');
-      this.link = this.$('a');
+      this.setElement(this.template.clone().get(0));
       return this.listenTo(this.model, 'change', this.render);
     };
 
     LabelListItemView.prototype.render = function() {
       if (this.model.has('colour')) {
-        this.swatch.css({
+        this.$('.swatch').css({
           'background-color': this.model.get('colour')
         });
       }
-      this.link.attr('href', "/labels/" + (encodeURIComponent(this.model.get('name'))));
-      return this.link.text(this.model.get('name'));
+      this.$('.label-link').attr('href', "/labels/" + (encodeURIComponent(this.model.get('name'))));
+      return this.$('.label-name').text(this.model.get('name'));
     };
 
     return LabelListItemView;
@@ -1037,6 +1045,7 @@
     }
 
     AppRouter.prototype.initialize = function(config) {
+      window.app = this;
       this.route('', function() {
         return this.navigate('/todo', true);
       });
@@ -1046,6 +1055,7 @@
       this.route(/^todo$/, 'listTodoIssues');
       this.route(/^archive$/, 'listAllIssues');
       this.user = config.user;
+      this.labelCollection = new LabelCollection(config.labels);
       this.issueCollection = new IssueCollection(config.issues);
       this.issueCollection.url = '/api/issues';
       this.todoCollection = this.issueCollection.subcollection({
@@ -1054,7 +1064,6 @@
         }
       });
       this.todoCollection.url = '/api/issues/todo';
-      this.labelCollection = new LabelCollection(config.labels);
       this.panels = {
         newIssue: new NewIssuePanel('#new-issue-panel', this.issueCollection),
         showIssue: new Panel('#issue-details-panel'),
@@ -1079,16 +1088,19 @@
       return this.listIssues(this.issueCollection);
     };
 
-    AppRouter.prototype.listIssuesWithLabel = function(label) {
-      var collection;
+    AppRouter.prototype.listIssuesWithLabel = function(name) {
+      var collection, label;
+      label = this.labelCollection.findWhere({
+        name: name
+      });
       collection = this.issueCollection.subcollection({
         filter: function(issue) {
           return issue.labels.containsWhere({
-            name: label
+            id: label.get('id')
           });
         }
       });
-      collection.url = "/api/labels/" + (encodeURIComponent(label));
+      collection.url = "/api/labels/" + (label.get('id'));
       collection.fetch();
       return this.listIssues(collection);
     };

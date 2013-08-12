@@ -38,9 +38,19 @@
 	display: inline-block;
 	width: 12px;
 	height: 12px;
+	line-height: 10px;
 	background-color: #ccc;
 	float: right;
 	margin: 4px 0;
+	cursor: pointer;
+}
+
+.swatch .caret {
+	display: none;
+}
+
+.swatch:hover .caret {
+	display: inline-block;
 }
 
 .navbar .user-name {

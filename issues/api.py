@@ -186,31 +186,31 @@ def create_label():
 
     return jsonify(label.to_dict()), 201
 
-@app.route('/api/labels/<names>', methods=['GET'])
-def list_issues_labels(names):
+@app.route('/api/labels/<ids>', methods=['GET'])
+def list_issues_labels(ids):
     """ List all issues with given labels """
-    labels = names.split('+')
-    issues = Issue.query.filter(Issue.labels.any(Label.name.in_(labels))).all()
+    labels = ids.split('+')
+    issues = Issue.query.filter(Issue.labels.any(Label.id.in_(labels))).all()
     return jsonify([issue.to_dict() for issue in issues])
 
 
-@app.route('/api/labels/<name>', methods=['PUT'])
+@app.route('/api/labels/<int:label_id>', methods=['PUT'])
 @api_admin_required
-def update_label(name):
+def update_label(label_id):
     """ Update label (change colour) """
     data = request.get_json()
-    label = Label.query.filter_by(name=name).first_or_404()
+    label = Label.query.filter_by(id=label_id).first_or_404()
     if 'colour' in data and data['colour'].strip():
         label.colour = data['colour'].strip()
     db.session.commit()
     return 'OK'
 
 
-@app.route('/api/labels/<name>', methods=['DELETE'])
+@app.route('/api/labels/<int:label_id>', methods=['DELETE'])
 @api_admin_required
-def delete_label(name):
+def delete_label(label_id):
     """ Remove label from database """
-    label = Label.query.filter_by(name=name).first_or_404()
+    label = Label.query.filter_by(id=label_id).first_or_404()
     db.session.delete(label)
     db.session.commit()
     return 'Label deleted'

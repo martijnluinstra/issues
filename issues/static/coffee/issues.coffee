@@ -67,6 +67,8 @@ class NewIssuePanel extends Panel
 
 class AppRouter extends Backbone.Router
 	initialize: (config) ->
+		window.app = this;
+		
 		@route '', ->
 			@navigate '/todo', true
 
@@ -77,6 +79,8 @@ class AppRouter extends Backbone.Router
 		@route /^archive$/, 'listAllIssues'
 
 		@user = config.user
+
+		@labelCollection = new LabelCollection config.labels
 
 		@issueCollection = new IssueCollection config.issues
 		@issueCollection.url = '/api/issues' # (Cannot be passed as an option
@@ -90,8 +94,6 @@ class AppRouter extends Backbone.Router
 		# issues.
 		@todoCollection.url = '/api/issues/todo'
 		
-		@labelCollection = new LabelCollection config.labels
-
 		@panels =
 			newIssue:   new NewIssuePanel '#new-issue-panel', @issueCollection
 			showIssue:  new Panel '#issue-details-panel'
@@ -115,12 +117,14 @@ class AppRouter extends Backbone.Router
 		@issueCollection.fetch()
 		@listIssues @issueCollection
 
-	listIssuesWithLabel: (label) ->
+	listIssuesWithLabel: (name) ->
+		label = @labelCollection.findWhere name: name
+
 		collection = @issueCollection.subcollection
 			filter: (issue) ->
-				issue.labels.containsWhere name: label
+				issue.labels.containsWhere id: label.get 'id'
 
-		collection.url = "/api/labels/#{encodeURIComponent(label)}"
+		collection.url = "/api/labels/#{label.get 'id'}"
 		collection.fetch()
 		@listIssues collection
 
