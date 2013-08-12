@@ -171,9 +171,10 @@ class InlineLabelListItemView extends Backbone.View
 		@listenTo @model, 'change', @render
 
 	render: ->
-		@$el.css
-			'color': bestContrastingColour @model.get 'colour'
-			'background-color': @model.get 'colour'
+		if @model.has 'colour'
+			@$el.css
+				'color': bestContrastingColour @model.get 'colour'
+				'background-color': @model.get 'colour'
 
 		@$el.text @model.get 'name'
 
@@ -195,9 +196,10 @@ class DropdownLabelListItemView extends Backbone.View
 		@listenTo @model, 'change', @render
 
 	render: ->
-		@$el.css
-			'color': bestContrastingColour @model.get 'colour'
-			'background-color': @model.get 'colour'
+		if @model.has 'colour'
+			@$el.css
+				'color': bestContrastingColour @model.get 'colour'
+				'background-color': @model.get 'colour'
 
 		@$('.label-name').text @model.get 'name'
 		@$('.label-selected').attr 'checked', !! @selected.get @model.get 'id'
@@ -210,13 +212,20 @@ class DropdownLabelListView extends Backbone.CollectionView
 	events:
 		'keyup .label-filter': (evt) ->
 			if evt.keyCode == 27
-				@$('.label-filter').val('')
+				# If the filter is not yet cleared, clear it
+				if @filterField.val() != ''
+					@filterField.val ''
+				# Second press closes the filter field
+				else
+					@hide()
+				
 				evt.preventDefault()
 
-			@filterList @$('.label-filter').val()
+			defer => @filter @filterField.val()
 
 		'click .create-new-label-button': ->
-			alert 'Not implemented yet ;)'
+			@model.create
+				name: @filterField.val()
 	
 	initialize: (options) ->
 		super options
@@ -228,6 +237,9 @@ class DropdownLabelListView extends Backbone.CollectionView
 		console.log @template.get 0
 
 		@setElement @template.clone().get 0
+		@filterField = @$ '.label-filter'
+		@createLabelButton = @$ '.create-new-label-button'
+
 		@hide()
 		jQuery(document.body).append @el
 
@@ -243,15 +255,40 @@ class DropdownLabelListView extends Backbone.CollectionView
 		for cid, child in @children
 			child.render()
 
+	filter: (query) ->
+		pattern = new RegExp '.*' + query.split('').join('.*') + '.*', 'i'
+
+		for cid, child of @children
+			if pattern.test child.model.get 'name'
+				child.$el.show()
+			else
+				child.$el.hide()
+
+		if query != ''
+			@createLabelButton.text "Create label '#{query}'"
+			@createLabelButton.show()
+		else
+			@createLabelButton.hide()
+
 	show: (parent) ->
+		# Position the popover
 		parent_pos = jQuery(parent).offset()
 
 		@$el.css
 			top: parent_pos.top + jQuery(parent).height() + 12
 			left: parent_pos.left + jQuery(parent).width() / 2 - @$el.width() / 2
 
+		# Clear the filter field
+		@filterField.val ''
+
+		# Show all elements
+		@filter ''
+
+		# Show the popover
 		@$el.show()
-		defer => @$('.label-filter').focus()
+
+		# .. and focus the filter field
+		defer => @filterField.focus()
 
 	hide: ->
 		@$el.hide()

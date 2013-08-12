@@ -37,7 +37,7 @@ class Label extends Backbone.Model
 	defaults:
 		id: null
 		name: ''
-		colour: 'grey'
+		colour: null
 
 	urlRoot: '/api/labels'
 

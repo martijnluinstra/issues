@@ -439,7 +439,7 @@
     Label.prototype.defaults = {
       id: null,
       name: '',
-      colour: 'grey'
+      colour: null
     };
 
     Label.prototype.urlRoot = '/api/labels';
@@ -718,10 +718,12 @@
     };
 
     InlineLabelListItemView.prototype.render = function() {
-      this.$el.css({
-        'color': bestContrastingColour(this.model.get('colour')),
-        'background-color': this.model.get('colour')
-      });
+      if (this.model.has('colour')) {
+        this.$el.css({
+          'color': bestContrastingColour(this.model.get('colour')),
+          'background-color': this.model.get('colour')
+        });
+      }
       return this.$el.text(this.model.get('name'));
     };
 
@@ -755,10 +757,12 @@
     };
 
     DropdownLabelListItemView.prototype.render = function() {
-      this.$el.css({
-        'color': bestContrastingColour(this.model.get('colour')),
-        'background-color': this.model.get('colour')
-      });
+      if (this.model.has('colour')) {
+        this.$el.css({
+          'color': bestContrastingColour(this.model.get('colour')),
+          'background-color': this.model.get('colour')
+        });
+      }
       this.$('.label-name').text(this.model.get('name'));
       return this.$('.label-selected').attr('checked', !!this.selected.get(this.model.get('id')));
     };
@@ -781,14 +785,23 @@
 
     DropdownLabelListView.prototype.events = {
       'keyup .label-filter': function(evt) {
+        var _this = this;
         if (evt.keyCode === 27) {
-          this.$('.label-filter').val('');
+          if (this.filterField.val() !== '') {
+            this.filterField.val('');
+          } else {
+            this.hide();
+          }
           evt.preventDefault();
         }
-        return this.filterList(this.$('.label-filter').val());
+        return defer(function() {
+          return _this.filter(_this.filterField.val());
+        });
       },
       'click .create-new-label-button': function() {
-        return alert('Not implemented yet ;)');
+        return this.model.create({
+          name: this.filterField.val()
+        });
       }
     };
 
@@ -799,6 +812,8 @@
       this.listenTo(this.selected, 'remove', this.updateChildren);
       console.log(this.template.get(0));
       this.setElement(this.template.clone().get(0));
+      this.filterField = this.$('.label-filter');
+      this.createLabelButton = this.$('.create-new-label-button');
       this.hide();
       return jQuery(document.body).append(this.el);
     };
@@ -825,6 +840,26 @@
       return _results;
     };
 
+    DropdownLabelListView.prototype.filter = function(query) {
+      var child, cid, pattern, _ref14;
+      pattern = new RegExp('.*' + query.split('').join('.*') + '.*', 'i');
+      _ref14 = this.children;
+      for (cid in _ref14) {
+        child = _ref14[cid];
+        if (pattern.test(child.model.get('name'))) {
+          child.$el.show();
+        } else {
+          child.$el.hide();
+        }
+      }
+      if (query !== '') {
+        this.createLabelButton.text("Create label '" + query + "'");
+        return this.createLabelButton.show();
+      } else {
+        return this.createLabelButton.hide();
+      }
+    };
+
     DropdownLabelListView.prototype.show = function(parent) {
       var parent_pos,
         _this = this;
@@ -833,9 +868,11 @@
         top: parent_pos.top + jQuery(parent).height() + 12,
         left: parent_pos.left + jQuery(parent).width() / 2 - this.$el.width() / 2
       });
+      this.filterField.val('');
+      this.filter('');
       this.$el.show();
       return defer(function() {
-        return _this.$('.label-filter').focus();
+        return _this.filterField.focus();
       });
     };
 

@@ -48,6 +48,8 @@
 	padding: 0 0.2em;
 	border-radius: 2px;
 	font-size: 0.8em;
+	background-color: #ccc;
+	color: #000;
 }
 
 .user-not-logged-in .requires-login {

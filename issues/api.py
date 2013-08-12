@@ -144,12 +144,12 @@ def add_label(issue_id):
         label = Label.query.filter_by(name=name).first()
 
         # Label not found? Create a new one
-        if label is None:
-            if re.match('^[\w]+[\w-]*$', name) is None:
-                return 'Invalid label name "' + name + '"', 422
+        # if label is None:
+        #     if re.match('^[\w]+[\w-]*$', name) is None:
+        #         return 'Invalid label name "' + name + '"', 422
 
-            label = Label(name)
-            db.session.add(label)
+        #     label = Label(name)
+        #     db.session.add(label)
 
         # Add label to the issue
         issue.labels.append(label)
@@ -167,6 +167,24 @@ def list_labels():
     labels = Label.query.all()
     return jsonify([label.to_dict() for label in labels])
 
+
+@app.route('/api/labels', methods=['POST'])
+@api_admin_required
+def create_label():
+    data = request.get_json()
+    
+    if not 'name' in data or data['name'].strip() == '':
+        return 'Label name is empty', 500
+
+    # (Disabled because somehow I do like spaces in my label names..)
+    # if re.match('^[\w]+[\w-]*$', data['name']) is None:
+    #     return 'Invalid label name "' + name + '"', 422
+
+    label = Label(data['name'])
+    db.session.add(label)
+    db.session.commit()
+
+    return jsonify(label.to_dict()), 201
 
 @app.route('/api/labels/<names>', methods=['GET'])
 def list_issues_labels(names):
