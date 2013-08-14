@@ -1,34 +1,38 @@
 <!DOCTYPE html>
 <html>
 <head>
-    {% block head %}
-    <title>{% block title %}Issues{% endblock %}</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/issues.css') }}">
-    <script src="{{ url_for('static', filename='js/jquery-2.0.3.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/bootstrap.js') }}"></script>
-    {% endblock %}
+	{% block head %}
+	<title>{% block title %}Issues{% endblock %}</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.css') }}">
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/issues.css') }}">
+	<script src="{{ url_for('static', filename='js/jquery-2.0.3.js') }}"></script>
+	<script src="{{ url_for('static', filename='js/bootstrap.js') }}"></script>
+	{% endblock %}
 </head>
 <body class="{{page_attributes}}">
-    <div class="navbar navbar-static-top">
-        <a href="/" class="navbar-brand">Issues</a>
-        {% if user_name %}
-        <div class="navbar-text pull-right dropdown">Signed in as
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{user_name}}</a>
-            <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu">
-                <li><a href="{{ url_for('change_password') }}" data-external="true">Change password</a></li>
-                <li class="divider"></li>
-                <li><a href="{{ url_for('logout') }}" data-external="true">Sign out</a></li>
-            </ul>
-        </div>
-        {% else %}
-        <div class="navbar-text pull-right dropdown">
-            <a href="{{ url_for('login') }}" data-external="true">Sign in</a>
-        </div>
-        {% endif %}
-    </div>
-    {% block content %}
-    {% endblock %}
+	<div class="main-nav">
+		<a href="/" class="glyph issue-tracker-link">✔</a>
+		<a href="http://www.svcover.nl" rel="external" class="glyph website-link">Cover</a>
+		{% if user %}
+		<div class="profile">
+			<div class="dropup">
+				<span class="user-name dropdown-toggle" data-toggle="dropdown">
+					<img src="{{user['gravatar']}}" class="gravatar">
+					{{user.name}}
+				</span>
+				<ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu">
+					<li><a href="{{ url_for('change_password') }}" rel="external">Change password</a></li>
+					<li class="divider"></li>
+					<li><a href="{{ url_for('logout') }}" rel="external">Sign out</a></li>
+				</ul>
+			</div>
+		</div>
+		{% else %}
+		<a href="{{ url_for('login') }}" rel="external">Sign in</a>
+		{% endif %}
+	</div>
+	{% block content %}
+	{% endblock %}
 </body>
 </html>
