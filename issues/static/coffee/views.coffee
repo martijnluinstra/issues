@@ -360,7 +360,7 @@ class DropdownLabelListView extends Backbone.CollectionView
 
 	show: (parent) ->
 		# Position the popover
-		parent_pos = jQuery(parent).offset()
+		parent_pos = jQuery(parent).offsetTo @el.parentNode
 
 		@$el.css
 			top: parent_pos.top + jQuery(parent).height() + 12

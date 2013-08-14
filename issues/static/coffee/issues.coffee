@@ -12,6 +12,21 @@ jQuery.fn.serializeObject = ->
 
 	data
 
+
+jQuery.fn.offsetTo = (parent) ->
+	el = jQuery this
+	position =
+		top: 0
+		left: 0
+
+	while el.length and (el.get 0) != parent
+		p = el.position()
+		position.top += p.top
+		position.left += p.left
+		el = el.parent()
+
+	return position
+
 # Get an attribute of the model with all the HTML tags stripped.
 # Note: don't use this on untrusted input (e.g. still do server
 # side cleaning on the input, please!)

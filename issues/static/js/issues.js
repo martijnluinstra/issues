@@ -986,7 +986,7 @@
     DropdownLabelListView.prototype.show = function(parent) {
       var parent_pos,
         _this = this;
-      parent_pos = jQuery(parent).offset();
+      parent_pos = jQuery(parent).offsetTo(this.el.parentNode);
       this.$el.css({
         top: parent_pos.top + jQuery(parent).height() + 12,
         left: parent_pos.left + jQuery(parent).width() / 2 - this.$el.width() / 2
@@ -1025,6 +1025,22 @@
       return data[pair.name] = pair.value;
     });
     return data;
+  };
+
+  jQuery.fn.offsetTo = function(parent) {
+    var el, p, position;
+    el = jQuery(this);
+    position = {
+      top: 0,
+      left: 0
+    };
+    while (el.length && (el.get(0)) !== parent) {
+      p = el.position();
+      position.top += p.top;
+      position.left += p.left;
+      el = el.parent();
+    }
+    return position;
   };
 
   Backbone.Model.prototype.strip = function(attribute) {
