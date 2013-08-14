@@ -27,6 +27,10 @@ class IssueListItemView extends Backbone.View
 	isSelected: ->
 		@$('input[type=checkbox]').get(0).checked
 
+	remove: ->
+		@labelView.remove()
+		super()
+
 
 class IssueListView extends Backbone.CollectionView
 	childView: IssueListItemView
@@ -155,6 +159,8 @@ class IssueView extends Backbone.View
 
 	remove: ->
 		@commentListView.remove()
+		@labelListView.remove()
+		@labelDropdownView.remove()
 		super()
 
 

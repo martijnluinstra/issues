@@ -515,6 +515,11 @@
       return this.$('input[type=checkbox]').get(0).checked;
     };
 
+    IssueListItemView.prototype.remove = function() {
+      this.labelView.remove();
+      return IssueListItemView.__super__.remove.call(this);
+    };
+
     return IssueListItemView;
 
   })(Backbone.View);
@@ -677,6 +682,8 @@
 
     IssueView.prototype.remove = function() {
       this.commentListView.remove();
+      this.labelListView.remove();
+      this.labelDropdownView.remove();
       return IssueView.__super__.remove.call(this);
     };
 
