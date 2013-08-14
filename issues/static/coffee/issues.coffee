@@ -46,17 +46,40 @@ class Panel
 
 	show: ->
 		@trigger 'show'
-		@$el.show()
+		@$el.removeClass 'hidden'
+		# delay the showing a bit to enforce the css transitions
+		defer => @$el.addClass 'visible'
 
 	hide: ->
 		@trigger 'hide'
-		@$el.hide()
+		@$el.removeClass 'visible'
+		@$el.addClass 'hidden'
 
+	isVisible: ->
+		return @$el.hasClass 'visible'
+
+
+# An Overlay Panel is just a panel that can be dismissed by clicking on the
+# backgrond or pressing escape.
+class OverlayPanel extends Panel
+	constructor: (el) ->
+		super el
+
+		@$el.on 'click', (evt) =>
+			if evt.target == @$el.get 0
+				@hide()
+
+		jQuery(document).on 'keyup', (evt) =>
+			if evt.keyCode == 27 and @isVisible()
+				evt.stopPropagation()
+				evt.preventDefault()
+				@hide()
+		
 
 class AppRouter extends Backbone.Router
 	initialize: (config) ->
 		window.app = this;
-		
+
 		@route '', ->
 			@navigate '/todo', true
 
@@ -84,7 +107,7 @@ class AppRouter extends Backbone.Router
 		
 		@listPanel = new Panel '#list-panel'
 
-		@detailPanel = new Panel '#detail-panel'
+		@detailPanel = new OverlayPanel '#detail-panel'
 		
 		@labelListView = new Backbone.CollectionView
 			childView: LabelListItemView

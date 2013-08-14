@@ -277,6 +277,7 @@ class DropdownLabelListView extends Backbone.CollectionView
 				else
 					@hide()
 
+				evt.stopPropagation()
 				evt.preventDefault()
 
 			
