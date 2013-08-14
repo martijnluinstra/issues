@@ -129,6 +129,8 @@ class IssueView extends Backbone.View
 			selected: @model.labels
 			el: @$ '.label-dropdown'
 
+		@$el.append @labelDropdownView.el
+
 		@model.comments.fetch()
 
 	render: (eventName) ->
@@ -330,7 +332,6 @@ class DropdownLabelListView extends Backbone.CollectionView
 		@createLabelButton = @$ '.create-new-label-button'
 
 		@$el.hide()
-		jQuery(document.body).append @el
 
 	createChildView: (model) ->
 		view = super model

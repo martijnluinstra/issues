@@ -650,6 +650,7 @@
         selected: this.model.labels,
         el: this.$('.label-dropdown')
       });
+      this.$el.append(this.labelDropdownView.el);
       return this.model.comments.fetch();
     };
 
@@ -940,8 +941,7 @@
       this.setElement(this.template());
       this.filterField = this.$('.label-filter');
       this.createLabelButton = this.$('.create-new-label-button');
-      this.$el.hide();
-      return jQuery(document.body).append(this.el);
+      return this.$el.hide();
     };
 
     DropdownLabelListView.prototype.createChildView = function(model) {
