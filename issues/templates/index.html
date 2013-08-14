@@ -13,7 +13,7 @@
 <body class="{{page_attributes}}">
 	<div class="main-nav">
 		<a href="/" class="glyph issue-tracker-link">✔</a>
-		<a href="http://www.svcover.nl" data-external="true" class="glyph website-link">Cover</a>
+		<a href="http://www.svcover.nl" rel="external" class="glyph website-link">Cover</a>
 		{% if user %}
 		<div class="profile">
 			<div class="dropup">
@@ -22,22 +22,22 @@
 					{{user.name}}
 				</span>
 				<ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu">
-					<li><a href="{{ url_for('change_password') }}" data-external="true">Change password</a></li>
+					<li><a href="{{ url_for('change_password') }}" rel="external">Change password</a></li>
 					<li class="divider"></li>
-					<li><a href="{{ url_for('logout') }}" data-external="true">Sign out</a></li>
+					<li><a href="{{ url_for('logout') }}" rel="external">Sign out</a></li>
 				</ul>
 			</div>
 		</div>
 		{% else %}
-		<a href="{{ url_for('login') }}" data-external="true">Sign in</a>
+		<a href="{{ url_for('login') }}" rel="external">Sign in</a>
 		{% endif %}
 	</div>
 
 	<div class="issue-tracker">
 		<div id="label-panel">
 			<ol class="view-list nav-list">
-				<li class=""><a href="/todo">Todo</a></li>
-				<li class=""><a href="/archive">Archive</a></li>
+				<li><a href="/todo">Todo</a></li>
+				<li><a href="/archive">Archive</a></li>
 			</ol>
 			<ol class="label-list nav-list"></ol>
 		</div>
@@ -48,10 +48,10 @@
 
 		<div id="tpl-issue-list-panel">
 			<ol class="issue-list nav-list">
-				<li>
-					<a href="/issues/new" class="new-issue-button requires-login">+ New Issue</a>
+				<li class="new-issue-button requires-login">
+					<a href="/issues/new">+ New Issue</a>
 				</li>
-				<li id="tpl-issue-list-item" class="">
+				<li id="tpl-issue-list-item">
 					<!-- <input type="checkbox"> -->
 					<a href="/issues/{issue-id}" class="issue-link">
 						<strong class="issue-title">{issue-title}</strong>
@@ -62,7 +62,7 @@
 			</ol>
 		</div>
 
-		<li id="tpl-label-list-item" class="">
+		<li id="tpl-label-list-item">
 			<a href="#" class="label-name label-link"></a>
 			<span class="swatch dropdown-toggle" data-toggle="dropdown">
 				<span class="caret"></span>

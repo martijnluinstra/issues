@@ -1209,7 +1209,7 @@
       pushState: true
     });
     jQuery(document.body).on('click', 'a', function(evt) {
-      if (jQuery(this).data('external')) {
+      if (jQuery(this).attr('rel') === 'external') {
         return;
       }
       evt.preventDefault();
