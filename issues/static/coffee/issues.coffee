@@ -12,6 +12,35 @@ jQuery.fn.serializeObject = ->
 
 	data
 
+
+jQuery.fn.offsetTo = (parent) ->
+	el = jQuery this
+	position =
+		top: 0
+		left: 0
+
+	while el.length and (el.get 0) != parent
+		p = el.position()
+		position.top += p.top
+		position.left += p.left
+		el = el.parent()
+
+	return position
+
+
+jQuery.fn.isOrIsChildOf = (parent) ->
+	el = jQuery this
+
+	loop
+		if (el.get 0) == parent
+			return yes
+
+		el = el.parent()
+		
+		if not el.length
+			return no
+
+
 # Get an attribute of the model with all the HTML tags stripped.
 # Note: don't use this on untrusted input (e.g. still do server
 # side cleaning on the input, please!)
@@ -46,14 +75,14 @@ class Panel
 
 	show: ->
 		@trigger 'show'
-		@$el.removeClass 'hidden'
-		# delay the showing a bit to enforce the css transitions
 		defer => @$el.addClass 'visible'
-
+		
 	hide: ->
+		if not @isVisible()
+			return
+
 		@trigger 'hide'
 		@$el.removeClass 'visible'
-		@$el.addClass 'hidden'
 
 	isVisible: ->
 		return @$el.hasClass 'visible'
@@ -73,8 +102,7 @@ class OverlayPanel extends Panel
 			if evt.keyCode == 27 and @isVisible()
 				evt.stopPropagation()
 				evt.preventDefault()
-				@hide()
-		
+				@hide()		
 
 class AppRouter extends Backbone.Router
 	initialize: (config) ->
@@ -116,16 +144,27 @@ class AppRouter extends Backbone.Router
 
 		@labelListView.render()
 
+		@listTodoIssues()
+
 		@listPanel.on 'render', =>
 			@detailPanel.hide()
 
+		@detailPanel.on 'hide', =>
+			app.navigate @listPanel.view.url
+
 	listTodoIssues: ->
 		@todoCollection.fetch()
-		@listIssues @todoCollection
+		view = new IssueListView
+			model: @todoCollection
+		view.url = '/todo'
+		@listPanel.render view
 
 	listAllIssues: ->
 		@issueCollection.fetch()
-		@listIssues @issueCollection
+		view = new IssueListView
+			model: @issueCollection
+		view.url = '/archive'
+		@listPanel.render view
 
 	listIssuesWithLabel: (name) ->
 		label = @labelCollection.findWhere name: name
@@ -136,11 +175,12 @@ class AppRouter extends Backbone.Router
 
 		collection.url = "/api/labels/#{label.get 'id'}"
 		collection.fetch()
-		@listIssues collection
-
-	listIssues: (collection) ->
-		@listPanel.render new IssueListView
+		
+		view = new IssueListView
 			model: collection
+		view.url = '/labels/' + encodeURIComponent name
+
+		@listPanel.render view
 
 	newIssue: ->
 		@detailPanel.render new NewIssueView

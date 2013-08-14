@@ -21,6 +21,10 @@
 	line-height: 30px;
 }
 
+.issue-tracker-app {
+	overflow: hidden;
+}
+
 .issue-tracker {
 	position: absolute;
 	top: 0;
@@ -110,7 +114,9 @@
 	bottom: 0;
 	right: 0;
 	left: -64px;
+	background-color: rgba(0, 0, 0, 0.0);
 	transition: background-color 300ms;
+	pointer-events: none;
 }
 
 #detail-panel > div {
@@ -127,22 +133,12 @@
 }
 
 #detail-panel.visible {
+	pointer-events: auto;
 	background-color: rgba(0, 0, 0, 0.6);
 }
 
 #detail-panel.visible > div {
 	right: 0;
-}
-
-#detail-panel.hidden {
-	display: block !important;
-	visibility: visible !important;
-	background-color: rgba(0, 0, 0, 0.0);
-	pointer-events: none;
-}
-
-#detail-panel.hidden > div {
-	right: -60%;
 }
 
 /* nav-list
@@ -338,8 +334,8 @@
 
 .comment-list {
 	list-style: none;
-	padding: 15px 15px 0 15px;
-	margin: 0 -15px;
+	padding: 15px 0 0 0;
+	margin: 0;
 	border-top: 1px solid #ccc;
 }
 

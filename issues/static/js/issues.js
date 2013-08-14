@@ -934,6 +934,7 @@
     };
 
     DropdownLabelListView.prototype.initialize = function(options) {
+      var _this = this;
       DropdownLabelListView.__super__.initialize.call(this, options);
       this.selected = options.selected;
       this.listenTo(this.selected, 'add', this.updateChildren);
@@ -941,7 +942,18 @@
       this.setElement(this.template());
       this.filterField = this.$('.label-filter');
       this.createLabelButton = this.$('.create-new-label-button');
+      this.blurCallback = function(evt) {
+        if (!jQuery(evt.target).isOrIsChildOf(_this.el)) {
+          return _this.hide();
+        }
+      };
+      jQuery(document).on('click', this.blurCallback);
       return this.$el.hide();
+    };
+
+    DropdownLabelListView.prototype.remove = function() {
+      jQuery(document).off('click', this.blurCallback);
+      return DropdownLabelListView.__super__.remove.call(this);
     };
 
     DropdownLabelListView.prototype.createChildView = function(model) {
@@ -986,7 +998,7 @@
     DropdownLabelListView.prototype.show = function(parent) {
       var parent_pos,
         _this = this;
-      parent_pos = jQuery(parent).offset();
+      parent_pos = jQuery(parent).offsetTo(this.el.parentNode);
       this.$el.css({
         top: parent_pos.top + jQuery(parent).height() + 12,
         left: parent_pos.left + jQuery(parent).width() / 2 - this.$el.width() / 2
@@ -1027,6 +1039,36 @@
     return data;
   };
 
+  jQuery.fn.offsetTo = function(parent) {
+    var el, p, position;
+    el = jQuery(this);
+    position = {
+      top: 0,
+      left: 0
+    };
+    while (el.length && (el.get(0)) !== parent) {
+      p = el.position();
+      position.top += p.top;
+      position.left += p.left;
+      el = el.parent();
+    }
+    return position;
+  };
+
+  jQuery.fn.isOrIsChildOf = function(parent) {
+    var el;
+    el = jQuery(this);
+    while (true) {
+      if ((el.get(0)) === parent) {
+        return true;
+      }
+      el = el.parent();
+      if (!el.length) {
+        return false;
+      }
+    }
+  };
+
   Backbone.Model.prototype.strip = function(attribute) {
     return jQuery("<p>" + (this.get(attribute)) + "</p>").wrap('p').text();
   };
@@ -1061,16 +1103,17 @@
     Panel.prototype.show = function() {
       var _this = this;
       this.trigger('show');
-      this.$el.removeClass('hidden');
       return defer(function() {
         return _this.$el.addClass('visible');
       });
     };
 
     Panel.prototype.hide = function() {
+      if (!this.isVisible()) {
+        return;
+      }
       this.trigger('hide');
-      this.$el.removeClass('visible');
-      return this.$el.addClass('hidden');
+      return this.$el.removeClass('visible');
     };
 
     Panel.prototype.isVisible = function() {
@@ -1142,23 +1185,37 @@
         el: jQuery('#label-panel .label-list').get(0)
       });
       this.labelListView.render();
-      return this.listPanel.on('render', function() {
+      this.listTodoIssues();
+      this.listPanel.on('render', function() {
         return _this.detailPanel.hide();
+      });
+      return this.detailPanel.on('hide', function() {
+        return app.navigate(_this.listPanel.view.url);
       });
     };
 
     AppRouter.prototype.listTodoIssues = function() {
+      var view;
       this.todoCollection.fetch();
-      return this.listIssues(this.todoCollection);
+      view = new IssueListView({
+        model: this.todoCollection
+      });
+      view.url = '/todo';
+      return this.listPanel.render(view);
     };
 
     AppRouter.prototype.listAllIssues = function() {
+      var view;
       this.issueCollection.fetch();
-      return this.listIssues(this.issueCollection);
+      view = new IssueListView({
+        model: this.issueCollection
+      });
+      view.url = '/archive';
+      return this.listPanel.render(view);
     };
 
     AppRouter.prototype.listIssuesWithLabel = function(name) {
-      var collection, label;
+      var collection, label, view;
       label = this.labelCollection.findWhere({
         name: name
       });
@@ -1171,13 +1228,11 @@
       });
       collection.url = "/api/labels/" + (label.get('id'));
       collection.fetch();
-      return this.listIssues(collection);
-    };
-
-    AppRouter.prototype.listIssues = function(collection) {
-      return this.listPanel.render(new IssueListView({
+      view = new IssueListView({
         model: collection
-      }));
+      });
+      view.url = '/labels/' + encodeURIComponent(name);
+      return this.listPanel.render(view);
     };
 
     AppRouter.prototype.newIssue = function() {

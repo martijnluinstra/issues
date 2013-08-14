@@ -331,7 +331,17 @@ class DropdownLabelListView extends Backbone.CollectionView
 		@filterField = @$ '.label-filter'
 		@createLabelButton = @$ '.create-new-label-button'
 
+		@blurCallback = (evt) =>
+			if not jQuery(evt.target).isOrIsChildOf @el
+				@hide()
+
+		jQuery(document).on 'click', @blurCallback
+
 		@$el.hide()
+
+	remove: ->
+		jQuery(document).off 'click', @blurCallback
+		super()
 
 	createChildView: (model) ->
 		view = super model
@@ -360,7 +370,7 @@ class DropdownLabelListView extends Backbone.CollectionView
 
 	show: (parent) ->
 		# Position the popover
-		parent_pos = jQuery(parent).offset()
+		parent_pos = jQuery(parent).offsetTo @el.parentNode
 
 		@$el.css
 			top: parent_pos.top + jQuery(parent).height() + 12
