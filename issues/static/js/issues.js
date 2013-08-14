@@ -1159,6 +1159,7 @@
         el: jQuery('#label-panel .label-list').get(0)
       });
       this.labelListView.render();
+      this.listTodoIssues();
       return this.listPanel.on('render', function() {
         return _this.detailPanel.hide();
       });

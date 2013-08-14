@@ -130,6 +130,8 @@ class AppRouter extends Backbone.Router
 
 		@labelListView.render()
 
+		@listTodoIssues()
+
 		@listPanel.on 'render', =>
 			@detailPanel.hide()
 
