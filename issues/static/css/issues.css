@@ -21,6 +21,10 @@
 	line-height: 30px;
 }
 
+.issue-tracker-app {
+	overflow: hidden;
+}
+
 .issue-tracker {
 	position: absolute;
 	top: 0;
