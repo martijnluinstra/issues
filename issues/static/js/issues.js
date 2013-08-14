@@ -1160,23 +1160,36 @@
       });
       this.labelListView.render();
       this.listTodoIssues();
-      return this.listPanel.on('render', function() {
+      this.listPanel.on('render', function() {
         return _this.detailPanel.hide();
+      });
+      return this.detailPanel.on('hide', function() {
+        return app.navigate(_this.listPanel.view.url);
       });
     };
 
     AppRouter.prototype.listTodoIssues = function() {
+      var view;
       this.todoCollection.fetch();
-      return this.listIssues(this.todoCollection);
+      view = new IssueListView({
+        model: this.todoCollection
+      });
+      view.url = '/todo';
+      return this.listPanel.render(view);
     };
 
     AppRouter.prototype.listAllIssues = function() {
+      var view;
       this.issueCollection.fetch();
-      return this.listIssues(this.issueCollection);
+      view = new IssueListView({
+        model: this.issueCollection
+      });
+      view.url = '/archive';
+      return this.listPanel.render(view);
     };
 
     AppRouter.prototype.listIssuesWithLabel = function(name) {
-      var collection, label;
+      var collection, label, view;
       label = this.labelCollection.findWhere({
         name: name
       });
@@ -1189,13 +1202,11 @@
       });
       collection.url = "/api/labels/" + (label.get('id'));
       collection.fetch();
-      return this.listIssues(collection);
-    };
-
-    AppRouter.prototype.listIssues = function(collection) {
-      return this.listPanel.render(new IssueListView({
+      view = new IssueListView({
         model: collection
-      }));
+      });
+      view.url = '/labels/' + encodeURIComponent(name);
+      return this.listPanel.render(view);
     };
 
     AppRouter.prototype.newIssue = function() {

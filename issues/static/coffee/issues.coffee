@@ -135,13 +135,22 @@ class AppRouter extends Backbone.Router
 		@listPanel.on 'render', =>
 			@detailPanel.hide()
 
+		@detailPanel.on 'hide', =>
+			app.navigate @listPanel.view.url
+
 	listTodoIssues: ->
 		@todoCollection.fetch()
-		@listIssues @todoCollection
+		view = new IssueListView
+			model: @todoCollection
+		view.url = '/todo'
+		@listPanel.render view
 
 	listAllIssues: ->
 		@issueCollection.fetch()
-		@listIssues @issueCollection
+		view = new IssueListView
+			model: @issueCollection
+		view.url = '/archive'
+		@listPanel.render view
 
 	listIssuesWithLabel: (name) ->
 		label = @labelCollection.findWhere name: name
@@ -152,11 +161,12 @@ class AppRouter extends Backbone.Router
 
 		collection.url = "/api/labels/#{label.get 'id'}"
 		collection.fetch()
-		@listIssues collection
-
-	listIssues: (collection) ->
-		@listPanel.render new IssueListView
+		
+		view = new IssueListView
 			model: collection
+		view.url = '/labels/' + encodeURIComponent name
+
+		@listPanel.render view
 
 	newIssue: ->
 		@detailPanel.render new NewIssueView
