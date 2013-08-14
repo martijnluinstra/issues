@@ -89,18 +89,18 @@
 			</div>
 
 			<div class="read-issue">
-				<div class="panel-heading">
+				<header>
 					<h3 class="panel-title issue-title"></h3>
 					<span class="issue-labels"></span>
-				</div>
+				</header>
 
 				<div class="issue-description"></div>
 			</div>
 
 			<form class="edit-issue">
-				<div class="panel-heading">
+				<header>
 					<input type="text" name="title" class="issue-title" placeholder="Issue title…" required>
-				</div>
+				</header>
 
 				<textarea name="description" class="issue-description" placeholder="Optional description of the issue…"></textarea>
 			</form>
@@ -140,9 +140,9 @@
 		</li>
 
 		<div id="tpl-new-issue-panel">
-			<div class="panel-heading">
-				<h3 class="panel-title">New Issue</h3>
-			</div>
+			<header>
+				<h3>New Issue</h3>
+			</header>
 			<form method="post" action="/issues/new">
 				<div class="form-group">
 					<label for="issue-title">Title:</label>
