@@ -3,3 +3,4 @@
 /issues/static/js/issues.map
 /database.db
 *.pyc
+/issues/static/post-test.html

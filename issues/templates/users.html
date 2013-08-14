@@ -23,13 +23,12 @@
 							<div class="dropdown">
 								<span id="dropdown{{ user.id }}" class="dropdown-toggle btn btn-xs btn-default" data-toggle="dropdown">{{ user.admin }} <span class="caret"></span></span>
 								<ul class="dropdown-menu" role="menu" aria-labelledby="dropdown{{ user.id }}">
-									<li><a href="{{url_for('change_password', user_id=user.id)}}" data-rel="popup">Change</a></li>
+									<li><a href="{{url_for('make_admin', user_id=user.id)}}" data-rel="popup">Change</a></li>
 								</ul>
 							</div>
 						</td>
 						<td>
 							<a href="{{url_for('change_password', user_id=user.id)}}" class="btn btn-xs btn-default" data-rel="popup">Change password</a>
-							<a href="{{url_for('change_password', user_id=user.id)}}" class="btn btn-xs btn-default" data-rel="popup">Remove</a>
 						</td>
 					</tr>
 				{% endfor %}
@@ -66,6 +65,7 @@
 						$('.popup .panel-body').html(response.find('.panel-body').html());
 					} else {
 						hidePopup();
+						location.reload();
 					}
 				});
 			});
