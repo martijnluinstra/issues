@@ -3,7 +3,7 @@
 from flask import render_template, redirect, url_for
 from flask.ext.login import current_user, login_required
 from sqlalchemy.exc import IntegrityError
-from issues import app, db
+from issues import app, db, gravatar
 from models import Issue, User, Label
 from session import is_admin, is_logged_in, admin_required
 from forms import AddUserForm, ChangePasswordForm
@@ -51,6 +51,7 @@ def view_frontend(path=None):
         page_attributes=u' '.join(page_attributes()),
         user=current_user.to_dict() if is_logged_in() else None,
         current_user=jsonify(current_user.to_dict() if is_logged_in() else None),
+        anonymous_gravatar=gravatar(''),
         issues=jsonify([issue.to_dict() for issue in uncompleted_issues()]),
         labels=jsonify([label.to_dict() for label in labels()]))
 

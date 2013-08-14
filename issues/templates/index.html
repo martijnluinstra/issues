@@ -29,7 +29,14 @@
 			</div>
 		</div>
 		{% else %}
-		<a href="{{ url_for('login') }}" rel="external">Sign in</a>
+		<div class="profile">
+			<a href="{{ url_for('login') }}" rel="external">
+				<span class="user-name">
+					<img src="{{ anonymous_gravatar }}" class="gravatar">
+					Sign in
+				</span>
+			</a>
+		</div>
 		{% endif %}
 	</div>
 

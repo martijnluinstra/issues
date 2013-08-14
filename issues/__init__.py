@@ -11,6 +11,6 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
 
-gravatar = Gravatar(app,size=100)
+gravatar = Gravatar(app, size=96, default='mm')
 
 from issues import models, api, session, frontend
