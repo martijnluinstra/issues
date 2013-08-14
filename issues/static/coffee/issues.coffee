@@ -61,14 +61,14 @@ class Panel
 
 	show: ->
 		@trigger 'show'
-		@$el.removeClass 'hidden'
-		# delay the showing a bit to enforce the css transitions
 		defer => @$el.addClass 'visible'
-
+		
 	hide: ->
+		if not @isVisible()
+			return
+
 		@trigger 'hide'
 		@$el.removeClass 'visible'
-		@$el.addClass 'hidden'
 
 	isVisible: ->
 		return @$el.hasClass 'visible'
@@ -88,8 +88,7 @@ class OverlayPanel extends Panel
 			if evt.keyCode == 27 and @isVisible()
 				evt.stopPropagation()
 				evt.preventDefault()
-				@hide()
-		
+				@hide()		
 
 class AppRouter extends Backbone.Router
 	initialize: (config) ->

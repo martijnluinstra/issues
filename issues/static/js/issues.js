@@ -1077,16 +1077,17 @@
     Panel.prototype.show = function() {
       var _this = this;
       this.trigger('show');
-      this.$el.removeClass('hidden');
       return defer(function() {
         return _this.$el.addClass('visible');
       });
     };
 
     Panel.prototype.hide = function() {
+      if (!this.isVisible()) {
+        return;
+      }
       this.trigger('hide');
-      this.$el.removeClass('visible');
-      return this.$el.addClass('hidden');
+      return this.$el.removeClass('visible');
     };
 
     Panel.prototype.isVisible = function() {
