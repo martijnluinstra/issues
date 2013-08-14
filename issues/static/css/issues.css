@@ -367,13 +367,6 @@
 	vertical-align: middle;
 }
 
-.popup{
-	position: fixed;
-	margin: 50px auto 0;
-	left: 0;
-	right: 0;
-}
-
 .overlay{
 	position: fixed;
 	top: 0;
@@ -381,4 +374,24 @@
 	bottom: 0;
 	left: 0;
 	background-color: rgba(0,0,0,0.6);
+	transition: background-color 300ms;
+}
+
+.overlay > .popup{
+	position: fixed;
+	margin: 0 auto;
+	left: 0;
+	right: 0;
+	top:50px;
+	transition: top 300ms;
+}
+
+.overlay.hidden {
+	display: block !important;
+	visibility: visible !important;
+	background-color: rgba(0, 0, 0, 0.0);
+}
+
+.overlay.hidden > .popup{
+	top: -100%;
 }
