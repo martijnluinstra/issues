@@ -71,7 +71,7 @@
 			});
 
 			popup.css({width: '400px'});
-			var overlay = $('<div class="overlay"></div>').click(function(evt){
+			var overlay = $('<div class="overlay hidden"></div>').click(function(evt){
 				if(evt.target == $('.overlay').get(0)){
 					hidePopup();
 					console.log('Jeej');
@@ -79,6 +79,9 @@
 			});
 			overlay.append(popup);
 			$('body').append(overlay);
+			setTimeout(function() {
+                overlay.removeClass('hidden');
+            },20);
 		}
 
 		function hidePopup(){
