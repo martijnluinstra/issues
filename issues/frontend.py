@@ -6,7 +6,7 @@ from sqlalchemy.exc import IntegrityError
 from issues import app, db
 from models import Issue, User, Label
 from session import is_admin, is_logged_in, admin_required
-from forms import AddUserForm, ChangePasswordForm
+from forms import AddUserForm, ChangePasswordForm, ConfirmPasswordForm
 import json
 
 
@@ -55,6 +55,15 @@ def view_frontend(path=None):
         labels=jsonify([label.to_dict() for label in labels()]))
 
 
+@app.route('/users', methods=['GET'])
+@admin_required
+def list_users():
+    users = User.query.all()
+    return render_template('users.html',
+        user=current_user.to_dict() if is_logged_in() else None, 
+        users=users)
+
+
 @app.route('/users/add', methods=['GET', 'POST'])
 def add_user():
     form = AddUserForm()
@@ -69,19 +78,37 @@ def add_user():
     return render_template('user_add.html', form=form)
 
 
+@app.route('/users/<int:user_id>/make-admin', methods=['GET', 'POST'])
+@admin_required
+def make_admin(user_id):
+    form = ConfirmPasswordForm()
+    user = User.query.filter_by(id=user_id).first_or_404()
+    if form.validate_on_submit():
+        if current_user.check_password(form.password.data):
+            user.admin = not user.admin
+            db.session.commit()
+            return redirect(url_for('view_frontend'))
+        else: 
+            form.password.errors.append('Wrong password')
+    return render_template('confirm.html',
+        user=current_user.to_dict() if is_logged_in() else None, 
+        form=form,
+        title='Change Admin Status',
+        target=url_for('make_admin', user_id=user_id))
+
+
 @app.route('/users/change-password', methods=['GET', 'POST'])
 @app.route('/users/<int:user_id>/change-password', methods=['GET', 'POST'])
 @login_required
 def change_password(user_id=None):
     form = ChangePasswordForm()
-    print(user_id)
     if user_id is not None and not is_admin():
         return 'You are not authorised', 403
+    if user_id is None:
+        user_id = current_user.get_id()
+    user = User.query.filter_by(id=user_id).first_or_404()
     if form.validate_on_submit():
         if current_user.check_password(form.current_password.data):
-            if user_id is None:
-                user_id = current_user.get_id()
-            user = User.query.filter_by(id=user_id).first_or_404()
             user.set_password(form.new_password.data)
             db.session.commit()
             return redirect(url_for('view_frontend'))
@@ -91,13 +118,3 @@ def change_password(user_id=None):
         form=form,
         user=current_user.to_dict() if is_logged_in() else None,
         user_id=user_id)
-
-
-@app.route('/users', methods=['GET'])
-@admin_required
-def list_users():
-    users = User.query.all()
-    return render_template('users.html',
-        user=current_user.to_dict() if is_logged_in() else None, 
-        users=users)
-

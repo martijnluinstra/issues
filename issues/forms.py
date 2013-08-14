@@ -11,3 +11,6 @@ class ChangePasswordForm(Form):
     current_password = PasswordField('Your Password', [validators.Required(message='Password is required')])
     new_password = PasswordField('New Password', [validators.Required(message='New Password is required'), validators.EqualTo('confirm', message='Passwords do not match')])
     confirm  = PasswordField('Repeat New Password')
+
+class ConfirmPasswordForm(Form):
+    password = PasswordField('Your Password', [validators.Required(message='Password is required')])
