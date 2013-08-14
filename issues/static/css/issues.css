@@ -4,6 +4,10 @@
 	margin: 100px auto;
 }
 
+.user-list-panel {
+	max-width: 900px;
+	margin: 100px auto;
+}
 
 #label-panel {
 	position: absolute;
