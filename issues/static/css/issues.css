@@ -9,11 +9,50 @@
 	margin: 100px auto;
 }
 
+.navbar {
+	min-height: 30px;
+}
+
+.navbar-brand,
+.navbar-text {
+	padding: 0;
+	margin: 0;
+	line-height: 30px;
+}
+
 #label-panel {
-	position: absolute;
-	top: 12px;
-	left: 12px;
+	position: fixed;
+	background: red;
+	top: 30px;
+	left: 0;
+	bottom: 0;
 	width: 200px;
+}
+
+#list-panel {
+	position: absolute;
+	top: 0;
+	left: 224px;
+	right: 0;
+}
+
+#detail-panel {
+	position: fixed;
+	top: 30px;
+	bottom: 0;
+	right: 0;
+	min-width: 60%;
+	background: green;
+	overflow: auto;
+	box-shadow: 0 0 180px 0 #333;
+}
+
+.issue-tracker {
+	position: absolute;
+	top: 30px;
+	right: 0;
+	bottom: 0;
+	left: 0;
 }
 
 #label-panel .label-list .list-group-item:first-child {
@@ -32,15 +71,7 @@
 	padding-right: 15px;
 }
 
-#issue-list-panel,
-#issue-details-panel,
-#new-issue-panel {
-	position: absolute;
-	top: 12px;
-	right: 12px;
-	left: 224px;
-	bottom: 12px;
-}
+
 
 .swatch {
 	display: inline-block;
@@ -64,14 +95,6 @@
 .navbar .user-name {
 	text-decoration: underline;
 	cursor: pointer;
-}
-
-.issue-tracker {
-	position: absolute;
-	top: 50px;
-	right: 0;
-	bottom: 0;
-	left: 0;
 }
 
 .issue-list {

@@ -27,42 +27,30 @@ defer = (fn) ->
 
 class Panel
 	constructor: (el) ->
+		# Mixin events
+		_.extend this, Backbone.Events
+
 		@$el = jQuery el
 
 	render: (view) ->
 		if @view? and @view != view
 			@view.remove()
 
-		@view = view
-		@view.render()
-		@view.$el.appendTo @$el
+		if @view != view
+			@view = view
+			@view.render()
+			@view.$el.appendTo @$el
+
+		@trigger 'render'
+		@show()
 
 	show: ->
+		@trigger 'show'
 		@$el.show()
 
 	hide: ->
+		@trigger 'hide'
 		@$el.hide()
-
-
-class NewIssuePanel extends Panel
-	constructor: (el, @model) ->
-		super el
-		@$el.on 'submit', 'form', (evt) =>
-			# Prevent the form from actually being submitted
-			evt.preventDefault()
-			
-			data = jQuery(evt.target).serializeObject()
-
-			# When the issue is saved (and has an id), go to it.
-			options =
-				success: (issue) ->
-					app.navigate "/issues/#{issue.get 'id'}", true
-
-			# Clear the form if the issue was created
-			issue = new Issue
-			if issue.save data, options
-				@model.add issue
-				evt.target.reset()
 
 
 class AppRouter extends Backbone.Router
@@ -94,11 +82,10 @@ class AppRouter extends Backbone.Router
 		# issues.
 		@todoCollection.url = '/api/issues/todo'
 		
-		@panels =
-			newIssue:   new NewIssuePanel '#new-issue-panel', @issueCollection
-			showIssue:  new Panel '#issue-details-panel'
-			listIssues: new Panel '#issue-list-panel'
+		@listPanel = new Panel '#list-panel'
 
+		@detailPanel = new Panel '#detail-panel'
+		
 		@labelListView = new Backbone.CollectionView
 			childView: LabelListItemView
 			model: @labelCollection
@@ -106,8 +93,8 @@ class AppRouter extends Backbone.Router
 
 		@labelListView.render()
 
-		# Hide all panels
-		@showPanel null
+		@listPanel.on 'render', =>
+			@detailPanel.hide()
 
 	listTodoIssues: ->
 		@todoCollection.fetch()
@@ -129,13 +116,12 @@ class AppRouter extends Backbone.Router
 		@listIssues collection
 
 	listIssues: (collection) ->
-		view = new IssueListView
+		@listPanel.render new IssueListView
 			model: collection
 
-		@showPanel 'listIssues', view
-
 	newIssue: ->
-		@showPanel 'newIssue'
+		@detailPanel.render new NewIssueView
+			model: @issueCollection
 
 	showIssue: (id) ->
 		# First, try to get the issue from our global collection
@@ -148,18 +134,8 @@ class AppRouter extends Backbone.Router
 			issue.fetch()
 		
 		# Give it a view and render it
-		view = new IssueView
+		@detailPanel.render new IssueView
 			model: issue
-
-		@showPanel 'showIssue', view
-
-	showPanel: (id, view) ->
-		for name, panel of @panels
-			if name == id
-				if view? then panel.render view
-				panel.show()
-			else
-				panel.hide()
 
 
 window.init = (data) ->

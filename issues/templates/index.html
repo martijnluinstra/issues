@@ -11,7 +11,7 @@
 	<script src="/static/js/bootstrap.js"></script>
 </head>
 <body class="{{page_attributes}}">
-	<div class="navbar navbar-static-top">
+	<div class="navbar navbar-fixed-top">
 		<a href="/" class="navbar-brand">Issues</a>
 		{% if user_name %}
 		<div class="navbar-text pull-right dropdown">Signed in as
@@ -30,15 +30,17 @@
 	</div>
 
 	<div class="issue-tracker">
-		<div id="label-panel" class="panel">
-			<ol class="view-list list-group list-group-flush">
-				<li class="list-group-item"><a href="/todo">Todo</a></li>
-				<li class="list-group-item"><a href="/archive">Archive</a></li>
+		<div id="label-panel">
+			<ol class="view-list">
+				<li class=""><a href="/todo">Todo</a></li>
+				<li class=""><a href="/archive">Archive</a></li>
 			</ol>
-			<ol class="label-list list-group list-group-flush"></ol>
+			<ol class="label-list"></ol>
 		</div>
 
-		<div id="issue-list-panel" class="panel"></div>
+		<div id="list-panel"></div>
+
+		<div id="detail-panel"></div>
 
 		<div id="tpl-issue-list-panel">
 			<div class="btn-toolbar requires-login">
@@ -49,8 +51,8 @@
 					<button type="button" class="btn close-issues-button btn-default btn-small">Close</button>
 				</div>
 			</div>
-			<ol class="issue-list list-group list-group-flush">
-				<li id="tpl-issue-list-item" class="list-group-item">
+			<ol class="issue-list">
+				<li id="tpl-issue-list-item" class="">
 					<input type="checkbox">
 					<a href="/issues/{issue-id}" class="issue-link">
 						<strong class="issue-title">{issue-title}</strong>
@@ -61,7 +63,7 @@
 			</ol>
 		</div>
 
-		<li id="tpl-label-list-item" class="list-group-item">
+		<li id="tpl-label-list-item" class="">
 			<a href="#" class="label-name label-link"></a>
 			<span class="swatch dropdown-toggle" data-toggle="dropdown">
 				<span class="caret"></span>
@@ -70,8 +72,6 @@
 				<li><button class="btn btn-link delete-label-button">Delete label…</button></li>
 			</ul>
 		</li>
-
-		<div id="issue-details-panel"></div>
 
 		<div id="tpl-issue-details-panel" class="issue">
 			<div class="btn-group">
@@ -142,7 +142,7 @@
 			</label>
 		</li>
 
-		<div id="new-issue-panel" class="panel">
+		<div id="tpl-new-issue-panel" class="panel">
 			<div class="panel-heading">
 				<h3 class="panel-title">New Issue</h3>
 			</div>
