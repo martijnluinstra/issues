@@ -934,6 +934,7 @@
     };
 
     DropdownLabelListView.prototype.initialize = function(options) {
+      var _this = this;
       DropdownLabelListView.__super__.initialize.call(this, options);
       this.selected = options.selected;
       this.listenTo(this.selected, 'add', this.updateChildren);
@@ -941,7 +942,18 @@
       this.setElement(this.template());
       this.filterField = this.$('.label-filter');
       this.createLabelButton = this.$('.create-new-label-button');
+      this.blurCallback = function(evt) {
+        if (!jQuery(evt.target).isOrIsChildOf(_this.el)) {
+          return _this.hide();
+        }
+      };
+      jQuery(document).on('click', this.blurCallback);
       return this.$el.hide();
+    };
+
+    DropdownLabelListView.prototype.remove = function() {
+      jQuery(document).off('click', this.blurCallback);
+      return DropdownLabelListView.__super__.remove.call(this);
     };
 
     DropdownLabelListView.prototype.createChildView = function(model) {
@@ -1041,6 +1053,20 @@
       el = el.parent();
     }
     return position;
+  };
+
+  jQuery.fn.isOrIsChildOf = function(parent) {
+    var el;
+    el = jQuery(this);
+    while (true) {
+      if ((el.get(0)) === parent) {
+        return true;
+      }
+      el = el.parent();
+      if (!el.length) {
+        return false;
+      }
+    }
   };
 
   Backbone.Model.prototype.strip = function(attribute) {

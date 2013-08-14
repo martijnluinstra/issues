@@ -27,6 +27,20 @@ jQuery.fn.offsetTo = (parent) ->
 
 	return position
 
+
+jQuery.fn.isOrIsChildOf = (parent) ->
+	el = jQuery this
+
+	loop
+		if (el.get 0) == parent
+			return yes
+
+		el = el.parent()
+		
+		if not el.length
+			return no
+
+
 # Get an attribute of the model with all the HTML tags stripped.
 # Note: don't use this on untrusted input (e.g. still do server
 # side cleaning on the input, please!)
