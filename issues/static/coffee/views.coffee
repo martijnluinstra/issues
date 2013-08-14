@@ -158,6 +158,31 @@ class IssueView extends Backbone.View
 		super()
 
 
+class NewIssueView extends Backbone.View
+	template: templatify 'tpl-new-issue-panel'
+
+	events:
+		'submit form': (evt) ->
+			# Prevent the form from actually being submitted
+			evt.preventDefault()
+			
+			data = jQuery(evt.target).serializeObject()
+
+			# When the issue is saved (and has an id), go to it.
+			options =
+				success: (issue) ->
+					window.app.navigate "/issues/#{issue.get 'id'}", true
+
+			# Clear the form if the issue was created
+			issue = new Issue
+			if issue.save data, options
+				@model.add issue
+				evt.target.reset()
+
+	initialize: ->
+		@setElement @template()
+
+
 class CommentListItemView extends Backbone.View
 	template: templatify 'tpl-comment-list-item'
 
