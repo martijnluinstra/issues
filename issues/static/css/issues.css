@@ -4,6 +4,11 @@
 	margin: 100px auto;
 }
 
+.user-list-panel {
+	max-width: 900px;
+	margin: 100px auto;
+}
+
 .navbar {
 	min-height: 30px;
 	padding: 0 8px;
