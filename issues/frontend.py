@@ -90,7 +90,7 @@ def change_password(user_id=None):
             form.current_password.errors.append('Wrong password')
     return render_template('user_change_password.html',
         form=form,
-        user_name=current_user.name if is_logged_in() else None,
+        user=current_user.to_dict() if is_logged_in() else None,
         user_id=user_id)
 
 
@@ -99,6 +99,6 @@ def change_password(user_id=None):
 def list_users():
     users = User.query.all()
     return render_template('users.html',
-        user_name=current_user.name if is_logged_in() else None, 
+        user=current_user.to_dict() if is_logged_in() else None, 
         users=users)
 

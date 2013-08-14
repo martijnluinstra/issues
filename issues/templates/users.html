@@ -2,37 +2,87 @@
 {% block content %}
 	<div class="user-list-panel panel panel-primary">
 		<div class="panel-heading">
-			<h3 class="panel-title">Issues New User</h3>
+			<h3 class="panel-title">Users</h3>
 		</div>
-
-		<table class="table table-hover">
-			<thead>
-				<tr>
-					<th>Name</th>
-					<th>Email Address</th>
-					<th>Admin</th>
-					<th>Options</th>
-				</tr>
-			</thead>
-			<tbody>
-			{% for user in users %}
-				<tr>
-					<td>{{ user.name }}</td>
-					<td>{{ user.email }}</td>
-					<td>
-						<span class="user-name dropdown-toggle" data-toggle="dropdown">{{ user.admin }}<span class="caret"></span></span>
-						<ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu">
-			                <li><a href="{{url_for('change_password', user_id=user.id)}}">Change</a></li>
-			            </ul>
-					</td>
-					<td>
-						<a href="{{url_for('change_password', user_id=user.id)}}" class="btn btn-xsmall">Change password</a>
-<!-- 						<a href="{{url_for('change_password', user_id=user.id)}}" class="btn">Make Admin</a> -->
-						<a href="{{url_for('change_password', user_id=user.id)}}" class="btn btn-xsmall">Remove</a>
-					</td>
-				</tr>
-			{% endfor %}
-			</tbody>
-		</table>
+		<div class="panel-body">
+			<table class="table table-hover table-users">
+				<thead>
+					<tr>
+						<th>Name</th>
+						<th>Email Address</th>
+						<th>Admin</th>
+						<th>Options</th>
+					</tr>
+				</thead>
+				<tbody>
+				{% for user in users %}
+					<tr>
+						<td>{{ user.name }}</td>
+						<td>{{ user.email }}</td>
+						<td>
+							<div class="dropdown">
+								<span id="dropdown{{ user.id }}" class="dropdown-toggle btn btn-xs btn-default" data-toggle="dropdown">{{ user.admin }} <span class="caret"></span></span>
+								<ul class="dropdown-menu" role="menu" aria-labelledby="dropdown{{ user.id }}">
+									<li><a href="{{url_for('change_password', user_id=user.id)}}" data-rel="popup">Change</a></li>
+								</ul>
+							</div>
+						</td>
+						<td>
+							<a href="{{url_for('change_password', user_id=user.id)}}" class="btn btn-xs btn-default" data-rel="popup">Change password</a>
+							<a href="{{url_for('change_password', user_id=user.id)}}" class="btn btn-xs btn-default" data-rel="popup">Remove</a>
+						</td>
+					</tr>
+				{% endfor %}
+				</tbody>
+			</table>
+		</div>
 	</div>
+	<script>
+		$('a[data-rel=popup]').click(function(evt){
+			evt.preventDefault();
+
+			var target = $(this).attr('href');
+			$.ajax({
+				url: target,
+				success:  function(response) {
+					displayPopup( $(response).filter('.user-panel') );
+				}
+			});
+		});
+
+		function displayPopup(popup){
+			popup.addClass('popup');
+			popup.find('.panel-title').append('<button type="button" class="close" data-dismiss="popup">&times;</button>').click(function(){
+				hidePopup();
+			});
+
+			popup.find('form').submit(function(event) {
+				event.preventDefault();
+				var $form = $( this );
+				var posting = $.post( $form.attr( 'action' ), $form.serialize());
+				posting.done(function( data ) {
+					var response = $(data).filter('.user-panel')
+					if ($(response).length > 0){
+						$('.popup .panel-body').html(response.find('.panel-body').html());
+					} else {
+						hidePopup();
+					}
+				});
+			});
+
+			popup.css({width: '400px'});
+			var overlay = $('<div class="overlay"></div>').click(function(evt){
+				if(evt.target == $('.overlay').get(0)){
+					hidePopup();
+					console.log('Jeej');
+				}
+			});
+			overlay.append(popup);
+			$('body').append(overlay);
+		}
+
+		function hidePopup(){
+			$('.overlay').remove();
+		}
+	</script>
 {% endblock %}
