@@ -8,6 +8,6 @@ class AddUserForm(Form):
     confirm  = PasswordField('Repeat Password')
 
 class ChangePasswordForm(Form):
-    current_password = PasswordField('Password', [validators.Required(message='Password is required')])
+    current_password = PasswordField('Your Password', [validators.Required(message='Password is required')])
     new_password = PasswordField('New Password', [validators.Required(message='New Password is required'), validators.EqualTo('confirm', message='Passwords do not match')])
     confirm  = PasswordField('Repeat New Password')
