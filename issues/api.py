@@ -132,16 +132,16 @@ def add_label(issue_id):
     for label_data in data:
         label = None
 
-        if not 'name' in label_data:
+        if not 'id' in label_data:
             return 'One of the labels is missing a label name', 500
 
-        if not label_data['name'].strip():
+        if not label_data['id'].strip():
             return 'One of the labels has an empty name', 500
 
-        name = label_data["name"].strip()
+        label_id = label_data['id'].strip()
 
         # Find the label
-        label = Label.query.filter_by(name=name).first()
+        label = Label.query.filter_by(id=label_id).first()
 
         # Label not found? Create a new one
         # if label is None:
