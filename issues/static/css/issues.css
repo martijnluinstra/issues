@@ -21,9 +21,76 @@
 	line-height: 30px;
 }
 
+.issue-tracker {
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 64px;
+}
+
+.main-nav {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	width: 64px;
+	background: #fff;
+	border-right: 1px solid #ccc;
+	text-align: center;
+}
+
+.main-nav .dropdown-menu {
+	text-align: left; 
+}
+
+.main-nav .profile {
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	padding: 8px;
+	cursor: pointer;
+}
+
+.main-nav .profile .gravatar {
+	width: 48px;
+	height: 48px;
+	margin: 0 auto;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+}
+
+.main-nav .profile .user-name {
+	width: 48px; 
+	display: inline-block;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.main-nav .profile:hover .user-name {
+	text-decoration: underline;
+}
+
+.main-nav .glyph {
+	display: block;
+	width: 48px;
+	height: 48px;
+	margin: 8px auto;
+	border: 1px solid #428bca;
+	border-radius: 4px;
+	line-height: 48px;
+	overflow: hidden;
+}
+
+.main-nav .glyph:hover {
+	color: #2a6496;
+	border-color: #2a6496;
+}
+
 #label-panel {
-	position: fixed;
-	top: 30px;
+	position: absolute;
+	top: 0;
 	left: 0;
 	bottom: 0;
 	width: 200px;
@@ -38,11 +105,11 @@
 }
 
 #detail-panel {
-	position: fixed;
-	top: 30px;
+	position: absolute;
+	top: 0;
 	bottom: 0;
 	right: 0;
-	left: 0;
+	left: -64px;
 	transition: background-color 300ms;
 }
 
@@ -76,14 +143,6 @@
 
 #detail-panel.hidden > div {
 	right: -60%;
-}
-
-.issue-tracker {
-	position: absolute;
-	top: 30px;
-	right: 0;
-	bottom: 0;
-	left: 0;
 }
 
 /* nav-list
