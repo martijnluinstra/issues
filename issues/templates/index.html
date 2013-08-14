@@ -1,45 +1,12 @@
-<!DOCTYPE html>
-<html>
-<head>
-	<title>Issues</title>
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<link rel="stylesheet" href="/static/css/bootstrap.css">
-	<link rel="stylesheet" href="/static/css/issues.css">
-	<script src="/static/js/jquery-2.0.3.js"></script>
-	<script src="/static/js/underscore.js"></script>
-	<script src="/static/js/backbone.js"></script>
-	<script src="/static/js/bootstrap.js"></script>
-</head>
-<body class="{{page_attributes}}">
-	<div class="main-nav">
-		<a href="/" class="glyph issue-tracker-link">✔</a>
-		<a href="http://www.svcover.nl" rel="external" class="glyph website-link">Cover</a>
-		{% if user %}
-		<div class="profile">
-			<div class="dropup">
-				<span class="user-name dropdown-toggle" data-toggle="dropdown">
-					<img src="{{user['gravatar']}}" class="gravatar">
-					{{user.name}}
-				</span>
-				<ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu">
-					<li><a href="{{ url_for('change_password') }}" rel="external">Change password</a></li>
-					<li class="divider"></li>
-					<li><a href="{{ url_for('logout') }}" rel="external">Sign out</a></li>
-				</ul>
-			</div>
-		</div>
-		{% else %}
-		<div class="profile">
-			<a href="{{ url_for('login') }}" rel="external">
-				<span class="user-name">
-					<img src="{{ anonymous_gravatar }}" class="gravatar">
-					Sign in
-				</span>
-			</a>
-		</div>
-		{% endif %}
-	</div>
+{% extends "base.html" %}
 
+{% block head %}
+{{ super() }}
+<script src="{{ url_for('static', filename='js/underscore.js') }}"></script>
+<script src="{{ url_for('static', filename='js/backbone.js') }}"></script>
+{% endblock %}
+
+{% block content %}
 	<div class="issue-tracker">
 		<div id="label-panel">
 			<ol class="view-list nav-list">
@@ -180,5 +147,4 @@
 		});
 		{% endautoescape %}
 	</script>
-</body>
-</html>
+{% endblock %}

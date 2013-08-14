@@ -48,7 +48,7 @@ def labels():
 @app.route('/<path:path>', methods=['GET'])
 def view_frontend(path=None):
     return render_template('index.html',
-        page_attributes=u' '.join(page_attributes()),
+        page_attributes=u' '.join(page_attributes() + ['issue-tracker-app']),
         user=current_user.to_dict() if is_logged_in() else None,
         current_user=jsonify(current_user.to_dict() if is_logged_in() else None),
         anonymous_gravatar=gravatar(''),

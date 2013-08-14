@@ -13,6 +13,7 @@
 <body class="{{page_attributes}}">
 	<div class="main-nav">
 		<a href="/" class="glyph issue-tracker-link">✔</a>
+		<a href="/users" class="glyph manage-users-link" rel="external">Users</a>
 		<a href="http://www.svcover.nl" rel="external" class="glyph website-link">Cover</a>
 		{% if user %}
 		<div class="profile">
@@ -29,7 +30,14 @@
 			</div>
 		</div>
 		{% else %}
-		<a href="{{ url_for('login') }}" rel="external">Sign in</a>
+		<div class="profile">
+			<a href="{{ url_for('login') }}" rel="external">
+				<span class="user-name">
+					<img src="{{ '' | gravatar }}" class="gravatar">
+					Sign in
+				</span>
+			</a>
+		</div>
 		{% endif %}
 	</div>
 	{% block content %}
