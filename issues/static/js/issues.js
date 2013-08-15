@@ -1088,32 +1088,33 @@
     }
 
     Panel.prototype.render = function(view) {
-      if ((this.view != null) && this.view !== view) {
-        this.view.remove();
-      }
-      if (this.view !== view) {
-        this.view = view;
-        this.view.render();
-        this.view.$el.appendTo(this.$el);
-      }
-      this.trigger('render');
-      return this.show();
-    };
-
-    Panel.prototype.show = function() {
       var _this = this;
-      this.trigger('show');
+      this.clear();
+      this.view = view;
+      this.view.render();
+      this.view.$el.appendTo(this.$el);
       return defer(function() {
         return _this.$el.addClass('visible');
       });
     };
 
+    Panel.prototype.clear = function() {
+      if (this.view != null) {
+        this.view.remove();
+        return this.view = null;
+      }
+    };
+
     Panel.prototype.hide = function() {
+      var _this = this;
       if (!this.isVisible()) {
         return;
       }
       this.trigger('hide');
-      return this.$el.removeClass('visible');
+      this.$el.removeClass('visible');
+      return setTimeout((function() {
+        return _this.clear;
+      }), 500);
     };
 
     Panel.prototype.isVisible = function() {

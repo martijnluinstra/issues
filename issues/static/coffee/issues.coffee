@@ -62,27 +62,31 @@ class Panel
 		@$el = jQuery el
 
 	render: (view) ->
-		if @view? and @view != view
-			@view.remove()
-
-		if @view != view
-			@view = view
-			@view.render()
-			@view.$el.appendTo @$el
-
-		@trigger 'render'
-		@show()
-
-	show: ->
-		@trigger 'show'
-		defer => @$el.addClass 'visible'
+		# Clear the current view (if necessary)
+		@clear()
 		
+		# Set-up and render the new view
+		@view = view
+		@view.render()
+		@view.$el.appendTo @$el
+
+		# Delay adding the class 'visible' to enforce css transitions
+		defer => @$el.addClass 'visible'
+
+	clear: ->
+		if @view?
+			@view.remove()
+			@view = null
+
 	hide: ->
 		if not @isVisible()
 			return
 
 		@trigger 'hide'
 		@$el.removeClass 'visible'
+		# Remove the view from the DOM (so it can't receive updates and catch
+		# events while no longer visible nor active.)
+		setTimeout (=> @clear), 500
 
 	isVisible: ->
 		return @$el.hasClass 'visible'
