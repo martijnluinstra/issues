@@ -775,6 +775,8 @@
     };
 
     CommentListItemView.prototype.render = function(eventName) {
+      this.$('time[pubdate]').text(moment(this.model.get('time')).fromNow());
+      this.$('time[pubdate]').attr('title', moment(this.model.get('time')).calendar());
       this.$('.gravatar').attr('src', (this.model.get('user')).gravatar);
       this.$('.comment-text').text(this.model.get('text'));
       return this.$('.user-name').text((this.model.get('user')).name);

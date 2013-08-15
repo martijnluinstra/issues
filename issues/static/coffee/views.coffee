@@ -213,6 +213,8 @@ class CommentListItemView extends Backbone.View
 		@listenTo @model, 'change', @render
 
 	render: (eventName) ->
+		@$('time[pubdate]').text moment(@model.get 'time').fromNow()
+		@$('time[pubdate]').attr 'title', moment(@model.get 'time').calendar()
 		@$('.gravatar').attr 'src', (@model.get 'user').gravatar
 		@$('.comment-text').text @model.get 'text'
 		@$('.user-name').text (@model.get 'user').name
