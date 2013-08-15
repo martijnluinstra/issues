@@ -222,7 +222,7 @@
 	display: none;
 }
 
-.issue-completed .panel-heading h3:before {
+.issue-completed header h3:before {
 	content: '✔ ';
 	color: green;
 }
