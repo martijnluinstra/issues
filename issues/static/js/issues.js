@@ -526,7 +526,6 @@
     };
 
     IssueListItemView.prototype.render = function(eventName) {
-      console.log(this.model.has('deadline'));
       this.$('.issue-link').attr('href', "/issues/" + (this.model.get('id')));
       this.$('.issue-title').text(this.model.get('title'));
       this.$('.issue-description').text(this.model.strip('description'));
