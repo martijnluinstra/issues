@@ -390,22 +390,6 @@
       });
     };
 
-    Issue.prototype.parse = function(response, options) {
-      if (response.deadline != null) {
-        response.deadline = moment(response.deadline);
-      }
-      if (response.added != null) {
-        response.added = moment(response.added);
-      }
-      if (response.modified != null) {
-        response.modified = moment(response.modified);
-      }
-      if (response.completed != null) {
-        response.completed = moment(response.completed);
-      }
-      return response;
-    };
-
     return Issue;
 
   })(Backbone.Model);
@@ -659,8 +643,11 @@
         return this.$('.edit-issue').submit();
       },
       'submit .edit-issue': function(evt) {
+        var data;
         evt.preventDefault();
-        this.model.save(this.$('.edit-issue').serializeObject(), {
+        data = this.$('.edit-issue').serializeObject();
+        data.deadline = data.deadline != null ? moment(data.deadline) : null;
+        this.model.save(data, {
           patch: true
         });
         return this.$el.removeClass('editable');
@@ -695,12 +682,13 @@
     IssueView.prototype.render = function(eventName) {
       this.$('.read-issue .issue-title').text(this.model.get('title'));
       this.$('.read-issue .issue-description').html(this.model.get('description'));
-      this.$('.read-issue .issue-added').text("Added " + (this.model.get('added').fromNow()) + " by " + (this.model.get('owner').name));
-      this.$('.read-issue .issue-added').attr('title', this.model.get('added').calendar());
-      this.$('.read-issue .issue-deadline').text(this.model.has('deadline') ? "Deadline " + (this.model.get('deadline').fromNow()) : "No deadline");
-      this.$('.read-issue .issue-deadline').attr('title', this.model.has('deadline') ? this.model.get('deadline').calendar() : "");
+      this.$('.read-issue .issue-added').text("Added " + (moment(this.model.get('added')).fromNow()) + " by " + (this.model.get('owner').name));
+      this.$('.read-issue .issue-added').attr('title', moment(this.model.get('added')).calendar());
+      this.$('.read-issue .issue-deadline').text(this.model.has('deadline') ? "Deadline " + (moment(this.model.get('deadline')).fromNow()) : "No deadline");
+      this.$('.read-issue .issue-deadline').attr('title', this.model.has('deadline') ? moment(this.model.get('deadline')).calendar() : "");
       this.$('.edit-issue .issue-title').val(this.model.get('title'));
       this.$('.edit-issue .issue-description').val(this.model.get('description'));
+      this.$('.edit-issue .issue-deadline').val(this.model.has('deadline') ? moment(this.model.get('deadline')).format('YYYY-MM-DD') : void 0);
       this.$el.toggleClass('loading', !this.model.get('added'));
       this.$el.toggleClass('issue-completed', !!this.model.get('completed'));
       this.commentListView.render();

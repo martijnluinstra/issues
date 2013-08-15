@@ -30,21 +30,6 @@ class Issue extends Backbone.Model
 		@labels = new LabelCollection labels,
 			url: =>
 				"#{@url()}/labels"
-	
-	parse: (response, options) ->
-		if response.deadline?
-			response.deadline = moment response.deadline
-
-		if response.added?
-			response.added = moment response.added
-
-		if response.modified?
-			response.modified = moment response.modified
-
-		if response.completed?
-			response.completed = moment response.completed
-
-		return response
 
 
 class IssueCollection extends Backbone.Collection

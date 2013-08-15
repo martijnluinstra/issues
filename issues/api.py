@@ -6,7 +6,7 @@ from models import Issue, Comment, Label
 from session import api_login_required, api_admin_required, is_admin
 import json, re, time
 
-TIME_FORMAT = '%Y:%m:%d %H:%M:%S'
+TIME_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
 
 
 def jsonify(data):
@@ -14,6 +14,10 @@ def jsonify(data):
     response = make_response(json.dumps(data, indent=2, ensure_ascii=False).encode('utf-8'))
     response.content_type = 'application/json'
     return response
+
+
+def parse_iso_datetime(datetimestring):
+    return datetime.strptime(datetimestring, TIME_FORMAT)
 
 
 @app.route('/api/issues', methods=['GET'])
@@ -74,10 +78,13 @@ def update_issue(issue_id):
     if 'public' in data:
         issue.public = bool(data['public'])
     if 'deadline' in data:
-        try:
-            issue.deadline = datetime.strptime(data['deadline'], TIME_FORMAT)
-        except ValueError:
-            return 'Invalid datetime format', 422
+        if data['deadline'] is None:
+            issue.deadline = None
+        else:
+            try:
+                issue.deadline = parse_iso_datetime(data['deadline'])
+            except ValueError:
+                return 'Invalid datetime format', 422
     issue.modified = datetime.now()
     db.session.commit()
     return 'OK'
