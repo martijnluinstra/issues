@@ -1112,6 +1112,7 @@
       this.view = view;
       this.view.render();
       this.view.$el.appendTo(this.$el);
+      this.trigger('render');
       return defer(function() {
         return _this.$el.addClass('visible');
       });

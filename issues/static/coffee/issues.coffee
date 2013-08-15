@@ -70,6 +70,7 @@ class Panel
 		@view.render()
 		@view.$el.appendTo @$el
 
+		@trigger 'render'
 		# Delay adding the class 'visible' to enforce css transitions
 		defer => @$el.addClass 'visible'
 
