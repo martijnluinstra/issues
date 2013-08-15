@@ -137,6 +137,12 @@ class IssueView extends Backbone.View
 		@$('.read-issue .issue-title').text @model.get 'title'
 		@$('.read-issue .issue-description').html @model.get 'description'
 
+		@$('.read-issue .issue-added').text "Added #{@model.get('added').fromNow()} by #{@model.get('owner').name}"
+		@$('.read-issue .issue-added').attr 'title', @model.get('added').calendar()
+
+		@$('.read-issue .issue-deadline').text if @model.has 'deadline' then "Deadline #{@model.get('deadline').fromNow()}" else "No deadline"
+		@$('.read-issue .issue-deadline').attr 'title', if @model.has 'deadline' then @model.get('deadline').calendar() else ""
+
 		@$('.edit-issue .issue-title').val @model.get 'title'
 		@$('.edit-issue .issue-description').val @model.get 'description'
 

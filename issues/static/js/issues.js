@@ -359,7 +359,14 @@
       id: null,
       title: '',
       description: '',
-      labels: []
+      owner: null,
+      "public": false,
+      deadline: null,
+      added: null,
+      modified: null,
+      completed: null,
+      labels: [],
+      comments: []
     };
 
     Issue.prototype.urlRoot = '/api/issues';
@@ -367,7 +374,7 @@
     Issue.prototype.initialize = function() {
       var label_ids, labels,
         _this = this;
-      this.comments = new CommentCollection([], {
+      this.comments = new CommentCollection(this.get('comments'), {
         url: function() {
           return "" + (_this.url()) + "/comments";
         }
@@ -381,6 +388,22 @@
           return "" + (_this.url()) + "/labels";
         }
       });
+    };
+
+    Issue.prototype.parse = function(response, options) {
+      if (response.deadline != null) {
+        response.deadline = moment(response.deadline);
+      }
+      if (response.added != null) {
+        response.added = moment(response.added);
+      }
+      if (response.modified != null) {
+        response.modified = moment(response.modified);
+      }
+      if (response.completed != null) {
+        response.completed = moment(response.completed);
+      }
+      return response;
     };
 
     return Issue;
@@ -672,6 +695,10 @@
     IssueView.prototype.render = function(eventName) {
       this.$('.read-issue .issue-title').text(this.model.get('title'));
       this.$('.read-issue .issue-description').html(this.model.get('description'));
+      this.$('.read-issue .issue-added').text("Added " + (this.model.get('added').fromNow()) + " by " + (this.model.get('owner').name));
+      this.$('.read-issue .issue-added').attr('title', this.model.get('added').calendar());
+      this.$('.read-issue .issue-deadline').text(this.model.has('deadline') ? "Deadline " + (this.model.get('deadline').fromNow()) : "No deadline");
+      this.$('.read-issue .issue-deadline').attr('title', this.model.has('deadline') ? this.model.get('deadline').calendar() : "");
       this.$('.edit-issue .issue-title').val(this.model.get('title'));
       this.$('.edit-issue .issue-description').val(this.model.get('description'));
       this.$el.toggleClass('loading', !this.model.get('added'));
@@ -1190,7 +1217,9 @@
       this.route(/^archive$/, 'listAllIssues');
       this.user = config.user;
       this.labelCollection = new LabelCollection(config.labels);
-      this.issueCollection = new IssueCollection(config.issues);
+      this.issueCollection = new IssueCollection(config.issues, {
+        parse: true
+      });
       this.issueCollection.url = '/api/issues';
       this.todoCollection = this.issueCollection.subcollection({
         filter: function(issue) {

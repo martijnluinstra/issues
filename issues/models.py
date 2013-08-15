@@ -81,7 +81,7 @@ class Issue(db.Model):
             'title': self.title,
             'description': self.description,
             'owner': owner.to_dict(),
-            'public': self. public,
+            'public': self.public,
             'deadline': self.deadline.isoformat() if self.deadline is not None else None,
             'added': self.added.isoformat() if self.added is not None else None,
             'modified': self.modified.isoformat() if self.modified is not None else None,

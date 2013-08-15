@@ -282,7 +282,7 @@
 }
 
 .issue header {
-	background: #eee;
+	background: #ccc;
 	padding: 8px;
 	position: relative;
 }
@@ -291,6 +291,18 @@
 	position: absolute;
 	bottom: 0;
 	right: 0;
+}
+
+.issue aside {
+	background: #eee;
+	padding: 8px;
+	position: relative;
+	font-size: 11px;
+	border-bottom: 1px solid #ccc;
+}
+
+.issue aside span {
+	margin-right: 16px;
 }
 
 .issue .issue-description {

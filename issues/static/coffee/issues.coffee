@@ -126,7 +126,9 @@ class AppRouter extends Backbone.Router
 
 		@labelCollection = new LabelCollection config.labels
 
-		@issueCollection = new IssueCollection config.issues
+		@issueCollection = new IssueCollection config.issues,
+			parse: yes
+		
 		@issueCollection.url = '/api/issues' # (Cannot be passed as an option
 			# because then it will also be passed to all the issues preloaded)
 
