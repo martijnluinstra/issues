@@ -273,8 +273,12 @@
 	bottom: 0;
 	right: 0;
 	background: rgba(255,255,255,0.9);
-	padding: 2em;
 	display: none;
+}
+
+.issue .loading-overlay canvas {
+	width: 100%;
+	height: 100%;
 }
 
 .issue.loading .loading-overlay {

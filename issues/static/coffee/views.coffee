@@ -140,12 +140,15 @@ class IssueView extends Backbone.View
 
 		@model.comments.fetch()
 
+		@loadingAnimation = new Triangle @$('.loading-overlay canvas').get 0
+
 	render: (eventName) ->
 		@$('.read-issue .issue-title').text @model.get 'title'
 		@$('.read-issue .issue-description').html @model.get 'description'
 
-		@$('.read-issue .issue-added').text "Added #{moment(@model.get 'added').fromNow()} by #{@model.get('owner').name}"
-		@$('.read-issue .issue-added').attr 'title', moment(@model.get 'added').calendar()
+		if @model.has 'added'
+			@$('.read-issue .issue-added').text "Added #{moment(@model.get 'added').fromNow()} by #{@model.get('owner').name}"
+			@$('.read-issue .issue-added').attr 'title', moment(@model.get 'added').calendar()
 
 		@$('.read-issue .issue-deadline').text if @model.has 'deadline' then "Deadline #{moment(@model.get 'deadline').fromNow()}" else "No deadline"
 		@$('.read-issue .issue-deadline').attr 'title', if @model.has 'deadline' then moment(@model.get 'deadline').calendar() else ""
@@ -156,6 +159,11 @@ class IssueView extends Backbone.View
 
 		@$el.toggleClass 'loading', !@model.get 'added'
 		@$el.toggleClass 'issue-completed', !! @model.get 'completed'
+
+		if @model.get 'added'
+			@loadingAnimation.stop()
+		else
+			@loadingAnimation.start()
 
 		@commentListView.render()
 		@labelListView.render()
@@ -177,6 +185,7 @@ class IssueView extends Backbone.View
 		@commentListView.remove()
 		@labelListView.remove()
 		@labelDropdownView.remove()
+		@loadingAnimation.stop()
 		super()
 
 
