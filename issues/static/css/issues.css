@@ -249,14 +249,16 @@
 	display: block;
 }
 
-.edit-issue .issue-title {
+.issue .edit-issue .issue-title {
 	width: 100%;
 	font-size: 17.5px;
 	font-weight: 500;
 }
 
-.edit-issue .issue-description {
+.issue .edit-issue .issue-description {
 	width: 100%;
+	margin: 8px 0;
+	padding: 8px;
 	min-height: 150px;
 }
 
@@ -271,12 +273,28 @@
 	display: none;
 }
 
-.issue-description {
-	margin: 12px 0;
-}
-
 .issue.loading .loading-overlay {
 	display: block;
+}
+
+.issue .issue-controls {
+	margin-bottom: 8px;
+}
+
+.issue header {
+	background: #eee;
+	padding: 8px;
+	position: relative;
+}
+
+.issue header .issue-labels {
+	position: absolute;
+	bottom: 0;
+	right: 0;
+}
+
+.issue .issue-description {
+	margin: 12px 8px;
 }
 
 /* Label selector */
@@ -348,6 +366,8 @@
 	height: 40px;
 	margin: 0 4px 4px 0;
 	float: left;
+	border: 1px solid #ccc;
+	border-radius: 4px;
 }
 
 .comment .author {
