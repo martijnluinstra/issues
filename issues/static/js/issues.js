@@ -679,6 +679,10 @@
 
     IssueListView.prototype.template = templatify('tpl-issue-list-panel');
 
+    IssueListView.prototype.title = function() {
+      return 'Issues';
+    };
+
     IssueListView.prototype.events = {
       'click .close-issues-button': function(evt) {
         var child, cid, _ref8, _results;
@@ -723,6 +727,10 @@
     }
 
     IssueView.prototype.template = templatify('tpl-issue-details-panel');
+
+    IssueView.prototype.title = function() {
+      return this.model.get('title');
+    };
 
     IssueView.prototype.events = {
       'submit .comments form': function(evt) {
@@ -861,6 +869,10 @@
     }
 
     NewIssueView.prototype.template = templatify('tpl-new-issue-panel');
+
+    NewIssueView.prototype.title = function() {
+      return 'New Issue';
+    };
 
     NewIssueView.prototype.events = {
       'submit form': function(evt) {
@@ -1290,7 +1302,7 @@
       this.view = view;
       this.view.render();
       this.view.$el.appendTo(this.$el);
-      this.trigger('render');
+      this.trigger('render', this.view);
       return defer(function() {
         return _this.$el.addClass('visible');
       });
@@ -1308,7 +1320,7 @@
       if (!this.isVisible()) {
         return;
       }
-      this.trigger('hide');
+      this.trigger('hide', this.view);
       this.$el.removeClass('visible');
       return setTimeout((function() {
         return _this.clear;
@@ -1356,7 +1368,8 @@
     }
 
     AppRouter.prototype.initialize = function(config) {
-      var _this = this;
+      var setTitle,
+        _this = this;
       window.app = this;
       this.route('', function() {
         return this.navigate('/todo', true);
@@ -1387,11 +1400,14 @@
       });
       this.labelListView.render();
       this.listTodoIssues();
-      this.listPanel.on('render', function() {
-        return _this.detailPanel.hide();
-      });
+      setTitle = function(view) {
+        return window.document.title = "" + (view.title()) + " – Issues";
+      };
+      this.listPanel.on('render', setTitle);
+      this.detailPanel.on('render', setTitle);
       return this.detailPanel.on('hide', function() {
-        return app.navigate(_this.listPanel.view.url);
+        app.navigate(_this.listPanel.view.url);
+        return setTitle(_this.listPanel.view);
       });
     };
 
@@ -1402,6 +1418,9 @@
         model: this.todoCollection
       });
       view.url = '/todo';
+      view.title = function() {
+        return 'Todo';
+      };
       return this.listPanel.render(view);
     };
 
@@ -1412,6 +1431,9 @@
         model: this.issueCollection
       });
       view.url = '/archive';
+      view.title = function() {
+        return 'Archive';
+      };
       return this.listPanel.render(view);
     };
 
@@ -1433,13 +1455,19 @@
         model: collection
       });
       view.url = '/labels/' + encodeURIComponent(name);
+      view.title = function() {
+        return name;
+      };
       return this.listPanel.render(view);
     };
 
     AppRouter.prototype.newIssue = function() {
-      return this.detailPanel.render(new NewIssueView({
+      var view;
+      view = new NewIssueView({
         model: this.issueCollection
-      }));
+      });
+      view.url = '/issues/new';
+      return this.detailPanel.render(view);
     };
 
     AppRouter.prototype.showIssue = function(id) {

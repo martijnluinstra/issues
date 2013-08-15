@@ -40,6 +40,8 @@ class IssueListView extends Backbone.CollectionView
 
 	template: templatify 'tpl-issue-list-panel'
 
+	title: -> 'Issues'
+
 	events:
 		# 'Close' selection button
 		'click .close-issues-button': (evt) ->
@@ -64,6 +66,8 @@ class IssueListView extends Backbone.CollectionView
 
 class IssueView extends Backbone.View
 	template: templatify 'tpl-issue-details-panel'
+
+	title: -> @model.get 'title'
 
 	events:
 		# catch the submit-event of the comment form
@@ -191,6 +195,8 @@ class IssueView extends Backbone.View
 
 class NewIssueView extends Backbone.View
 	template: templatify 'tpl-new-issue-panel'
+
+	title: -> 'New Issue'
 
 	events:
 		'submit form': (evt) ->

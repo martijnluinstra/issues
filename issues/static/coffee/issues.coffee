@@ -97,7 +97,7 @@ class Panel
 		@view.render()
 		@view.$el.appendTo @$el
 
-		@trigger 'render'
+		@trigger 'render', @view
 		# Delay adding the class 'visible' to enforce css transitions
 		defer => @$el.addClass 'visible'
 
@@ -110,7 +110,7 @@ class Panel
 		if not @isVisible()
 			return
 
-		@trigger 'hide'
+		@trigger 'hide', @view
 		@$el.removeClass 'visible'
 		# Remove the view from the DOM (so it can't receive updates and catch
 		# events while no longer visible nor active.)
@@ -155,7 +155,7 @@ class AppRouter extends Backbone.Router
 
 		@issueCollection = new IssueCollection config.issues,
 			parse: yes
-		
+
 		@issueCollection.url = '/api/issues' # (Cannot be passed as an option
 			# because then it will also be passed to all the issues preloaded)
 
@@ -180,17 +180,25 @@ class AppRouter extends Backbone.Router
 
 		@listTodoIssues()
 
-		@listPanel.on 'render', =>
-			@detailPanel.hide()
+		# Set the title of the window to the last rendered panel.
+		setTitle = (view) ->
+			window.document.title = "#{view.title()} – Issues"
 
+		@listPanel.on 'render', setTitle
+		@detailPanel.on 'render', setTitle
+
+		# When the details panel is hidden, return focus, url and title to
+		# the active list panel.
 		@detailPanel.on 'hide', =>
 			app.navigate @listPanel.view.url
+			setTitle @listPanel.view
 
 	listTodoIssues: ->
 		@todoCollection.fetch()
 		view = new IssueListView
 			model: @todoCollection
 		view.url = '/todo'
+		view.title = -> 'Todo'
 		@listPanel.render view
 
 	listAllIssues: ->
@@ -198,6 +206,7 @@ class AppRouter extends Backbone.Router
 		view = new IssueListView
 			model: @issueCollection
 		view.url = '/archive'
+		view.title = -> 'Archive'
 		@listPanel.render view
 
 	listIssuesWithLabel: (name) ->
@@ -213,12 +222,14 @@ class AppRouter extends Backbone.Router
 		view = new IssueListView
 			model: collection
 		view.url = '/labels/' + encodeURIComponent name
-
+		view.title = -> name
 		@listPanel.render view
 
 	newIssue: ->
-		@detailPanel.render new NewIssueView
+		view = new NewIssueView
 			model: @issueCollection
+		view.url = '/issues/new'
+		@detailPanel.render view
 
 	showIssue: (id) ->
 		# First, try to get the issue from our global collection
