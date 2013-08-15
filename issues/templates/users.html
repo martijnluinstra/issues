@@ -85,7 +85,12 @@
 		}
 
 		function hidePopup(){
-			$('.overlay').remove();
+			var overlay = $('.overlay');
+			overlay.addClass('hidden');
+			// Wait with removing till the transition has been completed.
+			setTimeout(function() {
+				overlay.remove();
+			}, 500);
 		}
 	</script>
 {% endblock %}

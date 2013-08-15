@@ -53,6 +53,33 @@ Backbone.Collection::containsWhere = (attributes) ->
 defer = (fn) ->
 	setTimeout fn, 1
 
+loadPopup = (url) ->
+	overlay = jQuery '<div class="overlay hidden"></div>'
+
+	hide = ->
+		overlay.addClass 'hidden'
+		setTimeout (-> overlay.remove()), 500
+
+	# Clicking on the overlay dismisses the overlay
+	overlay.click (evt) ->
+		hide() if evt.target == overlay.get 0
+
+	jQuery(document.body).append overlay
+
+	jQuery.ajax
+		url: url
+		success: (response) ->
+			panel = jQuery(response).filter '.panel'
+			panel.addClass 'popup'
+
+			# add a close button to the popup
+			closeButton = panel.find('.panel-title').append '<button type="button" class="close" data-dismiss="popup">&times;</button>'
+			closeButton.click hide
+
+			# add the popup to the overlay
+			overlay.append panel
+			defer -> overlay.removeClass 'hidden'
+
 
 class Panel
 	constructor: (el) ->
@@ -228,7 +255,11 @@ window.init = (data) ->
 		if jQuery(this).attr('rel') == 'external'
 			return;
 
+		if jQuery(this).attr('rel') == 'popup'
+			evt.preventDefault()
+			return loadPopup jQuery(this).attr 'href'
+
 		evt.preventDefault()
-		app.navigate (jQuery this).attr('href'), true
+		app.navigate (jQuery(this).attr 'href'), true
 
 	return app
