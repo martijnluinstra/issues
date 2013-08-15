@@ -463,10 +463,25 @@
 
     LabelCollection.prototype.model = Label;
 
+    LabelCollection.prototype.isDirty = false;
+
+    LabelCollection.prototype.initialize = function() {
+      this.on('add', this.markDirty, this);
+      return this.on('remove', this.markDirty, this);
+    };
+
+    LabelCollection.prototype.markDirty = function() {
+      return this.isDirty = true;
+    };
+
     LabelCollection.prototype.save = function() {
-      return Backbone.sync('update', this, {
-        url: this.url()
-      });
+      var isDirty;
+      if (this.isDirty) {
+        Backbone.sync('update', this, {
+          url: this.url()
+        });
+        return isDirty = false;
+      }
     };
 
     return LabelCollection;
@@ -943,7 +958,7 @@
       this.filterField = this.$('.label-filter');
       this.createLabelButton = this.$('.create-new-label-button');
       this.blurCallback = function(evt) {
-        if (!jQuery(evt.target).isOrIsChildOf(_this.el)) {
+        if (_this.isVisible() && !jQuery(evt.target).isOrIsChildOf(_this.el)) {
           return _this.hide();
         }
       };
@@ -995,6 +1010,10 @@
       }
     };
 
+    DropdownLabelListView.prototype.isVisible = function() {
+      return this.$el.is(':visible');
+    };
+
     DropdownLabelListView.prototype.show = function(parent) {
       var parent_pos,
         _this = this;
@@ -1017,7 +1036,7 @@
     };
 
     DropdownLabelListView.prototype.toggle = function(parent) {
-      if (this.$el.is(':visible')) {
+      if (this.isVisible()) {
         return this.hide();
       } else {
         return this.show(parent);

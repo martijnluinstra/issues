@@ -53,6 +53,17 @@ class Label extends Backbone.Model
 class LabelCollection extends Backbone.Collection
 	model: Label
 
+	isDirty: no
+
+	initialize: ->
+		@on 'add', @markDirty, this
+		@on 'remove', @markDirty, this
+
+	markDirty: ->
+		@isDirty = yes
+
 	save: ->
-		Backbone.sync 'update', this,
-			url: @url()
+		if @isDirty
+			Backbone.sync 'update', this,
+				url: @url()
+			isDirty = no

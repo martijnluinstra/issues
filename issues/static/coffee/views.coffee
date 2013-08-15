@@ -332,7 +332,7 @@ class DropdownLabelListView extends Backbone.CollectionView
 		@createLabelButton = @$ '.create-new-label-button'
 
 		@blurCallback = (evt) =>
-			if not jQuery(evt.target).isOrIsChildOf @el
+			if @isVisible() and not jQuery(evt.target).isOrIsChildOf @el
 				@hide()
 
 		jQuery(document).on 'click', @blurCallback
@@ -368,6 +368,9 @@ class DropdownLabelListView extends Backbone.CollectionView
 		else
 			@createLabelButton.hide()
 
+	isVisible: ->
+		@$el.is ':visible'
+
 	show: (parent) ->
 		# Position the popover
 		parent_pos = jQuery(parent).offsetTo @el.parentNode
@@ -393,7 +396,7 @@ class DropdownLabelListView extends Backbone.CollectionView
 		@selected.save()
 
 	toggle: (parent) ->
-		if @$el.is ':visible'
+		if @isVisible()
 			@hide()
 		else
 			@show parent
