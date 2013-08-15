@@ -18,9 +18,11 @@ class IssueListItemView extends Backbone.View
 			el: @$ '.issue-labels'
 
 	render: (eventName) ->
+		console.log @model.has 'deadline'
 		@$('.issue-link').attr 'href', "/issues/#{@model.get 'id'}"
 		@$('.issue-title').text @model.get 'title'
 		@$('.issue-description').text @model.strip 'description'
+		@$el.toggleClass 'issue-missed-deadline', (@model.has 'deadline') and not (@model.get 'completed') and moment(@model.get 'deadline').isBefore()
 		@$el.toggleClass 'issue-completed', !! @model.get 'completed'
 		@labelView.render()
 

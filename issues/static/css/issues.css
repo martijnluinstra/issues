@@ -198,6 +198,10 @@
 	text-decoration: line-through;
 }
 
+.issue-list .issue-missed-deadline a {
+	color: red;
+}
+
 .issue-list .issue-labels {
 	position: absolute;
 	bottom: 0;

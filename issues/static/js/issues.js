@@ -526,9 +526,11 @@
     };
 
     IssueListItemView.prototype.render = function(eventName) {
+      console.log(this.model.has('deadline'));
       this.$('.issue-link').attr('href', "/issues/" + (this.model.get('id')));
       this.$('.issue-title').text(this.model.get('title'));
       this.$('.issue-description').text(this.model.strip('description'));
+      this.$el.toggleClass('issue-missed-deadline', (this.model.has('deadline')) && !(this.model.get('completed')) && moment(this.model.get('deadline')).isBefore());
       this.$el.toggleClass('issue-completed', !!this.model.get('completed'));
       return this.labelView.render();
     };
