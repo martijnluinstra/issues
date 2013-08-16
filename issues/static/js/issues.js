@@ -397,8 +397,8 @@
         }
       };
       this.resizeCallback = function() {
-        _this.canvas.width = _this.canvas.parentNode.offsetWidth;
-        return _this.canvas.height = _this.canvas.parentNode.offsetHeight;
+        _this.canvas.width = _this.canvas.parentNode.offsetWidth * 2;
+        return _this.canvas.height = _this.canvas.parentNode.offsetHeight * 2;
       };
     }
 
@@ -455,8 +455,8 @@
       var d, n, r, w;
       r = this.smooth(0, 1, 120000, t);
       n = 3;
-      d = this.smooth(0, 50, 10000, t);
-      w = this.smooth(10, 50, 15000, t);
+      d = this.smooth(0, this.canvas.width / 8, 10000, t);
+      w = this.smooth(10, this.canvas.width / 8, 15000, t);
       this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
       return this.draw(this.canvas.width / 2, this.canvas.height / 2, r, d, w, n);
     };

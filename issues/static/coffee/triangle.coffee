@@ -41,8 +41,8 @@ class Triangle
 				@requestFrame.call window, @animateCallback
 
 		@resizeCallback = =>
-			@canvas.width = @canvas.parentNode.offsetWidth
-			@canvas.height = @canvas.parentNode.offsetHeight
+			@canvas.width = @canvas.parentNode.offsetWidth * 2
+			@canvas.height = @canvas.parentNode.offsetHeight * 2
 
 	start: ->
 		if @playing
@@ -99,8 +99,8 @@ class Triangle
 	drawStep: (t) ->
 		r = @smooth 0, 1, 120000, t
 		n = 3
-		d = @smooth 0, 50, 10000, t
-		w = @smooth 10, 50, 15000, t
+		d = @smooth 0, @canvas.width / 8, 10000, t
+		w = @smooth 10, @canvas.width / 8, 15000, t
 
 		@ctx.clearRect 0, 0, @canvas.width, @canvas.height
 		@draw @canvas.width / 2, @canvas.height / 2, r, d, w, n
