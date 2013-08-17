@@ -76,6 +76,9 @@ loadPopup = (url) ->
 			closeButton = panel.find('.panel-title').append '<button type="button" class="close" data-dismiss="popup">&times;</button>'
 			closeButton.click hide
 
+			# mark all links as external
+			panel.find('a[href]').attr 'rel', 'external'
+
 			# add the popup to the overlay
 			overlay.append panel
 			defer -> overlay.removeClass 'hidden'
