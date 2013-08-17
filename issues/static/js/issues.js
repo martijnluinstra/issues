@@ -1047,19 +1047,28 @@
     return setTimeout(fn, 1);
   };
   loadPopup = function(url) {
-    var hide, overlay;
+    var catchEscapeKey, hide, overlay;
     overlay = jQuery('<div class="overlay hidden"></div>');
+    catchEscapeKey = function(evt) {
+      if (evt.keyCode === 27) {
+        evt.preventDefault();
+        evt.stopPropagation();
+        return hide();
+      }
+    };
     hide = function() {
       overlay.addClass('hidden');
-      return setTimeout((function() {
+      setTimeout((function() {
         return overlay.remove();
       }), 500);
+      return jQuery(document).off('keyup', catchEscapeKey);
     };
     overlay.click(function(evt) {
       if (evt.target === overlay.get(0)) {
         return hide();
       }
     });
+    jQuery(document).on('keyup', catchEscapeKey);
     jQuery(document.body).append(overlay);
     return jQuery.ajax({
       url: url,

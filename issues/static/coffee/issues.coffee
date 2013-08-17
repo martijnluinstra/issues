@@ -56,13 +56,28 @@ defer = (fn) ->
 loadPopup = (url) ->
 	overlay = jQuery '<div class="overlay hidden"></div>'
 
-	hide = ->
-		overlay.addClass 'hidden'
-		setTimeout (-> overlay.remove()), 500
+	catchEscapeKey = (evt) ->
+		if evt.keyCode == 27
+			evt.preventDefault()
+			evt.stopPropagation()
+			hide()
 
+	hide = ->
+		# Remove the popup from view (animation)
+		overlay.addClass 'hidden'
+
+		# Remove DOM event listeners
+		jQuery(document).off 'keyup', catchEscapeKey
+
+		# Schedule cleanup
+		setTimeout (-> overlay.remove()), 500
+	
 	# Clicking on the overlay dismisses the overlay
 	overlay.click (evt) ->
 		hide() if evt.target == overlay.get 0
+
+	# Pressing the [escape]-button dismisses the overlay
+	jQuery(document).on 'keyup', catchEscapeKey
 
 	jQuery(document.body).append overlay
 
