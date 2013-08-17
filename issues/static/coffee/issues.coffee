@@ -71,7 +71,7 @@ loadPopup = (url) ->
 
 		# Schedule cleanup
 		setTimeout (-> overlay.remove()), 500
-	
+
 	# Clicking on the overlay dismisses the overlay
 	overlay.click (evt) ->
 		hide() if evt.target == overlay.get 0
@@ -204,6 +204,9 @@ class AppRouter extends Backbone.Router
 
 		@listPanel.on 'render', setTitle
 		@detailPanel.on 'render', setTitle
+
+		@listPanel.on 'render', =>
+			@detailPanel.hide()
 
 		# When the details panel is hidden, return focus, url and title to
 		# the active list panel.

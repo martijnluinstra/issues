@@ -1188,6 +1188,9 @@
       };
       this.listPanel.on('render', setTitle);
       this.detailPanel.on('render', setTitle);
+      this.listPanel.on('render', __bind(function() {
+        return this.detailPanel.hide();
+      }, this));
       return this.detailPanel.on('hide', __bind(function() {
         app.navigate(this.listPanel.view.url);
         return setTitle(this.listPanel.view);
