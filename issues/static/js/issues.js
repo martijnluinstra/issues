@@ -751,6 +751,11 @@
     NewIssueView.prototype.initialize = function() {
       return this.setElement(this.template());
     };
+    NewIssueView.prototype.render = function() {
+      return setTimeout((__bind(function() {
+        return this.$('input[name=title]').get(0).focus();
+      }, this)), 500);
+    };
     return NewIssueView;
   })();
   CommentListItemView = (function() {
@@ -1058,10 +1063,10 @@
     };
     hide = function() {
       overlay.addClass('hidden');
-      setTimeout((function() {
+      jQuery(document).off('keyup', catchEscapeKey);
+      return setTimeout((function() {
         return overlay.remove();
       }), 500);
-      return jQuery(document).off('keyup', catchEscapeKey);
     };
     overlay.click(function(evt) {
       if (evt.target === overlay.get(0)) {
