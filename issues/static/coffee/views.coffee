@@ -146,6 +146,10 @@ class IssueView extends Backbone.View
 
 		@loadingAnimation = new Triangle @$('.loading-overlay canvas').get 0
 
+		@$el.find('input[type=date]').pickadate
+			firstDay: 1
+			format: 'yyyy/mm/dd'
+
 	render: (eventName) ->
 		@$('.read-issue .issue-title').text @model.get 'title'
 		@$('.read-issue .issue-description').html @model.get 'description'

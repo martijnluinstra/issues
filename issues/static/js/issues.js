@@ -806,7 +806,11 @@
       });
       this.$el.append(this.labelDropdownView.el);
       this.model.comments.fetch();
-      return this.loadingAnimation = new Triangle(this.$('.loading-overlay canvas').get(0));
+      this.loadingAnimation = new Triangle(this.$('.loading-overlay canvas').get(0));
+      return this.$el.find('input[type=date]').pickadate({
+        firstDay: 1,
+        format: 'yyyy/mm/dd'
+      });
     };
 
     IssueView.prototype.render = function(eventName) {
