@@ -807,7 +807,7 @@
       this.$el.append(this.labelDropdownView.el);
       this.model.comments.fetch();
       this.loadingAnimation = new Triangle(this.$('.loading-overlay canvas').get(0));
-      return this.$el.find('input[type=date]').pickadate({
+      return this.$el.find('.issue-deadline').pickadate({
         firstDay: 1,
         format: 'yyyy/mm/dd'
       });

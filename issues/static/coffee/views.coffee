@@ -146,7 +146,7 @@ class IssueView extends Backbone.View
 
 		@loadingAnimation = new Triangle @$('.loading-overlay canvas').get 0
 
-		@$el.find('input[type=date]').pickadate
+		@$el.find('.issue-deadline').pickadate
 			firstDay: 1
 			format: 'yyyy/mm/dd'
 
