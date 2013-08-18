@@ -1,4 +1,5 @@
-from flask.ext.wtf import Form, TextField, PasswordField, validators
+from flask.ext.wtf import Form
+from wtforms import TextField, PasswordField, validators
 
 
 class AddUserForm(Form):

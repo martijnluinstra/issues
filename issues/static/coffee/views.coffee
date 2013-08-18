@@ -219,6 +219,12 @@ class NewIssueView extends Backbone.View
 	initialize: ->
 		@setElement @template()
 
+	render: ->
+		# Auto-focus the title field, but only after a delay used for the
+		# animation of the OverlayPanel which shows this view. (This feels
+		# quite dirty. Fix me.)
+		setTimeout (=> @$('input[name=title]').get(0).focus()), 500
+
 
 class CommentListItemView extends Backbone.View
 	template: templatify 'tpl-comment-list-item'

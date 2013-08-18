@@ -896,6 +896,13 @@
       return this.setElement(this.template());
     };
 
+    NewIssueView.prototype.render = function() {
+      var _this = this;
+      return setTimeout((function() {
+        return _this.$('input[name=title]').get(0).focus();
+      }), 500);
+    };
+
     return NewIssueView;
 
   })(Backbone.View);
@@ -1260,10 +1267,18 @@
   };
 
   loadPopup = function(url) {
-    var hide, overlay;
+    var catchEscapeKey, hide, overlay;
     overlay = jQuery('<div class="overlay hidden"></div>');
+    catchEscapeKey = function(evt) {
+      if (evt.keyCode === 27) {
+        evt.preventDefault();
+        evt.stopPropagation();
+        return hide();
+      }
+    };
     hide = function() {
       overlay.addClass('hidden');
+      jQuery(document).off('keyup', catchEscapeKey);
       return setTimeout((function() {
         return overlay.remove();
       }), 500);
@@ -1273,6 +1288,7 @@
         return hide();
       }
     });
+    jQuery(document).on('keyup', catchEscapeKey);
     jQuery(document.body).append(overlay);
     return jQuery.ajax({
       url: url,
@@ -1282,6 +1298,7 @@
         panel.addClass('popup');
         closeButton = panel.find('.panel-title').append('<button type="button" class="close" data-dismiss="popup">&times;</button>');
         closeButton.click(hide);
+        panel.find('a[href]').attr('rel', 'external');
         overlay.append(panel);
         return defer(function() {
           return overlay.removeClass('hidden');
@@ -1405,6 +1422,9 @@
       };
       this.listPanel.on('render', setTitle);
       this.detailPanel.on('render', setTitle);
+      this.listPanel.on('render', function() {
+        return _this.detailPanel.hide();
+      });
       return this.detailPanel.on('hide', function() {
         app.navigate(_this.listPanel.view.url);
         return setTitle(_this.listPanel.view);

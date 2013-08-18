@@ -56,13 +56,28 @@ defer = (fn) ->
 loadPopup = (url) ->
 	overlay = jQuery '<div class="overlay hidden"></div>'
 
+	catchEscapeKey = (evt) ->
+		if evt.keyCode == 27
+			evt.preventDefault()
+			evt.stopPropagation()
+			hide()
+
 	hide = ->
+		# Remove the popup from view (animation)
 		overlay.addClass 'hidden'
+
+		# Remove DOM event listeners
+		jQuery(document).off 'keyup', catchEscapeKey
+
+		# Schedule cleanup
 		setTimeout (-> overlay.remove()), 500
 
 	# Clicking on the overlay dismisses the overlay
 	overlay.click (evt) ->
 		hide() if evt.target == overlay.get 0
+
+	# Pressing the [escape]-button dismisses the overlay
+	jQuery(document).on 'keyup', catchEscapeKey
 
 	jQuery(document.body).append overlay
 
@@ -75,6 +90,9 @@ loadPopup = (url) ->
 			# add a close button to the popup
 			closeButton = panel.find('.panel-title').append '<button type="button" class="close" data-dismiss="popup">&times;</button>'
 			closeButton.click hide
+
+			# mark all links as external
+			panel.find('a[href]').attr 'rel', 'external'
 
 			# add the popup to the overlay
 			overlay.append panel
@@ -186,6 +204,9 @@ class AppRouter extends Backbone.Router
 
 		@listPanel.on 'render', setTitle
 		@detailPanel.on 'render', setTitle
+
+		@listPanel.on 'render', =>
+			@detailPanel.hide()
 
 		# When the details panel is hidden, return focus, url and title to
 		# the active list panel.
