@@ -21,10 +21,14 @@ class IssueListItemView extends Backbone.View
 		@$('.issue-link').attr 'href', "/issues/#{@model.get 'id'}"
 		@$('.issue-title').text @model.get 'title'
 		@$('.issue-description').text @model.strip 'description'
+		
 		@$el.toggleClass 'issue-missed-deadline', (@model.has 'deadline') and \
 			not (@model.get 'completed') and \
 			moment(@model.get 'deadline').isBefore()
 		@$el.toggleClass 'issue-completed', !! @model.get 'completed'
+		@$el.toggleClass 'issue-is-public', !! @model.get 'public'
+		@$el.toggleClass 'issue-is-private', ! @model.get 'public'
+		
 		@labelView.render()
 
 	isSelected: ->
@@ -112,6 +116,7 @@ class IssueView extends Backbone.View
 
 			data = @$('.edit-issue').serializeObject()
 			data.deadline = if data.deadline? then moment data.deadline else null
+			data.public = data.public?
 
 			@model.save data, patch: yes
 			@$el.removeClass 'editable'
@@ -160,13 +165,17 @@ class IssueView extends Backbone.View
 
 		@$('.read-issue .issue-deadline').text if @model.has 'deadline' then "Deadline #{moment(@model.get 'deadline').fromNow()}" else "No deadline"
 		@$('.read-issue .issue-deadline').attr 'title', if @model.has 'deadline' then moment(@model.get 'deadline').calendar() else ""
+		@$('.read-issue .issue-visibility').text if @model.get 'public' then 'Public issue' else 'Private issue'
 
 		@$('.edit-issue .issue-title').val @model.get 'title'
 		@$('.edit-issue .issue-description').val @model.get 'description'
 		@$('.edit-issue .issue-deadline').val if @model.has 'deadline' then moment(@model.get 'deadline').format 'YYYY-MM-DD'
+		@$('.edit-issue .issue-visibility').get(0).checked = @model.get 'public'
 
 		@$el.toggleClass 'loading', !@model.get 'added'
 		@$el.toggleClass 'issue-completed', !! @model.get 'completed'
+		@$el.toggleClass 'issue-is-public', !! @model.get 'public'
+		@$el.toggleClass 'issue-is-private', ! @model.get 'public'
 
 		if @model.get 'added'
 			@loadingAnimation.stop()

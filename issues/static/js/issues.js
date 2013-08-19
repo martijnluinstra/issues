@@ -651,6 +651,8 @@
       this.$('.issue-description').text(this.model.strip('description'));
       this.$el.toggleClass('issue-missed-deadline', (this.model.has('deadline')) && !(this.model.get('completed')) && moment(this.model.get('deadline')).isBefore());
       this.$el.toggleClass('issue-completed', !!this.model.get('completed'));
+      this.$el.toggleClass('issue-is-public', !!this.model.get('public'));
+      this.$el.toggleClass('issue-is-private', !this.model.get('public'));
       return this.labelView.render();
     };
 
@@ -776,6 +778,7 @@
         evt.preventDefault();
         data = this.$('.edit-issue').serializeObject();
         data.deadline = data.deadline != null ? moment(data.deadline) : null;
+        data["public"] = data["public"] != null;
         this.model.save(data, {
           patch: true
         });
@@ -822,11 +825,15 @@
       }
       this.$('.read-issue .issue-deadline').text(this.model.has('deadline') ? "Deadline " + (moment(this.model.get('deadline')).fromNow()) : "No deadline");
       this.$('.read-issue .issue-deadline').attr('title', this.model.has('deadline') ? moment(this.model.get('deadline')).calendar() : "");
+      this.$('.read-issue .issue-visibility').text(this.model.get('public') ? 'Public issue' : 'Private issue');
       this.$('.edit-issue .issue-title').val(this.model.get('title'));
       this.$('.edit-issue .issue-description').val(this.model.get('description'));
       this.$('.edit-issue .issue-deadline').val(this.model.has('deadline') ? moment(this.model.get('deadline')).format('YYYY-MM-DD') : void 0);
+      this.$('.edit-issue .issue-visibility').get(0).checked = this.model.get('public');
       this.$el.toggleClass('loading', !this.model.get('added'));
       this.$el.toggleClass('issue-completed', !!this.model.get('completed'));
+      this.$el.toggleClass('issue-is-public', !!this.model.get('public'));
+      this.$el.toggleClass('issue-is-private', !this.model.get('public'));
       if (this.model.get('added')) {
         this.loadingAnimation.stop();
       } else {

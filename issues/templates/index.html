@@ -76,6 +76,7 @@
 				<aside>
 					<span class="issue-deadline">Deadline in ???</span>
 					<span class="issue-added">Added ???</span>
+					<span class="issue-visibility"></span>
 				</aside>
 
 				<div class="issue-description"></div>
@@ -88,6 +89,11 @@
 
 				<aside>
 					<input type="text" name="deadline" class="issue-deadline" placeholder="Set a Deadline…" readonly>
+
+					<label>
+						<input type="checkbox" name="public" class="issue-visibility">
+						Public issue
+					</label>
 				</aside>
 
 				<textarea name="description" class="issue-description" placeholder="Optional description of the issue…"></textarea>

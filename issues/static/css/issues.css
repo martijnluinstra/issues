@@ -198,6 +198,10 @@
 	text-decoration: line-through;
 }
 
+.issue-list .issue-is-private {
+	background-color: #fee;
+}
+
 .issue-list .issue-missed-deadline a {
 	color: red;
 }
