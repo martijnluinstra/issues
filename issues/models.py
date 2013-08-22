@@ -2,14 +2,20 @@ from issues import db, gravatar
 from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 
-issues_labels = db.Table('issues_labels',
+issues_labels_table = db.Table('issues_labels',
     db.Column('issue', db.Integer, db.ForeignKey('issue.id')),
     db.Column('label', db.Integer, db.ForeignKey('label.id'))
 )
 
-notifications = db.Table('notifications',
+notifications_table = db.Table('notifications',
     db.Column('issue', db.Integer, db.ForeignKey('issue.id')),
     db.Column('user', db.Integer, db.ForeignKey('user.id'))
+)
+
+read_status_table = db.Table('read_status',
+    db.Column('issue', db.Integer, db.ForeignKey('issue.id')),
+    db.Column('user', db.Integer, db.ForeignKey('user.id')),
+    db.Column('last_read', db.DateTime)
 )
 
 class User(db.Model):
@@ -63,7 +69,7 @@ class Issue(db.Model):
     deadline = db.Column(db.DateTime(), nullable=True)
     comments = db.relationship('Comment', backref='issue',
                                 lazy='dynamic')
-    labels = db.relationship('Label', secondary=issues_labels,
+    labels = db.relationship('Label', secondary=issues_labels_table,
         backref=db.backref('issues', lazy='dynamic'))
 
     def __init__(self, title, description, owner_id, public=False, deadline=None):

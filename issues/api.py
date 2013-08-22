@@ -1,8 +1,9 @@
 from flask import make_response, request
 from flask.ext.login import current_user
+from sqlalchemy import update, and_
 from datetime import datetime
 from issues import app, db
-from models import Issue, Comment, Label
+from models import Issue, Comment, Label, read_status_table
 from session import api_login_required, api_admin_required, is_admin
 import json, re, time
 
@@ -101,6 +102,30 @@ def list_todo_issues():
     return jsonify([issue.to_dict() for issue in issues])
 
 
+@app.route('/api/issues/<int:issue_id>/read', methods=['PUT'])
+@api_login_required
+def mark_read(issue_id):
+    """ Add a comment to an issue """
+    data = request.get_json()
+    issue = Issue.query.filter_by(id=issue_id).first_or_404()
+    if 'last_read' in data:
+        try:
+            last_read = parse_iso_datetime(data['last_read'])
+        except (ValueError, TypeError):
+            return 'Invalid datetime format', 422
+        read_status = db.session.query(read_status_table).filter(read_status_table.c.issue == issue.id, read_status_table.c.user == current_user.id).first()
+        if read_status: 
+            db.session.execute(read_status_table.update()
+                .where(and_(read_status_table.c.issue == issue.id, read_status_table.c.user == current_user.id))
+                .values(last_read=last_read))
+        else:
+            db.session.execute(read_status_table.insert()
+                .values(issue=issue.id, user=current_user.id, last_read=last_read))
+        db.session.commit()
+        return 'Updated readstatus', 200
+    return 'No date', 400
+
+
 @app.route('/api/issues/<int:issue_id>/comments', methods=['GET'])
 def list_comments(issue_id):
     """ Get a list containing all comments of an issue """
@@ -122,7 +147,7 @@ def add_comment(issue_id):
         db.session.add(comment)
         db.session.commit()
         return 'Comment added', 201
-    return 'Invalid text', 422
+    return 'No/invalid text', 422
 
 
 @app.route('/api/issues/<int:issue_id>/labels', methods=['PUT'])
@@ -140,7 +165,7 @@ def add_label(issue_id):
         label = None
 
         if not 'id' in label_data:
-            return 'One of the labels is missing a label id', 500
+            return 'One of the labels is missing a label id', 400
 
         # Find the label
         label = Label.query.filter_by(id=label_data['id']).first()
@@ -176,7 +201,7 @@ def create_label():
     data = request.get_json()
     
     if not 'name' in data or data['name'].strip() == '':
-        return 'Label name is empty', 500
+        return 'Label name is empty', 400
 
     # (Disabled because somehow I do like spaces in my label names..)
     # if re.match('^[\w]+[\w-]*$', data['name']) is None:
