@@ -1,6 +1,5 @@
 from flask import make_response, request
 from flask.ext.login import current_user
-from sqlalchemy import and_
 from datetime import datetime
 from issues import app, db
 from models import Issue, Comment, Label, read_status_table
@@ -17,18 +16,35 @@ def jsonify(data):
     return response
 
 
+def create_issue_read_dict(issue, last_read):
+    date = last_read.isoformat() if last_read is not None else None
+    return dict(issue.to_dict().items() + [('last_read', date)])
+
+
 def parse_iso_datetime(datetimestring):
     return datetime.strptime(datetimestring, TIME_FORMAT)
 
 
+def issues_read_query(**filters):
+    clauses = [getattr(Issue, key) == value for (key, value) in filters.items()]
+    return db.session.query(Issue, read_status_table.c.last_read).\
+        outerjoin(read_status_table,
+                  db.and_(
+                      Issue.id == read_status_table.c.issue,
+                      read_status_table.c.user == current_user.get_id()
+                  )
+                  ).filter(db.and_(*clauses))
+
+
 @app.route('/api/issues', methods=['GET'])
 def list_all_issues():
-    """ Get a list containing all issues """  
+    """ Get a list containing all issues """
     conditions = {}
+    # Only show public issues to non-admins
     if not is_admin():
         conditions['public'] = True
-    issues = Issue.query.filter_by(**conditions).all()
-    return jsonify([issue.to_dict() for issue in issues])
+    result = issues_read_query(**conditions).all()
+    return jsonify([create_issue_read_dict(issue, last_read) for (issue,last_read) in result])
 
 
 @app.route('/api/issues', methods=['POST'])
@@ -51,8 +67,8 @@ def view_issue(issue_id):
     conditions = {'id': issue_id}
     if not is_admin():
         conditions['public'] = True
-    issue = Issue.query.filter_by(**conditions).first_or_404()
-    return jsonify(issue.to_dict())
+    (issue,last_read) = issues_read_query(**conditions).first()
+    return jsonify(create_issue_read_dict(issue, last_read))
 
 
 @app.route('/api/issues/<int:issue_id>', methods=['PUT', 'PATCH'])
@@ -98,8 +114,8 @@ def list_todo_issues():
     # Only show public issues to non-admins
     if not is_admin():
         conditions['public'] = True
-    issues = Issue.query.filter_by(**conditions).all()
-    return jsonify([issue.to_dict() for issue in issues])
+    result = issues_read_query(**conditions).all()
+    return jsonify([create_issue_read_dict(issue, last_read) for (issue,last_read) in result])
 
 
 @app.route('/api/issues/<int:issue_id>/read', methods=['PUT'])
@@ -116,7 +132,7 @@ def mark_read(issue_id):
         read_status = db.session.query(read_status_table).filter(read_status_table.c.issue == issue.id, read_status_table.c.user == current_user.id).first()
         if read_status: 
             db.session.execute(read_status_table.update()
-                .where(and_(read_status_table.c.issue == issue.id, read_status_table.c.user == current_user.id))
+                .where(db.and_(read_status_table.c.issue == issue.id, read_status_table.c.user == current_user.id))
                 .values(last_read=last_read))
         else:
             db.session.execute(read_status_table.insert()
@@ -217,8 +233,10 @@ def create_label():
 def list_issues_labels(ids):
     """ List all issues with given labels """
     labels = ids.split('+')
-    issues = Issue.query.filter(Issue.labels.any(Label.id.in_(labels))).all()
-    return jsonify([issue.to_dict() for issue in issues])
+    # issues = Issue.query.filter(Issue.labels.any(Label.id.in_(labels))).all()
+    # return jsonify([issue.to_dict() for issue in issues])
+    result = issues_read_query().filter(Issue.labels.any(Label.id.in_(labels))).all()
+    return jsonify([create_issue_read_dict(issue, last_read) for (issue,last_read) in result])
 
 
 @app.route('/api/labels/<int:label_id>', methods=['PUT'])
