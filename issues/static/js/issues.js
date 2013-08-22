@@ -1201,14 +1201,14 @@
     DropdownLabelListView.prototype.show = function(parent) {
       var parent_pos,
         _this = this;
+      this.filterField.val('');
+      this.filter('');
+      this.$el.show();
       parent_pos = jQuery(parent).offsetTo(this.el.parentNode);
       this.$el.css({
         top: parent_pos.top + jQuery(parent).height() + 12,
         left: parent_pos.left + jQuery(parent).width() / 2 - this.$el.width() / 2
       });
-      this.filterField.val('');
-      this.filter('');
-      this.$el.show();
       return defer(function() {
         return _this.filterField.focus();
       });

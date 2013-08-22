@@ -427,13 +427,6 @@ class DropdownLabelListView extends Backbone.CollectionView
 		@$el.is ':visible'
 
 	show: (parent) ->
-		# Position the popover
-		parent_pos = jQuery(parent).offsetTo @el.parentNode
-
-		@$el.css
-			top: parent_pos.top + jQuery(parent).height() + 12
-			left: parent_pos.left + jQuery(parent).width() / 2 - @$el.width() / 2
-
 		# Clear the filter field
 		@filterField.val ''
 
@@ -442,6 +435,13 @@ class DropdownLabelListView extends Backbone.CollectionView
 
 		# Show the popover
 		@$el.show()
+
+		# Position the popover
+		parent_pos = jQuery(parent).offsetTo @el.parentNode
+
+		@$el.css
+			top: parent_pos.top + jQuery(parent).height() + 12
+			left: parent_pos.left + jQuery(parent).width() / 2 - @$el.width() / 2
 
 		# .. and focus the filter field
 		defer => @filterField.focus()
