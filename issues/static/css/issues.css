@@ -198,12 +198,17 @@
 	text-decoration: line-through;
 }
 
-.issue-list .issue-is-private {
-	background-color: #fee;
-}
-
 .issue-list .issue-missed-deadline a {
 	color: red;
+}
+
+.issue-list .issue-visibility:before {
+	content: "\e105";
+	color: #ccc;
+}
+
+.issue-list .issue-is-private .issue-visibility:before {
+	content: "\e106";
 }
 
 .issue-list .issue-labels {

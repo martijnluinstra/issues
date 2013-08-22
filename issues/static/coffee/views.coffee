@@ -427,13 +427,6 @@ class DropdownLabelListView extends Backbone.CollectionView
 		@$el.is ':visible'
 
 	show: (parent) ->
-		# Position the popover
-		parent_pos = jQuery(parent).offsetTo @el.parentNode
-
-		@$el.css
-			top: parent_pos.top + jQuery(parent).height() + 12
-			left: parent_pos.left + jQuery(parent).width() / 2 - @$el.width() / 2
-
 		# Clear the filter field
 		@filterField.val ''
 
@@ -442,6 +435,13 @@ class DropdownLabelListView extends Backbone.CollectionView
 
 		# Show the popover
 		@$el.show()
+
+		# Position the popover
+		parent_pos = jQuery(parent).offsetTo @el.parentNode
+
+		@$el.css
+			top: parent_pos.top + jQuery(parent).height() + 12
+			left: parent_pos.left + jQuery(parent).width() / 2 - @$el.width() / 2
 
 		# .. and focus the filter field
 		defer => @filterField.focus()
@@ -460,6 +460,22 @@ class LabelContextMenu extends Backbone.View
 	events:
 		'change input[name=label-colour]': (evt) ->
 			@model.save colour: evt.target.value
+
+		'click .rename-label-button': (evt) ->
+			evt.preventDefault()
+
+			if name = prompt 'Label name', @model.get 'name'
+				@model.save name: name
+
+			@hide()
+
+		'click .delete-label-button': (evt) ->
+			evt.preventDefault()
+
+			if confirm "Do you want to delete the label '#{@model.get 'name'}'?"
+				@model.destroy()
+
+			@hide()
 
 	template: '
 		<div class="popover bottom label-context-menu">
@@ -503,8 +519,8 @@ class LabelContextMenu extends Backbone.View
 					<label for="label-colour-e1e1e1" style="background-color: #e1e1e1">Gray</label>
 				</div>
 				<ul class="menu">
-					<li class="rename-label-button"><a href="#">Rename Label…</a></li>
-					<li class="delete-label-button"><a href="#">Delete Label…</a></li>
+					<li><a href="#" class="rename-label-button">Rename Label…</a></li>
+					<li><a href="#" class="delete-label-button">Delete Label…</a></li>
 				</ul>
 			</div>
 		</div>'
