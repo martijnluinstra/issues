@@ -1000,12 +1000,9 @@
 
     LabelListItemView.prototype.events = {
       'click .swatch': function(evt) {
-        evt.stopPropagation();
-        evt.preventDefault();
         if (this.contextMenu && this.contextMenu.isVisible()) {
           return this.contextMenu.hide();
         } else {
-          console.log(this.model);
           this.contextMenu = new LabelContextMenu({
             model: this.model
           });
@@ -1252,7 +1249,7 @@
     };
 
     LabelContextMenu.prototype.template = '\
-		<div class="popover right label-context-menu">\
+		<div class="popover bottom label-context-menu">\
 			<div class="arrow"></div>\
 			<div class="popover-content">\
 				<div class="label-colour">\
@@ -1292,14 +1289,14 @@
 					<input type="radio" name="label-colour" value="#e1e1e1" id="label-colour-e1e1e1">\
 					<label for="label-colour-e1e1e1" style="background-color: #e1e1e1">Gray</label>\
 				</div>\
-				<ul>\
-					<li class="rename-label-button">Rename Label…</li>\
-					<li class="delete-label-button">Delete Label…</li>\
+				<ul class="menu">\
+					<li class="rename-label-button"><a href="#">Rename Label…</a></li>\
+					<li class="delete-label-button"><a href="#">Delete Label…</a></li>\
 				</ul>\
 			</div>\
 		</div>';
 
-    LabelContextMenu.prototype.initialize = function() {
+    LabelContextMenu.prototype.initialize = function(options) {
       this.setElement(jQuery(this.template).get(0));
       this.$el.hide();
       jQuery(document.body).append(this.el);
@@ -1320,12 +1317,13 @@
 
     LabelContextMenu.prototype.show = function(parent) {
       var parent_pos;
-      parent_pos = jQuery(parent).offsetTo(this.el.parentNode);
-      this.$el.css({
+      this.trigger = parent;
+      this.$el.show();
+      parent_pos = jQuery(parent).offset();
+      return this.$el.css({
         top: parent_pos.top + jQuery(parent).height() + 12,
         left: parent_pos.left + jQuery(parent).width() / 2 - this.$el.width() / 2
       });
-      return this.$el.show();
     };
 
     LabelContextMenu.prototype.hide = function() {
@@ -1338,7 +1336,15 @@
     };
 
     LabelContextMenu.prototype.blurCallback = function(evt) {
-      if (this.isVisible() && !jQuery(evt.target).isOrIsChildOf(this.el)) {
+      if (!this.isVisible()) {
+        return;
+      }
+      if (jQuery(evt.target).isOrIsChildOf(this.el)) {
+        return;
+      }
+      if (jQuery(evt.target).isOrIsChildOf(this.trigger)) {
+
+      } else {
         return this.hide();
       }
     };

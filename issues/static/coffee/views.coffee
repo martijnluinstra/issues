@@ -279,13 +279,9 @@ class LabelListItemView extends Backbone.View
 	events:
 		# show label context menu when the swatch is clicked
 		'click .swatch': (evt) ->
-			evt.stopPropagation()
-			evt.preventDefault()
-
 			if @contextMenu and @contextMenu.isVisible()
 				@contextMenu.hide()
 			else
-				console.log @model
 				@contextMenu = new LabelContextMenu model: @model
 				@contextMenu.render()
 				@contextMenu.show evt.target
@@ -466,7 +462,7 @@ class LabelContextMenu extends Backbone.View
 			@model.save colour: evt.target.value
 
 	template: '
-		<div class="popover right label-context-menu">
+		<div class="popover bottom label-context-menu">
 			<div class="arrow"></div>
 			<div class="popover-content">
 				<div class="label-colour">
@@ -506,14 +502,14 @@ class LabelContextMenu extends Backbone.View
 					<input type="radio" name="label-colour" value="#e1e1e1" id="label-colour-e1e1e1">
 					<label for="label-colour-e1e1e1" style="background-color: #e1e1e1">Gray</label>
 				</div>
-				<ul>
-					<li class="rename-label-button">Rename Label…</li>
-					<li class="delete-label-button">Delete Label…</li>
+				<ul class="menu">
+					<li class="rename-label-button"><a href="#">Rename Label…</a></li>
+					<li class="delete-label-button"><a href="#">Delete Label…</a></li>
 				</ul>
 			</div>
 		</div>'
 
-	initialize: ->
+	initialize: (options) ->
 		@setElement jQuery(@template).get 0
 		@$el.hide()
 
@@ -529,15 +525,14 @@ class LabelContextMenu extends Backbone.View
 		@$el.is ':visible'
 
 	show: (parent) ->
-		# Position the popover
-		parent_pos = jQuery(parent).offsetTo @el.parentNode
+		@trigger = parent
 
+		@$el.show()
+		
+		parent_pos = jQuery(parent).offset()
 		@$el.css
 			top: parent_pos.top + jQuery(parent).height() + 12
 			left: parent_pos.left + jQuery(parent).width() / 2 - @$el.width() / 2
-
-		# Show the popover
-		@$el.show()
 
 	hide: ->
 		@remove()
@@ -547,6 +542,14 @@ class LabelContextMenu extends Backbone.View
 		super()
 
 	blurCallback: (evt) =>
-		if @isVisible() and not jQuery(evt.target).isOrIsChildOf @el
+		if not @isVisible()
+			return
+
+		if jQuery(evt.target).isOrIsChildOf @el
+			return 
+
+		if jQuery(evt.target).isOrIsChildOf @trigger
+			return
+		else
 			@hide()
 
