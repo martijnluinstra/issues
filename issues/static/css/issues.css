@@ -372,6 +372,39 @@
 	border-top: 1px solid #ccc;
 }
 
+/* Label context menu */
+.label-context-menu .label-colour {
+	width: 120px;
+	height: 36px;
+	overflow: hidden;
+}
+
+.label-context-menu .label-colour input {
+	float: left;
+	visibility: hidden;
+	width: 0;
+}
+
+.label-context-menu .label-colour label {
+	display: block;
+	float: left;
+	width: 12px;
+	height: 12px;
+	margin: 0 6px 6px 0;
+	text-indent: 24px;
+	overflow: hidden;
+	border-radius: 2px;
+	cursor: pointer;
+}
+
+.label-context-menu .label-colour label:hover {
+	border: 1px solid #555;
+}
+
+.label-context-menu .label-colour input[type="radio"]:checked + label {
+	border: 1px solid black;
+}
+
 /* Comments */
 
 .comment-list {
