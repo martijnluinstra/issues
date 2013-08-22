@@ -372,6 +372,90 @@
 	border-top: 1px solid #ccc;
 }
 
+/* Label context menu */
+.label-context-menu .label-colour {
+	width: 120px;
+	height: 36px;
+	overflow: hidden;
+	margin: 4px 0 0 8px;
+}
+
+.label-context-menu .label-colour input {
+	float: left;
+	visibility: hidden;
+	width: 0;
+}
+
+.label-context-menu .label-colour label {
+	display: block;
+	float: left;
+	width: 12px;
+	height: 12px;
+	margin: 0 6px 6px 0;
+	text-indent: 24px;
+	overflow: hidden;
+	border-radius: 2px;
+	cursor: pointer;
+}
+
+.label-context-menu .label-colour label:hover {
+	border: 1px solid #555;
+}
+
+.label-context-menu .label-colour input[type="radio"]:checked + label {
+	border: 1px solid black;
+}
+
+.popover .menu {
+  min-width: 160px;
+  padding: 5px 0;
+  margin: 2px -14px -8px -14px;
+  font-size: 14px;
+  list-style: none;
+  background-color: #ffffff;
+}
+
+.popover .menu > li > a {
+  display: block;
+  padding: 3px 20px;
+  clear: both;
+  font-weight: normal;
+  line-height: 1.428571429;
+  color: #333333;
+  white-space: nowrap;
+}
+
+.popover .menu > li > a:hover,
+.popover .menu > li > a:focus {
+  color: #ffffff;
+  text-decoration: none;
+  background-color: #428bca;
+}
+
+.popover .menu > .active > a,
+.popover .menu > .active > a:hover,
+.popover .menu > .active > a:focus {
+  color: #ffffff;
+  text-decoration: none;
+  background-color: #428bca;
+  outline: 0;
+}
+
+.popover .menu > .disabled > a,
+.popover .menu > .disabled > a:hover,
+.popover .menu > .disabled > a:focus {
+  color: #999999;
+}
+
+.popover .menu > .disabled > a:hover,
+.popover .menu > .disabled > a:focus {
+  text-decoration: none;
+  cursor: not-allowed;
+  background-color: transparent;
+  background-image: none;
+  filter: progid:DXImageTransform.Microsoft.gradient(enabled=false);
+}
+
 /* Comments */
 
 .comment-list {

@@ -277,9 +277,14 @@ class LabelListItemView extends Backbone.View
 	template: templatify 'tpl-label-list-item'
 
 	events:
-		'click .delete-label-button': (evt) ->
-			if confirm "Do you want to delete the label #{@model.get 'name'}?"
-				@model.destroy()
+		# show label context menu when the swatch is clicked
+		'click .swatch': (evt) ->
+			if @contextMenu and @contextMenu.isVisible()
+				@contextMenu.hide()
+			else
+				@contextMenu = new LabelContextMenu model: @model
+				@contextMenu.render()
+				@contextMenu.show evt.target
 
 	initialize: ->
 		@setElement @template()
@@ -450,4 +455,101 @@ class DropdownLabelListView extends Backbone.CollectionView
 			@hide()
 		else
 			@show parent
+
+class LabelContextMenu extends Backbone.View
+	events:
+		'change input[name=label-colour]': (evt) ->
+			@model.save colour: evt.target.value
+
+	template: '
+		<div class="popover bottom label-context-menu">
+			<div class="arrow"></div>
+			<div class="popover-content">
+				<div class="label-colour">
+					<input type="radio" name="label-colour" value="#7bd148" id="label-colour-7bd148">
+					<label for="label-colour-7bd148" style="background-color: #7bd148">Green</label>
+					
+					<input type="radio" name="label-colour" value="#5484ed" id="label-colour-5484ed">
+					<label for="label-colour-5484ed" style="background-color: #5484ed">Bold blue</label>
+					
+					<input type="radio" name="label-colour" value="#a4bdfc" id="label-colour-a4bdfc">
+					<label for="label-colour-a4bdfc" style="background-color: #a4bdfc">Blue</label>
+					
+					<input type="radio" name="label-colour" value="#46d6db" id="label-colour-46d6db">
+					<label for="label-colour-46d6db" style="background-color: #46d6db">Turquoise</label>
+					
+					<input type="radio" name="label-colour" value="#7ae7bf" id="label-colour-7ae7bf">
+					<label for="label-colour-7ae7bf" style="background-color: #7ae7bf">Light green</label>
+					
+					<input type="radio" name="label-colour" value="#51b749" id="label-colour-51b749">
+					<label for="label-colour-51b749" style="background-color: #51b749">Bold green</label>
+					
+					<input type="radio" name="label-colour" value="#fbd75b" id="label-colour-fbd75b">
+					<label for="label-colour-fbd75b" style="background-color: #fbd75b">Yellow</label>
+					
+					<input type="radio" name="label-colour" value="#ffb878" id="label-colour-ffb878">
+					<label for="label-colour-ffb878" style="background-color: #ffb878">Orange</label>
+					
+					<input type="radio" name="label-colour" value="#ff887c" id="label-colour-ff887c">
+					<label for="label-colour-ff887c" style="background-color: #ff887c">Red</label>
+					
+					<input type="radio" name="label-colour" value="#dc2127" id="label-colour-dc2127">
+					<label for="label-colour-dc2127" style="background-color: #dc2127">Bold red</label>
+					
+					<input type="radio" name="label-colour" value="#dbadff" id="label-colour-dbadff">
+					<label for="label-colour-dbadff" style="background-color: #dbadff">Purple</label>
+					
+					<input type="radio" name="label-colour" value="#e1e1e1" id="label-colour-e1e1e1">
+					<label for="label-colour-e1e1e1" style="background-color: #e1e1e1">Gray</label>
+				</div>
+				<ul class="menu">
+					<li class="rename-label-button"><a href="#">Rename Label…</a></li>
+					<li class="delete-label-button"><a href="#">Delete Label…</a></li>
+				</ul>
+			</div>
+		</div>'
+
+	initialize: (options) ->
+		@setElement jQuery(@template).get 0
+		@$el.hide()
+
+		jQuery(document.body).append @el
+		jQuery(document.body).on 'click', @blurCallback
+
+	render: ->
+		current_colour = @model.get 'colour'
+		@$el.find('input[name=label-colour]').each ->
+			not @checked = @value == current_colour
+
+	isVisible: ->
+		@$el.is ':visible'
+
+	show: (parent) ->
+		@trigger = parent
+
+		@$el.show()
+		
+		parent_pos = jQuery(parent).offset()
+		@$el.css
+			top: parent_pos.top + jQuery(parent).height() + 12
+			left: parent_pos.left + jQuery(parent).width() / 2 - @$el.width() / 2
+
+	hide: ->
+		@remove()
+
+	remove: ->
+		jQuery(document).off 'click', @blurCallback
+		super()
+
+	blurCallback: (evt) =>
+		if not @isVisible()
+			return
+
+		if jQuery(evt.target).isOrIsChildOf @el
+			return 
+
+		if jQuery(evt.target).isOrIsChildOf @trigger
+			return
+		else
+			@hide()
 
