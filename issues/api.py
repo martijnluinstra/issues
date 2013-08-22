@@ -1,6 +1,6 @@
 from flask import make_response, request
 from flask.ext.login import current_user
-from sqlalchemy import update, and_
+from sqlalchemy import and_
 from datetime import datetime
 from issues import app, db
 from models import Issue, Comment, Label, read_status_table
