@@ -41,6 +41,13 @@ jQuery.fn.isOrIsChildOf = (parent) ->
 			return no
 
 
+jQuery(document).ajaxStart ->
+	NProgress.start()
+
+jQuery(document).ajaxStop ->
+	NProgress.done()
+
+
 # Get an attribute of the model with all the HTML tags stripped.
 # Note: don't use this on untrusted input (e.g. still do server
 # side cleaning on the input, please!)

@@ -16,7 +16,6 @@ issues/static/js/issues.js: \
 	issues/static/coffee/CollectionView.coffee \
 	issues/static/coffee/backbone.collectionsubset.coffee \
 	issues/static/coffee/colour.coffee \
-	issues/static/coffee/triangle.coffee \
 	issues/static/coffee/models.coffee \
 	issues/static/coffee/views.coffee \
 	issues/static/coffee/issues.coffee

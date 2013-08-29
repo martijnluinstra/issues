@@ -63,7 +63,6 @@ def add_issue():
 @app.route('/api/issues/<int:issue_id>', methods=['GET'])
 def view_issue(issue_id):
     """ Get all details of an issue """
-    time.sleep(1)
     conditions = {'id': issue_id}
     if not is_admin():
         conditions['public'] = True

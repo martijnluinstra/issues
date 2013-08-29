@@ -149,8 +149,6 @@ class IssueView extends Backbone.View
 
 		@model.comments.fetch()
 
-		@loadingAnimation = new Triangle @$('.loading-overlay canvas').get 0
-
 		@$el.find('.issue-deadline').pickadate
 			firstDay: 1
 			format: 'yyyy/mm/dd'
@@ -177,11 +175,6 @@ class IssueView extends Backbone.View
 		@$el.toggleClass 'issue-is-public', !! @model.get 'public'
 		@$el.toggleClass 'issue-is-private', ! @model.get 'public'
 
-		if @model.get 'added'
-			@loadingAnimation.stop()
-		else
-			@loadingAnimation.start()
-
 		@commentListView.render()
 		@labelListView.render()
 		@labelDropdownView.render()
@@ -202,7 +195,6 @@ class IssueView extends Backbone.View
 		@commentListView.remove()
 		@labelListView.remove()
 		@labelDropdownView.remove()
-		@loadingAnimation.stop()
 		super()
 
 

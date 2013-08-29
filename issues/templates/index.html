@@ -4,11 +4,13 @@
 {{ super() }}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/default.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/default.date.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/nprogress.css') }}">
 <script src="{{ url_for('static', filename='js/underscore.js') }}"></script>
 <script src="{{ url_for('static', filename='js/backbone.js') }}"></script>
 <script src="{{ url_for('static', filename='js/moment.min.js') }}"></script>
 <script src="{{ url_for('static', filename='js/picker.js') }}"></script>
 <script src="{{ url_for('static', filename='js/picker.date.js') }}"></script>
+<script src="{{ url_for('static', filename='js/nprogress.js') }}"></script>
 {% endblock %}
 
 {% block content %}
@@ -109,7 +111,7 @@
 			</div>
 
 			<div class="loading-overlay">
-				<canvas>Loading issue…</canvas>
+				<p>Loading issue…</p>
 			</div>
 		</div>
 

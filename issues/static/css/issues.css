@@ -285,7 +285,7 @@
 	display: none;
 }
 
-.issue .loading-overlay canvas {
+.issue .loading-overlay p {
 	width: 100%;
 	height: 100%;
 }
