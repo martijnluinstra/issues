@@ -86,7 +86,7 @@ def update_issue(issue_id):
             return 'Invalid description', 422
     if 'completed' in data:
         if data['completed']:
-            issue.completed = datetime.now()
+            issue.completed = datetime.utcnow()
         else: 
             issue.completed = None
     if 'public' in data:
@@ -99,7 +99,7 @@ def update_issue(issue_id):
                 issue.deadline = parse_iso_datetime(data['deadline'])
             except ValueError:
                 return 'Invalid datetime format', 422
-    issue.modified = datetime.now()
+    issue.modified = datetime.utcnow()
     db.session.commit()
     return 'OK'
 
