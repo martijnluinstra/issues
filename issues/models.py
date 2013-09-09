@@ -65,7 +65,7 @@ class Issue(db.Model):
     public = db.Column(db.Boolean())
     accepted = db.Column(db.Boolean())
     added = db.Column(db.DateTime())
-    modified = db.Column(db.DateTime(), nullable=True)
+    modified = db.Column(db.DateTime())
     completed = db.Column(db.DateTime(),nullable=True)
     deadline = db.Column(db.DateTime(), nullable=True)
     comments = db.relationship('Comment', backref='issue',
@@ -81,6 +81,7 @@ class Issue(db.Model):
         self.accepted = accepted
         self.deadline = deadline
         self.added = datetime.now()
+        self.modified = datetime.now()
 
     def to_dict(self):
         owner = User.query.filter_by(id=self.owner_id).first()

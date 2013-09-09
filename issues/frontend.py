@@ -8,7 +8,7 @@ from models import Issue, User, Label
 from session import is_admin, is_logged_in, admin_required
 from forms import AddUserForm, ChangePasswordForm, ConfirmPasswordForm
 import json
-
+from api import issues_read_query, create_issue_read_dict
 
 def jsonify(data):
     return unicode(json.dumps(data, indent=2, ensure_ascii=False))
@@ -37,7 +37,7 @@ def uncompleted_issues():
     if not is_admin():
         conditions['public'] = True
 
-    return Issue.query.filter_by(**conditions).all()
+    return issues_read_query(**conditions).all()
 
 
 def labels():
@@ -52,7 +52,7 @@ def view_frontend(path=None):
         user=current_user.to_dict() if is_logged_in() else None,
         current_user=jsonify(current_user.to_dict() if is_logged_in() else None),
         anonymous_gravatar=gravatar(''),
-        issues=jsonify([issue.to_dict() for issue in uncompleted_issues()]),
+        issues=jsonify([create_issue_read_dict(issue, last_read) for (issue,last_read) in uncompleted_issues()]),
         labels=jsonify([label.to_dict() for label in labels()]))
 
 
