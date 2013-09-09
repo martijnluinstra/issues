@@ -92,6 +92,7 @@ class Issue(db.Model):
             'owner': owner.to_dict() if owner is not None else None,
             'public': self.public,
             'deadline': self.deadline.isoformat() if self.deadline is not None else None,
+            'accepted': self.accepted,
             'added': self.added.isoformat() if self.added is not None else None,
             'modified': self.modified.isoformat() if self.modified is not None else None,
             'completed': self.completed.isoformat() if self.completed is not None else None,
