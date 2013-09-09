@@ -25,11 +25,16 @@ def parse_iso_datetime(datetimestring):
     return datetime.strptime(datetimestring, TIME_FORMAT)
 
 
-def issues_read_query(**filters):
+def query_issues_filter_by(**filters):
     # Only show public issues to non-admins
     if not is_admin():
         filters['public'] = True
+
     clauses = [getattr(Issue, key) == value for (key, value) in filters.items()]
+    return query_issues_filter(clauses)
+
+
+def query_issues_filter(clauses):
     return db.session.query(Issue, read_status_table.c.last_read).\
         outerjoin(read_status_table,
                   db.and_(
@@ -43,7 +48,7 @@ def issues_read_query(**filters):
 def list_all_issues():
     """ Get a list containing all issues """
     conditions = {}
-    result = issues_read_query(**conditions).all()
+    result = query_issues_filter_by(**conditions).all()
     return jsonify([create_issue_read_dict(issue, last_read) for (issue,last_read) in result])
 
 
@@ -64,7 +69,7 @@ def add_issue():
 def view_issue(issue_id):
     """ Get all details of an issue """
     conditions = {'id': issue_id}
-    (issue,last_read) = issues_read_query(**conditions).first()
+    (issue,last_read) = query_issues_filter_by(**conditions).first()
     return jsonify(create_issue_read_dict(issue, last_read))
 
 
@@ -111,7 +116,7 @@ def list_todo_issues():
         'completed': None,
         'accepted': True
     }
-    result = issues_read_query(**conditions).all()
+    result = query_issues_filter_by(**conditions).all()
     return jsonify([create_issue_read_dict(issue, last_read) for (issue,last_read) in result])
 
 
@@ -122,7 +127,18 @@ def list_ideas():
         'completed': None,
         'accepted': False
     }
-    result = issues_read_query(**conditions).all()
+    result = query_issues_filter_by(**conditions).all()
+    return jsonify([create_issue_read_dict(issue, last_read) for (issue,last_read) in result])
+
+
+@app.route('/api/issues/archive', methods=['GET'])
+def list_archive():
+    """ Get a list containing all completed issues """
+    
+    conditions = [Issue.completed != None]
+    if not is_admin():
+        conditions.append(Issue.public == True)
+    result = query_issues_filter(conditions).all()
     return jsonify([create_issue_read_dict(issue, last_read) for (issue,last_read) in result])
 
 
@@ -243,7 +259,7 @@ def list_issues_labels(ids):
     labels = ids.split('+')
     # issues = Issue.query.filter(Issue.labels.any(Label.id.in_(labels))).all()
     # return jsonify([issue.to_dict() for issue in issues])
-    result = issues_read_query().filter(Issue.labels.any(Label.id.in_(labels))).all()
+    result = query_issues_filter_by().filter(Issue.labels.any(Label.id.in_(labels))).all()
     return jsonify([create_issue_read_dict(issue, last_read) for (issue,last_read) in result])
 
 

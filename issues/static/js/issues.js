@@ -1488,7 +1488,8 @@
       this.route(/^labels\/([^\/]+)$/, 'listIssuesWithLabel');
       this.route(/^inbox$/, 'listInboxIssues');
       this.route(/^todo$/, 'listTodoIssues');
-      this.route(/^archive$/, 'listAllIssues');
+      this.route(/^archive$/, 'listArchiveIssues');
+      this.route(/^all$/, 'listAllIssues');
       this.user = config.user;
       this.labelCollection = new LabelCollection(config.labels);
       this.issueCollection = new IssueCollection(config.issues, {
@@ -1505,8 +1506,14 @@
           return !issue.get('accepted');
         }
       });
+      this.archiveCollection = this.issueCollection.subcollection({
+        filter: function(issue) {
+          return issue.get('completed' !== null);
+        }
+      });
       this.todoCollection.url = '/api/issues/todo';
       this.inboxCollection.url = '/api/issues/inbox';
+      this.archiveCollection.url = '/api/issues/archive';
       this.listPanel = new Panel('#list-panel');
       this.detailPanel = new OverlayPanel('#detail-panel');
       this.labelListView = new Backbone.CollectionView({
@@ -1556,15 +1563,29 @@
       return this.listPanel.render(view);
     };
 
+    AppRouter.prototype.listArchiveIssues = function() {
+      var view;
+      console.log('archive issued');
+      this.archiveCollection.fetch();
+      view = new IssueListView({
+        model: this.archiveCollection
+      });
+      view.url = '/archive';
+      view.title = function() {
+        return 'Archive';
+      };
+      return this.listPanel.render(view);
+    };
+
     AppRouter.prototype.listAllIssues = function() {
       var view;
       this.issueCollection.fetch();
       view = new IssueListView({
         model: this.issueCollection
       });
-      view.url = '/archive';
+      view.url = '/all';
       view.title = function() {
-        return 'Archive';
+        return 'All';
       };
       return this.listPanel.render(view);
     };

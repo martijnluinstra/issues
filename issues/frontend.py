@@ -8,7 +8,7 @@ from models import Issue, User, Label
 from session import is_admin, is_logged_in, admin_required
 from forms import AddUserForm, ChangePasswordForm, ConfirmPasswordForm
 import json
-from api import issues_read_query, create_issue_read_dict
+from api import query_issues_filter_by, create_issue_read_dict
 
 def jsonify(data):
     return unicode(json.dumps(data, indent=2, ensure_ascii=False))
@@ -37,7 +37,7 @@ def uncompleted_issues():
     if not is_admin():
         conditions['public'] = True
 
-    return issues_read_query(**conditions).all()
+    return query_issues_filter_by(**conditions).all()
 
 
 def labels():
