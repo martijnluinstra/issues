@@ -744,11 +744,16 @@
     };
 
     IssueView.prototype.render = function(eventName) {
+      var text;
       this.$el.toggleClass('unread', !this.model.is_read());
       this.$('.read-issue .issue-title').text(this.model.get('title'));
       this.$('.read-issue .issue-description').html(this.model.get('description'));
       if (this.model.has('added')) {
-        this.$('.read-issue .issue-added').text("Added " + (moment(this.model.get('added')).fromNow()) + " by " + (this.model.get('owner').name));
+        text = "Added " + (moment(this.model.get('added')).fromNow());
+        if (this.model.get('owner')) {
+          text += " by " + (this.model.get('owner').name);
+        }
+        this.$('.read-issue .issue-added').text(text);
         this.$('.read-issue .issue-added').attr('title', moment(this.model.get('added')).calendar());
       }
       this.$('.read-issue .issue-deadline').text(this.model.has('deadline') ? "Deadline " + (moment(this.model.get('deadline')).fromNow()) : "No deadline");
