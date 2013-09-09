@@ -68,8 +68,13 @@ class Comment extends Backbone.Model
 		if (jQuery.trim attr.text) == ''
 			return 'The comment has no text'
 
+	parse: (resp, options) ->
+		resp.time = new Date resp.time
+		return resp
+
 	is_read: ->
-		return @collection.issue.get 'last_read'
+		last_read = @collection.issue.get 'last_read'
+		return last_read isnt null and last_read >= @get 'time'
 		
 
 class CommentCollection extends Backbone.Collection

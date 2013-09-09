@@ -453,8 +453,15 @@
       }
     };
 
+    Comment.prototype.parse = function(resp, options) {
+      resp.time = new Date(resp.time);
+      return resp;
+    };
+
     Comment.prototype.is_read = function() {
-      return this.collection.issue.get('last_read');
+      var last_read;
+      last_read = this.collection.issue.get('last_read');
+      return last_read !== null && last_read >= this.get('time');
     };
 
     return Comment;
