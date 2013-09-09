@@ -6,6 +6,7 @@ class Issue extends Backbone.Model
 		owner: null
 		public: no
 		deadline: null
+		accepted: yes
 		added: null
 		modified: null
 		completed: null

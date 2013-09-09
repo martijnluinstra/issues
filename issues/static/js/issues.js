@@ -363,6 +363,7 @@
       owner: null,
       "public": false,
       deadline: null,
+      accepted: true,
       added: null,
       modified: null,
       completed: null,
@@ -1480,6 +1481,7 @@
       this.route(/^issues\/new$/, 'newIssue');
       this.route(/^issues\/(\d+)$/, 'showIssue');
       this.route(/^labels\/([^\/]+)$/, 'listIssuesWithLabel');
+      this.route(/^inbox$/, 'listInboxIssues');
       this.route(/^todo$/, 'listTodoIssues');
       this.route(/^archive$/, 'listAllIssues');
       this.user = config.user;
@@ -1493,7 +1495,13 @@
           return !issue.get('completed');
         }
       });
+      this.inboxCollection = this.issueCollection.subcollection({
+        filter: function(issue) {
+          return !issue.get('accepted');
+        }
+      });
       this.todoCollection.url = '/api/issues/todo';
+      this.inboxCollection.url = '/api/issues/inbox';
       this.listPanel = new Panel('#list-panel');
       this.detailPanel = new OverlayPanel('#detail-panel');
       this.labelListView = new Backbone.CollectionView({
@@ -1526,6 +1534,19 @@
       view.url = '/todo';
       view.title = function() {
         return 'Todo';
+      };
+      return this.listPanel.render(view);
+    };
+
+    AppRouter.prototype.listInboxIssues = function() {
+      var view;
+      this.inboxCollection.fetch();
+      view = new IssueListView({
+        model: this.inboxCollection
+      });
+      view.url = '/inbox';
+      view.title = function() {
+        return 'Inbox';
       };
       return this.listPanel.render(view);
     };

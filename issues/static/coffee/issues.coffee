@@ -171,6 +171,7 @@ class AppRouter extends Backbone.Router
 		@route /^issues\/new$/, 'newIssue'
 		@route /^issues\/(\d+)$/, 'showIssue'
 		@route /^labels\/([^\/]+)$/, 'listIssuesWithLabel'
+		@route /^inbox$/, 'listInboxIssues'
 		@route /^todo$/, 'listTodoIssues'
 		@route /^archive$/, 'listAllIssues'
 
@@ -188,9 +189,15 @@ class AppRouter extends Backbone.Router
 			filter: (issue) ->
 				not issue.get 'completed'
 
+		@inboxCollection = @issueCollection.subcollection
+			filter: (issue) ->
+				not issue.get 'accepted'
+
 		# Give the subcollection its own API endpoint for efficient fetching of
 		# issues.
 		@todoCollection.url = '/api/issues/todo'
+
+		@inboxCollection.url = '/api/issues/inbox'
 		
 		@listPanel = new Panel '#list-panel'
 
@@ -227,6 +234,14 @@ class AppRouter extends Backbone.Router
 			model: @todoCollection
 		view.url = '/todo'
 		view.title = -> 'Todo'
+		@listPanel.render view
+
+	listInboxIssues: ->
+		@inboxCollection.fetch()
+		view = new IssueListView
+			model: @inboxCollection
+		view.url = '/inbox'
+		view.title = -> 'Inbox'
 		@listPanel.render view
 
 	listAllIssues: ->
