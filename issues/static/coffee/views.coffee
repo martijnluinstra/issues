@@ -149,7 +149,7 @@ class IssueView extends Backbone.View
 
 		@model.comments.fetch()
 
-		@$el.find('.issue-deadline').pickadate
+		@$el.find('.edit-issue .issue-deadline').pickadate
 			firstDay: 1
 			format: 'yyyy/mm/dd'
 
