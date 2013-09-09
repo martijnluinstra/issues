@@ -273,7 +273,7 @@ class AppRouter extends Backbone.Router
 		@detailPanel.render new IssueView
 			model: issue
 
-		issue.mark_read()
+		setTimeout (-> issue.mark_read()), 1000
 
 
 window.init = (data) ->

@@ -80,8 +80,8 @@ class Issue(db.Model):
         self.public = public
         self.accepted = accepted
         self.deadline = deadline
-        self.added = datetime.now()
-        self.modified = datetime.now()
+        self.added = datetime.utcnow()
+        self.modified = datetime.utcnow()
 
     def to_dict(self):
         owner = User.query.filter_by(id=self.owner_id).first()
@@ -110,7 +110,7 @@ class Comment(db.Model):
         self.issue_id = issue_id
         self.user_id = user_id
         self.text = text
-        self.time = datetime.now()
+        self.time = datetime.utcnow()
 
     def to_dict(self):
         return {

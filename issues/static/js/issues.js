@@ -1588,7 +1588,9 @@
       this.detailPanel.render(new IssueView({
         model: issue
       }));
-      return issue.mark_read();
+      return setTimeout((function() {
+        return issue.mark_read();
+      }), 1000);
     };
 
     return AppRouter;
