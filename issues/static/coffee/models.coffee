@@ -9,6 +9,7 @@ class Issue extends Backbone.Model
 		added: null
 		modified: null
 		completed: null
+		last_read: null
 		labels: []
 		comments: []
 
@@ -16,6 +17,7 @@ class Issue extends Backbone.Model
 
 	initialize: ->
 		@comments = new CommentCollection (@get 'comments'),
+			issue: this
 			url: =>
 				"#{@url()}/comments"
 
@@ -31,6 +33,30 @@ class Issue extends Backbone.Model
 			url: =>
 				"#{@url()}/labels"
 
+	parse: (resp, options) ->
+		if resp.last_read?
+			resp.last_read = new Date resp.last_read
+
+		resp.modified = new Date resp.modified
+
+		return resp
+
+	is_read: ->
+		(@get 'last_read') isnt null and (@get 'last_read') >= (@get 'modified')
+
+	mark_read: ->
+		if app.user is null
+			return
+
+		@set 'last_read', new Date()
+
+		jQuery.ajax "/api/issues/#{@get 'id'}/read",
+			cache: no
+			global: no
+			type: 'PUT'
+			contentType: 'application/json'
+			data: JSON.stringify last_read: @get 'last_read'
+
 
 class IssueCollection extends Backbone.Collection
 	model: Issue
@@ -41,10 +67,16 @@ class Comment extends Backbone.Model
 	validate: (attr, options) ->
 		if (jQuery.trim attr.text) == ''
 			return 'The comment has no text'
+
+	is_read: ->
+		return @collection.issue.get 'last_read'
 		
 
 class CommentCollection extends Backbone.Collection
 	model: Comment
+
+	initialize: (models, options) ->
+		@issue = options.issue
 
 
 # Labels

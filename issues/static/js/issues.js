@@ -366,6 +366,7 @@
       added: null,
       modified: null,
       completed: null,
+      last_read: null,
       labels: [],
       comments: []
     };
@@ -376,6 +377,7 @@
       var label_ids, labels,
         _this = this;
       this.comments = new CommentCollection(this.get('comments'), {
+        issue: this,
         url: function() {
           return "" + (_this.url()) + "/comments";
         }
@@ -388,6 +390,34 @@
         url: function() {
           return "" + (_this.url()) + "/labels";
         }
+      });
+    };
+
+    Issue.prototype.parse = function(resp, options) {
+      if (resp.last_read != null) {
+        resp.last_read = new Date(resp.last_read);
+      }
+      resp.modified = new Date(resp.modified);
+      return resp;
+    };
+
+    Issue.prototype.is_read = function() {
+      return (this.get('last_read')) !== null && (this.get('last_read')) >= (this.get('modified'));
+    };
+
+    Issue.prototype.mark_read = function() {
+      if (app.user === null) {
+        return;
+      }
+      this.set('last_read', new Date());
+      return jQuery.ajax("/api/issues/" + (this.get('id')) + "/read", {
+        cache: false,
+        global: false,
+        type: 'PUT',
+        contentType: 'application/json',
+        data: JSON.stringify({
+          last_read: this.get('last_read')
+        })
       });
     };
 
@@ -423,6 +453,10 @@
       }
     };
 
+    Comment.prototype.is_read = function() {
+      return this.collection.issue.get('last_read');
+    };
+
     return Comment;
 
   })(Backbone.Model);
@@ -436,6 +470,10 @@
     }
 
     CommentCollection.prototype.model = Comment;
+
+    CommentCollection.prototype.initialize = function(models, options) {
+      return this.issue = options.issue;
+    };
 
     return CommentCollection;
 
@@ -527,6 +565,7 @@
     };
 
     IssueListItemView.prototype.render = function(eventName) {
+      this.$el.toggleClass('unread', !this.model.is_read());
       this.$('.issue-link').attr('href', "/issues/" + (this.model.get('id')));
       this.$('.issue-title').text(this.model.get('title'));
       this.$('.issue-description').text(this.model.strip('description'));
@@ -697,6 +736,7 @@
     };
 
     IssueView.prototype.render = function(eventName) {
+      this.$el.toggleClass('unread', !this.model.is_read());
       this.$('.read-issue .issue-title').text(this.model.get('title'));
       this.$('.read-issue .issue-description').html(this.model.get('description'));
       if (this.model.has('added')) {
@@ -808,6 +848,7 @@
     };
 
     CommentListItemView.prototype.render = function(eventName) {
+      this.$el.toggleClass('unread', !this.model.is_read());
       this.$('time[pubdate]').text(moment(this.model.get('time')).fromNow());
       this.$('time[pubdate]').attr('title', moment(this.model.get('time')).calendar());
       this.$('.gravatar').attr('src', (this.model.get('user')).gravatar);
@@ -1297,7 +1338,7 @@
   };
 
   Backbone.Collection.prototype.containsWhere = function(attributes) {
-    return this.findWhere(attributes === !null);
+    return this.findWhere(attributes !== null);
   };
 
   defer = function(fn) {
@@ -1537,9 +1578,10 @@
         });
         issue.fetch();
       }
-      return this.detailPanel.render(new IssueView({
+      this.detailPanel.render(new IssueView({
         model: issue
       }));
+      return issue.mark_read();
     };
 
     return AppRouter;

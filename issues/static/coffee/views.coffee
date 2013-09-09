@@ -18,6 +18,7 @@ class IssueListItemView extends Backbone.View
 			el: @$ '.issue-labels'
 
 	render: (eventName) ->
+		@$el.toggleClass 'unread', not @model.is_read()
 		@$('.issue-link').attr 'href', "/issues/#{@model.get 'id'}"
 		@$('.issue-title').text @model.get 'title'
 		@$('.issue-description').text @model.strip 'description'
@@ -154,6 +155,7 @@ class IssueView extends Backbone.View
 			format: 'yyyy/mm/dd'
 
 	render: (eventName) ->
+		@$el.toggleClass 'unread', not @model.is_read()
 		@$('.read-issue .issue-title').text @model.get 'title'
 		@$('.read-issue .issue-description').html @model.get 'description'
 
@@ -239,6 +241,7 @@ class CommentListItemView extends Backbone.View
 		@listenTo @model, 'change', @render
 
 	render: (eventName) ->
+		@$el.toggleClass 'unread', not @model.is_read()
 		@$('time[pubdate]').text moment(@model.get 'time').fromNow()
 		@$('time[pubdate]').attr 'title', moment(@model.get 'time').calendar()
 		@$('.gravatar').attr 'src', (@model.get 'user').gravatar

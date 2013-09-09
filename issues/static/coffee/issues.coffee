@@ -55,7 +55,7 @@ Backbone.Model::strip = (attribute) ->
 	jQuery("<p>#{@get attribute}</p>").wrap('p').text()
 
 Backbone.Collection::containsWhere = (attributes) ->
-	@findWhere attributes is not null
+	@findWhere attributes isnt null
 
 defer = (fn) ->
 	setTimeout fn, 1
@@ -268,10 +268,12 @@ class AppRouter extends Backbone.Router
 		if not issue
 			issue = new Issue id: id
 			issue.fetch()
-		
+
 		# Give it a view and render it
 		@detailPanel.render new IssueView
 			model: issue
+
+		issue.mark_read()
 
 
 window.init = (data) ->

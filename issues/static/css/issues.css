@@ -211,6 +211,10 @@
 	content: "\e106";
 }
 
+.issue-list .unread {
+	border-left: 5px solid #428bca;
+}
+
 .issue-list .issue-labels {
 	position: absolute;
 	bottom: 0;
