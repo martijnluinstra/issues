@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from flask import render_template, redirect, url_for
+from flask import render_template, redirect, url_for, request
 from flask.ext.login import current_user, login_required
 from sqlalchemy.exc import IntegrityError
 from issues import app, db, gravatar
@@ -119,3 +119,16 @@ def change_password(user_id=None):
         form=form,
         user=current_user.to_dict() if is_logged_in() else None,
         user_id=user_id)
+
+
+@app.route('/idea', methods=['POST'])
+def submit_idea():
+    if 'idea' in request.form and request.form['idea'].strip():
+        description = request.form['idea'].strip()
+        # Take the first 50 charcters of the first line of the description, remove trailing spaces and make it the title. 
+        title = description.splitlines()[0][:50].strip()
+        idea = Issue(title, description, None, True, None, False)
+        db.session.add(idea)
+        db.session.commit()
+        return render_template('thanks.html', error=False, idea=idea)
+    return render_template('thanks.html', error=True)

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Idea</title>
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.css') }}">
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/issues.css') }}">
+	<script src="{{ url_for('static', filename='js/jquery-2.0.3.js') }}"></script>
+	<script src="{{ url_for('static', filename='js/bootstrap.js') }}"></script>
+</head>
+<body id="thanks-page">
+	{% if error %}
+	<div class="jumbotron">
+		<div class="container">
+			<h1>Uh-oh</h1>
+			<p>We have made it very easy to submit your ideas, but you still made a mistake!</p>
+		</div>
+	</div>
+	{% else %}
+	<div class="jumbotron">
+		<div class="container">
+			<h1>Thanks!</h1>
+			<p>You have succesfully submitted an idea!</p>
+			<p><a class="btn btn-primary btn-lg" href="{{ url_for('view_frontend', path='issues/' ~ idea.id)}}">Keep track</a></p>
+		</div>
+	</div>
+	{% endif %}
+</body>
+</html>

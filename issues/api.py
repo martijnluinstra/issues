@@ -26,6 +26,9 @@ def parse_iso_datetime(datetimestring):
 
 
 def issues_read_query(**filters):
+    # Only show public issues to non-admins
+    if not is_admin():
+        filters['public'] = True
     clauses = [getattr(Issue, key) == value for (key, value) in filters.items()]
     return db.session.query(Issue, read_status_table.c.last_read).\
         outerjoin(read_status_table,
@@ -40,9 +43,6 @@ def issues_read_query(**filters):
 def list_all_issues():
     """ Get a list containing all issues """
     conditions = {}
-    # Only show public issues to non-admins
-    if not is_admin():
-        conditions['public'] = True
     result = issues_read_query(**conditions).all()
     return jsonify([create_issue_read_dict(issue, last_read) for (issue,last_read) in result])
 
@@ -64,8 +64,6 @@ def add_issue():
 def view_issue(issue_id):
     """ Get all details of an issue """
     conditions = {'id': issue_id}
-    if not is_admin():
-        conditions['public'] = True
     (issue,last_read) = issues_read_query(**conditions).first()
     return jsonify(create_issue_read_dict(issue, last_read))
 
@@ -109,10 +107,21 @@ def update_issue(issue_id):
 @app.route('/api/issues/todo', methods=['GET'])
 def list_todo_issues():
     """ Get a list containing all uncompleted issues """
-    conditions = {'completed': None}
-    # Only show public issues to non-admins
-    if not is_admin():
-        conditions['public'] = True
+    conditions = {
+        'completed': None,
+        'accepted': True
+    }
+    result = issues_read_query(**conditions).all()
+    return jsonify([create_issue_read_dict(issue, last_read) for (issue,last_read) in result])
+
+
+@app.route('/api/issues/inbox', methods=['GET'])
+def list_ideas():
+    """ Get a list containing all ideas """
+    conditions = {
+        'completed': None,
+        'accepted': False
+    }
     result = issues_read_query(**conditions).all()
     return jsonify([create_issue_read_dict(issue, last_read) for (issue,last_read) in result])
 

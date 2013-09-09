@@ -61,8 +61,9 @@ class Issue(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(255))
     description = db.Column(db.Text())
-    owner_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    owner_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
     public = db.Column(db.Boolean())
+    accepted = db.Column(db.Boolean())
     added = db.Column(db.DateTime())
     modified = db.Column(db.DateTime(), nullable=True)
     completed = db.Column(db.DateTime(),nullable=True)
@@ -72,11 +73,12 @@ class Issue(db.Model):
     labels = db.relationship('Label', secondary=issues_labels_table,
         backref=db.backref('issues', lazy='dynamic'))
 
-    def __init__(self, title, description, owner_id, public=False, deadline=None):
+    def __init__(self, title, description, owner_id=None, public=False, deadline=None, accepted=True):
         self.title = title
         self.description = description
         self.owner_id = owner_id
         self.public = public
+        self.accepted = accepted
         self.deadline = deadline
         self.added = datetime.now()
 
@@ -86,7 +88,7 @@ class Issue(db.Model):
             'id': self.id,
             'title': self.title,
             'description': self.description,
-            'owner': owner.to_dict(),
+            'owner': owner.to_dict() if owner is not None else None,
             'public': self.public,
             'deadline': self.deadline.isoformat() if self.deadline is not None else None,
             'added': self.added.isoformat() if self.added is not None else None,

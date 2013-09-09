@@ -524,3 +524,7 @@
 .overlay.hidden > .popup{
 	top: -100%;
 }
+
+#thanks-page{
+	background-color: #eeeeee;
+}

@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Idea</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/issues.css') }}">
+    <script src="{{ url_for('static', filename='js/jquery-2.0.3.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap.js') }}"></script>
+</head>
+<body id="idea-page">
+    <form method="post" action="/idea">
+        <div class="form-group">
+            <textarea name="idea"></textarea>
+        </div>
+        <button type="submit" class="btn btn-default">Submit</button>
+    </form>
+</body>
+</html>
