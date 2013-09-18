@@ -196,7 +196,8 @@ class AppRouter extends Backbone.Router
 
 		@archiveCollection = @issueCollection.subcollection
 			filter: (issue) ->
-				issue.get 'completed' isnt null
+				console.log issue, issue.get 'completed'
+				(issue.get 'completed') isnt null
 
 		# Give the subcollection its own API endpoint for efficient fetching of
 		# issues.

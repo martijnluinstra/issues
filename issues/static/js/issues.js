@@ -1508,7 +1508,8 @@
       });
       this.archiveCollection = this.issueCollection.subcollection({
         filter: function(issue) {
-          return issue.get('completed' !== null);
+          console.log(issue, issue.get('completed'));
+          return (issue.get('completed')) !== null;
         }
       });
       this.todoCollection.url = '/api/issues/todo';
