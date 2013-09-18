@@ -1360,7 +1360,7 @@
   };
 
   Backbone.Collection.prototype.containsWhere = function(attributes) {
-    return this.findWhere(attributes !== null);
+    return (this.findWhere(attributes)) !== null;
   };
 
   defer = function(fn) {
@@ -1507,7 +1507,7 @@
       this.issueCollection.url = '/api/issues';
       this.todoCollection = this.issueCollection.subcollection({
         filter: function(issue) {
-          return !issue.get('completed');
+          return (issue.get('accepted')) && !issue.get('completed');
         }
       });
       this.inboxCollection = this.issueCollection.subcollection({
@@ -1517,7 +1517,6 @@
       });
       this.archiveCollection = this.issueCollection.subcollection({
         filter: function(issue) {
-          console.log(issue, issue.get('completed'));
           return (issue.get('completed')) !== null;
         }
       });
@@ -1575,7 +1574,6 @@
 
     AppRouter.prototype.listArchiveIssues = function() {
       var view;
-      console.log('archive issued');
       this.archiveCollection.fetch();
       view = new IssueListView({
         model: this.archiveCollection
@@ -1589,7 +1587,6 @@
 
     AppRouter.prototype.listAllIssues = function() {
       var view;
-      this.issueCollection.fetch();
       view = new IssueListView({
         model: this.issueCollection
       });

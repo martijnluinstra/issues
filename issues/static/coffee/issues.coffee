@@ -55,7 +55,7 @@ Backbone.Model::strip = (attribute) ->
 	jQuery("<p>#{@get attribute}</p>").wrap('p').text()
 
 Backbone.Collection::containsWhere = (attributes) ->
-	@findWhere attributes isnt null
+	(@findWhere attributes) isnt null
 
 defer = (fn) ->
 	setTimeout fn, 1
@@ -161,6 +161,7 @@ class OverlayPanel extends Panel
 				evt.preventDefault()
 				@hide()		
 
+
 class AppRouter extends Backbone.Router
 	initialize: (config) ->
 		window.app = this;
@@ -188,7 +189,7 @@ class AppRouter extends Backbone.Router
 
 		@todoCollection = @issueCollection.subcollection
 			filter: (issue) ->
-				not issue.get 'completed'
+				(issue.get 'accepted') and not issue.get 'completed'
 
 		@inboxCollection = @issueCollection.subcollection
 			filter: (issue) ->
@@ -196,7 +197,6 @@ class AppRouter extends Backbone.Router
 
 		@archiveCollection = @issueCollection.subcollection
 			filter: (issue) ->
-				console.log issue, issue.get 'completed'
 				(issue.get 'completed') isnt null
 
 		# Give the subcollection its own API endpoint for efficient fetching of
@@ -253,7 +253,6 @@ class AppRouter extends Backbone.Router
 		@listPanel.render view
 
 	listArchiveIssues: ->
-		console.log 'archive issued'
 		@archiveCollection.fetch()
 		view = new IssueListView
 			model: @archiveCollection
@@ -262,7 +261,7 @@ class AppRouter extends Backbone.Router
 		@listPanel.render view
 
 	listAllIssues: ->
-		@issueCollection.fetch()
+		# @issueCollection.fetch()
 		view = new IssueListView
 			model: @issueCollection
 		view.url = '/all'
