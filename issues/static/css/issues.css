@@ -252,6 +252,9 @@
 	display: inline-block;
 }
 
+.issue.issue-is-accepted .accept-issue-button {
+	display: none;
+}
 
 .issue .edit-issue,
 .issue .finish-editing-issue-button,

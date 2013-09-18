@@ -96,6 +96,11 @@ class IssueView extends Backbone.View
 			evt.preventDefault()
 			@model.save ('completed': no), patch: yes
 
+		# Accept idea button:
+		'click .accept-issue-button': (evt) ->
+			evt.preventDefault()
+			@model.save ('accepted': yes), patch: yes
+
 		# Edit issue button:
 		# This causes the edit form to appear
 		'click .edit-issue-button': (evt) ->
@@ -180,6 +185,7 @@ class IssueView extends Backbone.View
 		@$el.toggleClass 'issue-completed', !! @model.get 'completed'
 		@$el.toggleClass 'issue-is-public', !! @model.get 'public'
 		@$el.toggleClass 'issue-is-private', ! @model.get 'public'
+		@$el.toggleClass 'issue-is-accepted', @model.get 'accepted'
 
 		@commentListView.render()
 		@labelListView.render()

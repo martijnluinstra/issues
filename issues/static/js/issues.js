@@ -689,6 +689,14 @@
           patch: true
         });
       },
+      'click .accept-issue-button': function(evt) {
+        evt.preventDefault();
+        return this.model.save({
+          'accepted': true
+        }, {
+          patch: true
+        });
+      },
       'click .edit-issue-button': function(evt) {
         evt.preventDefault();
         return this.$el.addClass('editable');
@@ -767,6 +775,7 @@
       this.$el.toggleClass('issue-completed', !!this.model.get('completed'));
       this.$el.toggleClass('issue-is-public', !!this.model.get('public'));
       this.$el.toggleClass('issue-is-private', !this.model.get('public'));
+      this.$el.toggleClass('issue-is-accepted', this.model.get('accepted'));
       this.commentListView.render();
       this.labelListView.render();
       return this.labelDropdownView.render();

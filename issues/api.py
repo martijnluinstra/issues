@@ -96,6 +96,8 @@ def update_issue(issue_id):
             issue.completed = None
     if 'public' in data:
         issue.public = bool(data['public'])
+    if 'accepted' in data:
+        issue.accepted = bool(data['accepted'])
     if 'deadline' in data:
         if data['deadline'] is None:
             issue.deadline = None
