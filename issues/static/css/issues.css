@@ -393,9 +393,7 @@
 }
 
 .label-context-menu .label-colour input {
-	float: left;
-	visibility: hidden;
-	width: 0;
+	display: none;
 }
 
 .label-context-menu .label-colour label {

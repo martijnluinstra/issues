@@ -87,11 +87,11 @@
 
 			<form class="edit-issue">
 				<header>
-					<input type="text" name="title" class="issue-title" placeholder="Issue title…" required>
+					<input type="text" name="title" class="issue-title form-control" placeholder="Issue title…" required>
 				</header>
 
-				<aside>
-					<input type="text" name="deadline" class="issue-deadline" placeholder="Set a Deadline…" readonly>
+				<aside class="form-inline">
+					<input type="text" name="deadline" class="issue-deadline form-control" placeholder="Set a Deadline…" readonly>
 
 					<label>
 						<input type="checkbox" name="public" class="issue-visibility">
@@ -99,7 +99,7 @@
 					</label>
 				</aside>
 
-				<textarea name="description" class="issue-description" placeholder="Optional description of the issue…"></textarea>
+				<textarea name="description" class="issue-description form-control" placeholder="Optional description of the issue…"></textarea>
 			</form>
 
 			<div class="comments">
