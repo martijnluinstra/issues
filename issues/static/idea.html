@@ -6,13 +6,38 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/issues.css') }}">
     <script src="{{ url_for('static', filename='js/jquery-2.0.3.js') }}"></script>
     <script src="{{ url_for('static', filename='js/bootstrap.js') }}"></script>
+    <style>
+        html, body {
+            width: 100%;
+            height: 100%;
+        }
+        textarea {
+            border: none;
+            font-size: 18px;
+            padding: 10px;
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 40px;
+            right: 0;
+            outline: none;
+        }
+
+        button {
+            position: absolute;
+            height: 40px;
+            left: 0;
+            right: 0;
+            bottom: 0;
+        }
+    </style>
 </head>
 <body id="idea-page">
     <form method="post" action="/idea">
         <div class="form-group">
-            <textarea name="idea"></textarea>
+            <textarea autofocus name="idea"></textarea>
         </div>
-        <button type="submit" class="btn btn-default">Submit</button>
+        <button type="submit" class="btn btn-default">Submit idea</button>
     </form>
 </body>
 </html>
