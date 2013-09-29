@@ -32,8 +32,11 @@ class IssueListItemView extends Backbone.View
 		
 		@labelView.render()
 
-	isSelected: ->
-		@$('input[type=checkbox]').get(0).checked
+	selected: (state) ->
+		if not state?
+			@$('input[type=checkbox]').get(0).checked
+		else
+			@$('input[type=checkbox]').get(0).checked = state
 
 	remove: ->
 		@labelView.remove()
@@ -49,12 +52,54 @@ class IssueListView extends Backbone.CollectionView
 
 	events:
 		# 'Close' selection button
-		'click .close-issues-button': (evt) ->
+		'click .mark-issues-completed-button': (evt) ->
 			evt.preventDefault()
 
 			for cid, child of @children
-				if child.isSelected()
+				if child.selected()
 					child.model.save (completed: yes), patch: yes
+
+		'click .select-issues-button': (evt) ->
+			evt.preventDefault()
+			all_selected = yes
+
+			for cid, child of @children
+				if not child.selected()
+					all_selected = no
+					break
+
+			for cid, child of @children
+				child.selected not all_selected
+
+			@$('.select-issues-button').toggleClass 'deselect-all', not all_selected
+
+		'click .label-issues-button': (evt) ->
+			if @labelSelector and @labelSelector.isVisible()
+				@labelSelector.hide()
+			else 
+				label_collections = []
+				for cid, child of @children
+					if child.selected()
+						label_collections.push child.model.labels
+
+				intersection = new Backbone.CollectionIntersection
+					parents: label_collections
+					child: new LabelCollection
+
+				@labelSelector = new DropdownLabelListView
+					model: app.labelCollection
+					selected: intersection.child
+
+				console.log intersection.child.models
+
+				@labelSelector.render()
+				@$el.append @labelSelector.el
+
+				@labelSelector.show @$ '.label-issues-button'
+				@labelSelector.on 'hide', =>
+					@labelSelector.remove()
+					intersection.dispose()
+					@labelSelector = null
 
 	initialize: ->
 		# Initialize the CollectionView (register model listeners)
@@ -67,6 +112,11 @@ class IssueListView extends Backbone.CollectionView
 	# issue-list element, not the root element.
 	appendChildView: (el) ->
 		@$('.issue-list').append el
+
+	remove: ->
+		if @labelSelector
+			@labelSelector.hide()
+		super()
 
 
 class IssueView extends Backbone.View
@@ -379,6 +429,10 @@ class DropdownLabelListView extends Backbone.CollectionView
 			if evt.keyCode == 27
 				evt.preventDefault()
 				@hide()
+
+	constructor: (options) ->
+		_.extend this, Backbone.Events
+		super options
 	
 	initialize: (options) ->
 		super options
@@ -392,7 +446,15 @@ class DropdownLabelListView extends Backbone.CollectionView
 		@createLabelButton = @$ '.create-new-label-button'
 
 		@blurCallback = (evt) =>
-			if @isVisible() and not jQuery(evt.target).isOrIsChildOf @el
+			if not @isVisible()
+				return
+			
+			if jQuery(evt.target).isOrIsChildOf @el
+				return
+
+			if @triggerButton and jQuery(evt.target).isOrIsChildOf @triggerButton
+				return
+			else
 				@hide()
 
 		jQuery(document).on 'click', @blurCallback
@@ -432,6 +494,8 @@ class DropdownLabelListView extends Backbone.CollectionView
 		@$el.is ':visible'
 
 	show: (parent) ->
+		@triggerButton = jQuery(parent).get 0
+
 		# Clear the filter field
 		@filterField.val ''
 
@@ -451,9 +515,12 @@ class DropdownLabelListView extends Backbone.CollectionView
 		# .. and focus the filter field
 		defer => @filterField.focus()
 
+		@trigger 'show'
+
 	hide: ->
 		@$el.hide()
 		@selected.save()
+		@trigger 'hide'
 
 	toggle: (parent) ->
 		if @isVisible()

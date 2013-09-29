@@ -190,6 +190,33 @@
 	cursor: pointer;
 }
 
+.list-controls {
+	margin: 0;
+	padding: 0;
+	border-bottom: 1px solid #ccc;
+}
+
+.list-controls .btn {
+	border: none;
+	color: #428bca;
+	border-radius: 0;
+	padding: 8px;
+}
+
+.list-controls .btn:hover,
+.list-controls .btn:focus {
+	border: none;
+	color: #2a6496;
+}
+
+.select-issues-button .glyphicon:before {
+	content: "\e157";
+}
+
+.select-issues-button.deselect-all .glyphicon:before {
+	content: "\e067";
+}
+
 .issue-list {
 	padding: 0;
 }
@@ -213,6 +240,11 @@
 
 .issue-list .unread {
 	border-left: 5px solid #428bca;
+}
+
+.issue-list input[type=checkbox] {
+	float: left;
+	margin: 12px 8px 8px 8px;
 }
 
 .issue-list .issue-labels {

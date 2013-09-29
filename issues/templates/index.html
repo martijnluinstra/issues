@@ -29,15 +29,26 @@
 		<div id="detail-panel"></div>
 
 		<div id="tpl-issue-list-panel">
+			<div class="list-controls">
+				<button class="btn btn-default select-issues-button requires-login">
+				<span class="glyphicon"></span> Select all</button>
+				<a href="/issues/new" class="btn btn-default new-issue-button requires-login">New Issue</a>
+				<div class="btn-group">
+					<button class="btn btn-default mark-issues-completed-button requires-login">
+						<span class="glyphicon glyphicon-ok"></span> Mark complete</button>
+				</div>
+				
+				<button class="btn btn-default label-issues-button requires-login">
+					<span class="glyphicon glyphicon-tag"></span>
+					Label <span class="caret"></span>
+				</button>
+			</div>
 			<ol class="issue-list nav-list">
-				<li class="new-issue-button requires-login">
-					<a href="/issues/new">+ New Issue</a>
-				</li>
 				<li id="tpl-issue-list-item">
-					<!-- <input type="checkbox"> -->
+					<input type="checkbox">
 					<a href="/issues/{issue-id}" class="issue-link">
-						<span class="glyphicon issue-visibility"></span>
 						<strong class="issue-title">{issue-title}</strong>
+						<span class="glyphicon issue-visibility"></span>
 						<span class="issue-labels"></span>
 						<span class="issue-description">{issue-description}</span>
 					</a>

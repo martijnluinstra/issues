@@ -94,6 +94,9 @@ class Label extends Backbone.Model
 
 	urlRoot: '/api/labels'
 
+	toString: ->
+		"[Label #{@get 'name'}]"
+
 
 class LabelCollection extends Backbone.Collection
 	model: Label

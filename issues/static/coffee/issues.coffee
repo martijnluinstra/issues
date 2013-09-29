@@ -206,6 +206,8 @@ class AppRouter extends Backbone.Router
 		@inboxCollection.url = '/api/issues/inbox'
 
 		@archiveCollection.url = '/api/issues/archive'
+
+		@labelCollection.url = '/api/labels';
 		
 		@listPanel = new Panel '#list-panel'
 
